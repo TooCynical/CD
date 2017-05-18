@@ -28,15 +28,15 @@ class Instance {
         set<int> _x_values;     // All occuring x-coordinates of terminals.
         set<int> _y_values;     // All occuring y-coordinates of terminals.
         set<int> _z_values;     // All occuring z-coordinates of terminals.
-        int _nx;                // Size of _x_values
-        int _ny;                // Size of _y_values
-        int _nz;                // Size of _z_values
+        int _n_x_values;        // Size of _x_values
+        int _n_y_values;        // Size of _y_values
+        int _n_z_values;        // Size of _z_values
 
-        Result SetTerminals(int **term_locs);
         Result SetXYZ(int **term_locs);
         Result SetVertices();
         Result SetHananGrid();
         Result SetNeighbours();
+        Result SetTerminals(int **term_locs);
 
     public:
         /* Constructor */

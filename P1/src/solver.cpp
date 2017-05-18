@@ -163,7 +163,6 @@ Result Solver::Merge(Label *first_label) {
     return SUCCESS;
 }
 
-// TODO: test.
 int RectDistance(Vertex *v, Vertex *w) {
     return  (abs(v->getX() - w->getX()) +
             abs(v->getY() - w->getY()) +

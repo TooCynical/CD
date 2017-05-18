@@ -2,34 +2,6 @@
 
 using namespace std;
 
-/* Set up all datastructures given a 1D array of terminal locations,
- * which are represented as a 1D array themselves. */
-Instance::Instance(int n, int **term_locs) {
-    _n_terminals = n;
-    SetXYZ(term_locs);
-    
-    SetVertices();
-    _n_vertices = _V.size();
-
-    SetHananGrid();
-    SetNeighbours();
-
-    SetTerminals(term_locs);
-}
-
-/* Find all terminals in _V to save specific references to them. */
-Result Instance::SetTerminals(int **term_locs) {
-    _terminals = (Vertex**) calloc(_n_terminals, sizeof(Vertex*));
-    
-    /* This is currently O(|Terminals|)*O(|V|), could be faster. */
-    for (int i = 0; i < _n_terminals; i++) {
-        for(int j = 0; j < _n_vertices; j++)
-        if (_V[j]->HasCoords(term_locs[i][0], term_locs[i][1], term_locs[i][2]))
-            _terminals[i] = _V[j];
-    }
-    return SUCCESS;
-}
-
 /* Find all x,y,z values appearing in terminal locations 
  * for later use in finding the Hanan grid. Save how many 
  * different x, y, z values were found respectively. */
@@ -40,9 +12,9 @@ Result Instance::SetXYZ(int **term_locs) {
         _z_values.insert(term_locs[i][2]);
     }
 
-    _nx = _x_values.size();
-    _ny = _y_values.size();
-    _nz = _z_values.size();
+    _n_x_values = _x_values.size();
+    _n_y_values = _y_values.size();
+    _n_z_values = _z_values.size();
 
     return SUCCESS;
 }
@@ -65,14 +37,14 @@ Result Instance::SetVertices() {
 /* Add references to all vertices to the 3D array _hanan_grid, in
  * correspondence with their (x,y,z)-position in the Hanan grid. */
 Result Instance::SetHananGrid() {
-    _hanan_grid = (Vertex****) calloc(_nx, sizeof(Vertex***));
+    _hanan_grid = (Vertex****) calloc(_n_x_values, sizeof(Vertex***));
 
-    for (int i = 0; i < _nx; i++) {
-        _hanan_grid[i] = (Vertex***) calloc(_ny, sizeof(Vertex**));
-        for (int j = 0; j < _ny; j++) {
-            _hanan_grid[i][j] = (Vertex**) calloc(_nz, sizeof(Vertex*));
-            for (int k = 0; k < _nz; k++) {
-                _hanan_grid[i][j][k] = _V[i*_ny*_nz + j*_nz + k];
+    for (int i = 0; i < _n_x_values; i++) {
+        _hanan_grid[i] = (Vertex***) calloc(_n_y_values, sizeof(Vertex**));
+        for (int j = 0; j < _n_y_values; j++) {
+            _hanan_grid[i][j] = (Vertex**) calloc(_n_z_values, sizeof(Vertex*));
+            for (int k = 0; k < _n_z_values; k++) {
+                _hanan_grid[i][j][k] = _V[i*_n_y_values*_n_z_values + j*_n_z_values + k];
             }
         }
     }
@@ -82,22 +54,22 @@ Result Instance::SetHananGrid() {
 /* Using the _hanan_grid, add references to each vertex's neighbours in
  * the Hanan Grid */
 Result Instance::SetNeighbours() {
-    for (int i = 0; i < _nx; i++) {
-        for (int j = 0; j < _ny; j++) {
-            for (int k = 0; k < _nz; k++) {
+    for (int i = 0; i < _n_x_values; i++) {
+        for (int j = 0; j < _n_y_values; j++) {
+            for (int k = 0; k < _n_z_values; k++) {
                 Vertex *v = _hanan_grid[i][j][k];
                 /* Add all grid-adjacent vertices as neighbours */
                 if (i - 1 >= 0)
                     v->AddNeighbour(_hanan_grid[i-1][j][k]);
-                if (i + 1 < _nx)
+                if (i + 1 < _n_x_values)
                     v->AddNeighbour(_hanan_grid[i+1][j][k]);
                 if (j - 1 >= 0)
                     v->AddNeighbour(_hanan_grid[i][j-1][k]);
-                if (j + 1 < _ny)
+                if (j + 1 < _n_y_values)
                     v->AddNeighbour(_hanan_grid[i][j+1][k]);
                 if (k - 1 >= 0)
                     v->AddNeighbour(_hanan_grid[i][j][k-1]);
-                if (k + 1 < _nz)
+                if (k + 1 < _n_z_values)
                     v->AddNeighbour(_hanan_grid[i][j][k+1]);
             }
         }
@@ -105,12 +77,39 @@ Result Instance::SetNeighbours() {
     return SUCCESS;
 }
 
+/* Find all terminals in _V to save specific references to them. */
+Result Instance::SetTerminals(int **term_locs) {
+    _terminals = (Vertex**) calloc(_n_terminals, sizeof(Vertex*));
+    
+    /* This is currently O(|Terminals|)*O(|V|), could be faster. */
+    for (int i = 0; i < _n_terminals; i++) {
+        for(int j = 0; j < _n_vertices; j++)
+        if (_V[j]->HasCoords(term_locs[i][0], term_locs[i][1], term_locs[i][2]))
+            _terminals[i] = _V[j];
+    }
+    return SUCCESS;
+}
+
+/* Set up all datastructures given a 1D array of terminal locations,
+ * which are represented as a 1D array themselves. */
+Instance::Instance(int n, int **term_locs) {
+    _n_terminals = n;
+    SetXYZ(term_locs);
+    
+    SetVertices();
+    _n_vertices = _V.size();
+
+    SetHananGrid();
+    SetNeighbours();
+
+    SetTerminals(term_locs);
+}
+
 /* Getters / Setters */
 vector<Vertex*> *Instance::GetV() { return &_V; }
 Vertex **Instance::GetTerminals() { return _terminals; }
 int Instance::GetNTerminals() { return _n_terminals; }
 int Instance::GetNVertices() { return _n_vertices; }
-
 
 /* IO-functions for testing purposes */
 void Instance::PrintTerminals() {
