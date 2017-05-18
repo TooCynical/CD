@@ -11,10 +11,13 @@
 #include <unordered_map>
 #include <iterator>
 
+
 using namespace std;
 
 /* Forward declaration */
 class Label;
+class Vertex;
+class Instance;
 
 class Vertex {
     public:
@@ -30,6 +33,8 @@ class Vertex {
         // Hash table containing the index of a label in _labels, 
         // if it is indeed in _labels.
 
+        bool _is_root;
+
     // public:
         Vertex(int x, int y, int z);
         
@@ -37,6 +42,9 @@ class Vertex {
         int getX();
         int getY();
         int getZ();
+
+        bool IsRoot() const;
+        Result SetRoot();
 
         int GetNNeigh();
         vector<Vertex*> *GetNeigh();

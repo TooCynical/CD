@@ -26,6 +26,7 @@ class Solver {
         Result SetInitialLabels();
         Result ConsiderNeighbours(Label *l);
         Result Merge(Label *v_label);
+        Result AddLabelToN(Label *l);
 
 
     public:

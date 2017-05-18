@@ -7,6 +7,8 @@ Vertex::Vertex(int x, int y, int z) {
     _y = y;
     _z = z;
     _n_neigh = 0;
+    _n_labels = 0;
+    _is_root = false;
 }
 
 void Vertex::Print() {
@@ -31,6 +33,12 @@ int Vertex::getZ() { return _z; }
 //         return true;
 //     return false;
 // }
+
+bool Vertex::IsRoot() const { return _is_root; }
+Result Vertex::SetRoot() { 
+    _is_root = true; 
+    return SUCCESS;
+}
 
 /* Return whether the vertex is located at given coordinates */
 bool Vertex::HasCoords(int x, int y, int z) {

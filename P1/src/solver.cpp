@@ -14,10 +14,26 @@ Result Solver::SetInitialN() {
         Label *l = new Label(s, b);
         l->SetL(0);
         s->AddLabel(l);
-        _N.push(l);
+        AddLabelToN(l);
     }
     cout << "Added " << _N.size() << " initial labels to N.\n";
     return SUCCESS;
+}
+
+/* Add a label to the priority Q _N but only 
+ * if it has never been added before to prevent
+ * duplicate entries. Also compute the lower bound
+ * for the label at this point. */
+Result Solver::AddLabelToN(Label* l) {
+    if (!l->BeenInQ()) {
+        l->SetBeenInQ();
+        l->SetLowerBound(0);
+        _N.push(l);
+        return SUCCESS;
+    }
+    else {
+        return FAIL;
+    }
 }
 
 Result Solver::SetInitialLabels() {
@@ -39,27 +55,31 @@ Result Solver::SolveCurrentInstance() {
     SetInitialLabels();
     Label *current_label;
     bitset<BITSET_SIZE> final_terminal_set;
+    _problem_instance->GetTerminals()[0]->SetRoot();
+    
+    /* Terminal set containing all terminals but the root terminal */
+    for (int i = 1; i < _problem_instance->GetNTerminals(); i++)
+        final_terminal_set.set(i);
+
+    int count = 0;
 
     while (_N.size() > 0) {
+        count ++;
         current_label = _N.top(); _N.pop();
         current_label->SetInP();
-        cout << "Considering \n";
+        if (current_label->GetVertex()->IsRoot() && 
+            current_label->GetBitset()[0] == final_terminal_set)
+            break;
+        cout << "Size of N: " << _N.size() << "\n";
         ConsiderNeighbours(current_label);
-        current_label->Print();
-        cout << "Merging \n";
-        
         Merge(current_label);
-
     }
+    cout << "Considered "<< count << " vertices \n";
 
     bitset<BITSET_SIZE> b;
-    for (int i = 1; i < _problem_instance->GetNTerminals(); i++)
-        b.set(i);
-    cout << b;
-    int index = _problem_instance->GetTerminals()[0]->_label_hash[b];
+    int index = _problem_instance->GetTerminals()[0]->_label_hash[final_terminal_set];
     Label *l = _problem_instance->GetTerminals()[0]->_labels[index];
-    l->Print();
-    cout << l->GetL();
+    cout << "Result: " << l->GetL() << "\n";
 
     // bitset<BITSET_SIZE> *k = l->GetBitset();
     // cout << _problem_instance->GetTerminals()[2]->_label_hash[*k];
@@ -82,16 +102,13 @@ Result Solver::ConsiderNeighbours(Label *v_label) {
             Label *w_label = new Label(w, b);
             w_label->SetL(v_label->GetL() + RectDistance(v, w));
             w->AddLabel(w_label);
-            _N.push(w_label);
+            AddLabelToN(w_label);
 
         }
         /* (w, I) already set, check if l(v, I) + c({v, w}) < l(w, I) and 
          * if so replace l(w, I) by this value and add (w, I) to _N */
         else {
-            cout << "eLSE \n";
             int w_label_ind = it->second;
-            cout << w_label_ind;
-            cout << "\n";
             Label *w_label = w->GetLabels()[0][w_label_ind];
             
             if (!w_label->IsInP() && 
@@ -99,7 +116,7 @@ Result Solver::ConsiderNeighbours(Label *v_label) {
 
                 w_label->SetL(v_label->GetL() + RectDistance(v,w));
 
-                _N.push(w_label);
+                AddLabelToN(w_label);
             }
         }
     }
@@ -125,7 +142,7 @@ Result Solver::Merge(Label *first_label) {
                 Label *new_label = new Label(v, b12);
                 new_label->SetL(first_label->GetL() + second_label->GetL());
                 v->AddLabel(new_label);
-                _N.push(new_label);
+                AddLabelToN(new_label);
             }
             /* If (v, IuJ) already set, check if l(v, I) + l(v, J) < l(v, IuJ) and 
             * if so replace l(v, IuJ) by this value and add (v, IuJ) to _N */
@@ -135,7 +152,7 @@ Result Solver::Merge(Label *first_label) {
                 if (!IJ_label->IsInP() &&
                     first_label->GetL() + second_label->GetL() < IJ_label->GetL()) {
                     IJ_label->SetL(first_label->GetL() + second_label->GetL());
-                    _N.push(IJ_label);
+                    AddLabelToN(IJ_label);
                 }
             }
             

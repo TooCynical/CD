@@ -5,7 +5,7 @@
 
 #include <stdlib.h>
 
-// The result type used instead of something unclear like return 0. 
+/* The result type used instead of something unclear like return 0. */
 typedef enum Result { FAIL, SUCCESS } Result; 
 
 Result Free2DArray(int** array, int n);

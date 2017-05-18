@@ -2,35 +2,26 @@
 
 using namespace std;
 
+/* Set up all datastructures given a 1D array of terminal locations,
+ * which are represented as a 1D array themselves. */
 Instance::Instance(int n, int **term_locs) {
     _n_terminals = n;
     SetXYZ(term_locs);
+    
     SetVertices();
+    _n_vertices = _V.size();
+
     SetHananGrid();
-
-    SetTerminals(term_locs);
-
     SetNeighbours();
 
-    cout << "Generated " << n <<" terminals.\n";
-    cout << "Generated " << _V.size() << " vertices." << "\n";
-    cout << "Hanan grid is of dimensions " << _nx << ", " << _ny << ", " << _nz << "\n";
-    
-    cout << "Vertices: \n";
-    PrintVertices();
-
-    cout << "Terminals: \n";
-    PrintTerminals();
-
-    cout << "\n";
-    _hanan_grid[1][0][1]->PrintNeighbours();
+    SetTerminals(term_locs);
 }
 
 /* Find all terminals in _V to save specific references to them. */
 Result Instance::SetTerminals(int **term_locs) {
     _terminals = (Vertex**) calloc(_n_terminals, sizeof(Vertex*));
     
-    /* This is currently O(|Terminals|)*O(|V|), could be faster */
+    /* This is currently O(|Terminals|)*O(|V|), could be faster. */
     for (int i = 0; i < _n_terminals; i++) {
         for(int j = 0; j < _n_vertices; j++)
         if (_V[j]->HasCoords(term_locs[i][0], term_locs[i][1], term_locs[i][2]))
@@ -39,9 +30,9 @@ Result Instance::SetTerminals(int **term_locs) {
     return SUCCESS;
 }
 
-/* Set all x,y,z values appearing in terminal locations 
- * for use in finding the Hanan grid. Save how many different
- * x, y, z values were found respectively. */
+/* Find all x,y,z values appearing in terminal locations 
+ * for later use in finding the Hanan grid. Save how many 
+ * different x, y, z values were found respectively. */
 Result Instance::SetXYZ(int **term_locs) {
     for (int i = 0; i < _n_terminals; i++) {
         _x_values.insert(term_locs[i][0]);
@@ -68,8 +59,6 @@ Result Instance::SetVertices() {
             }
         }
     }
-
-    _n_vertices = _V.size();
     return SUCCESS;
 }
 
@@ -116,12 +105,14 @@ Result Instance::SetNeighbours() {
     return SUCCESS;
 }
 
+/* Getters / Setters */
 vector<Vertex*> *Instance::GetV() { return &_V; }
 Vertex **Instance::GetTerminals() { return _terminals; }
 int Instance::GetNTerminals() { return _n_terminals; }
 int Instance::GetNVertices() { return _n_vertices; }
 
 
+/* IO-functions for testing purposes */
 void Instance::PrintTerminals() {
     for (int i = 0; i < _n_terminals; i++)
         _terminals[i]->Print();
