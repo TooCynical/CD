@@ -13,4 +13,7 @@ int main(int argc, char* argv[]) {
     ParseFile(argv[1], inst);
     Solver *S = new Solver(inst);
     S->SolveCurrentInstance();
+    int solution;
+    S->GetSolution(solution);
+    cout << "Solution: " << solution << "\n";
 }

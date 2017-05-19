@@ -1,25 +1,5 @@
 #include "solver.hpp"
 
-Solver::Solver(Instance *problem_instance) {
-    _problem_instance = problem_instance;
-}
-
-Result Solver::SetInitialN() {
-    int n = _problem_instance->GetNTerminals();
-    /* Add all labels (s, {s}) to N for s not the root terminal. */
-    for (int i = 1; i < n; i++) {
-        bitset<BITSET_SIZE> b;
-        b.set(i);
-        Vertex *s = _problem_instance->GetTerminals()[i];
-        Label *l = new Label(s, b);
-        l->SetL(0);
-        s->AddLabel(l);
-        AddLabelToN(l);
-    }
-    cout << "Added " << _N.size() << " initial labels to N.\n";
-    return SUCCESS;
-}
-
 /* Add a label to the priority Q _N but only 
  * if it has never been added before to prevent
  * duplicate entries. Also compute the lower bound
@@ -36,6 +16,26 @@ Result Solver::AddLabelToN(Label* l) {
     }
 }
 
+/* Add (s, {s}) to _N for each termianl s unequal to 
+ * the root. */
+Result Solver::SetInitialN() {
+    int n = _problem_instance->GetNTerminals();
+    for (int i = 1; i < n; i++) {
+        bitset<BITSET_SIZE> b;
+        b.set(i);
+        
+        Vertex *s = _problem_instance->GetTerminals()[i];
+        Label *l = new Label(s, b);
+        
+        l->SetL(0);
+        s->AddLabel(l);
+        AddLabelToN(l);
+    }
+    return SUCCESS;
+}
+
+/* Add (s, emptyset) for all vertices s with 
+ * l(s, emptyset) = 0. */
 Result Solver::SetInitialLabels() {
     int n = _problem_instance->GetNVertices();
     bitset<BITSET_SIZE> b;
@@ -50,42 +50,8 @@ Result Solver::SetInitialLabels() {
     return SUCCESS;   
 }
 
-Result Solver::SolveCurrentInstance() {
-    SetInitialN();
-    SetInitialLabels();
-    Label *current_label;
-    bitset<BITSET_SIZE> final_terminal_set;
-    _problem_instance->GetTerminals()[0]->SetRoot();
-    
-    /* Terminal set containing all terminals but the root terminal */
-    for (int i = 1; i < _problem_instance->GetNTerminals(); i++)
-        final_terminal_set.set(i);
-
-    int count = 0;
-
-    while (_N.size() > 0) {
-        count ++;
-        current_label = _N.top(); _N.pop();
-        current_label->SetInP();
-        if (current_label->GetVertex()->IsRoot() && 
-            current_label->GetBitset()[0] == final_terminal_set)
-            break;
-        cout << "Size of N: " << _N.size() << "\n";
-        ConsiderNeighbours(current_label);
-        Merge(current_label);
-    }
-    cout << "Considered "<< count << " vertices \n";
-
-    bitset<BITSET_SIZE> b;
-    int index = _problem_instance->GetTerminals()[0]->
-                        GetLabelHash()[0][final_terminal_set];
-    Label *l = _problem_instance->GetTerminals()[0]->
-                        GetLabels()[0][index];
-    cout << "Result: " << l->GetL() << "\n";
-    return SUCCESS;
-}
-
-/* l = (v, I) */
+/* Consider for the given label (v, I) all neighbours
+ * (w, I) and perform the Dijkstra-step if needed. */
 Result Solver::ConsiderNeighbours(Label *v_label) {
     Vertex *v = v_label->GetVertex();
     bitset<BITSET_SIZE> b = *v_label->GetBitset();
@@ -121,6 +87,7 @@ Result Solver::ConsiderNeighbours(Label *v_label) {
     return SUCCESS;
 }
 
+/* Perform the merge-step for given label */
 Result Solver::Merge(Label *first_label) {
     /* Loop over all labels in v._labels */
     Vertex* v = first_label->GetVertex();
@@ -153,14 +120,78 @@ Result Solver::Merge(Label *first_label) {
                     AddLabelToN(IJ_label);
                 }
             }
-            
         }
-
-
     }
     return SUCCESS;
 }
 
+/* Constructor */
+Solver::Solver(Instance *problem_instance) {
+    _problem_instance = problem_instance;
+    _solution_found = false;
+}
+
+/* Attempt to solve the given instance */
+Result Solver::SolveCurrentInstance() {
+    /* Set the root terminal (which is always just the
+     * first one given ) and the final terminal set 
+     * (i.e. the set containing all terminals but the root */
+    _problem_instance->GetTerminals()[0]->SetRoot();
+    bitset<BITSET_SIZE> final_terminal_set;
+    for (int i = 1; i < _problem_instance->GetNTerminals(); i++)
+        final_terminal_set.set(i);
+
+    /* Add (s, {s}) to _N for each termianl s unequal to 
+     * the root, and set (s, emptyset) for all vertices s. */
+    SetInitialN();
+    SetInitialLabels();
+
+    Label *current_label;
+
+    while (_N.size() > 0) {
+
+        /* Fetch the highest piority label from _N, and
+         * add it to P */
+        current_label = _N.top(); 
+        _N.pop();
+        current_label->SetInP();
+        
+        /* Check if current label = (root, {Terminals - root})
+         * in which case we are done */
+        if (current_label->GetVertex()->IsRoot() && 
+            current_label->GetBitset()[0] == final_terminal_set)
+            break;
+
+        /* Perform the Dijkstra-step for each neighbour */
+        ConsiderNeighbours(current_label);
+        /* Perform the merge-step */
+        Merge(current_label);
+    }
+
+    /* To find the solution, get l(root, {Terminals - root}) */
+    int index = _problem_instance->GetTerminals()[0]->
+                        GetLabelHash()[0][final_terminal_set];
+    Label *l = _problem_instance->GetTerminals()[0]->
+                        GetLabels()[0][index];
+    _solution_value = l->GetL();
+    _solution_found = true;
+
+    return SUCCESS;
+}
+
+/* Put solution to given instance in ret, 
+ * if one has been found already */
+Result Solver::GetSolution (int &ret) {
+    if (_solution_found) {
+        ret = _solution_value;
+        return SUCCESS;
+    }
+    else {
+        return FAIL;
+    }
+}
+
+/* Return the rectilinear distance between two vertices */
 int RectDistance(Vertex *v, Vertex *w) {
     return  (abs(v->GetX() - w->GetX()) +
             abs(v->GetY() - w->GetY()) +

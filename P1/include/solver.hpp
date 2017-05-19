@@ -18,20 +18,27 @@ using namespace std;
 
 class Solver {
     private:
-        Instance *_problem_instance;
-        priority_queue<Label*, vector<Label*>, LabelPointerComp > _N;
-        int _solution_value;
+        Instance *_problem_instance;            // The underlying problem instance.
+        priority_queue<Label*, vector<Label*>,  // Priority Queue of lables 
+                       LabelPointerComp > _N;   // added during the algorithm.
+        int _solution_value;                    // Value of the solution to
+                                                // given instance.
+        bool _solution_found;                   // Has a solution been found?
+
+        Result AddLabelToN(Label *l);
 
         Result SetInitialN();
         Result SetInitialLabels();
+
         Result ConsiderNeighbours(Label *l);
         Result Merge(Label *v_label);
-        Result AddLabelToN(Label *l);
-
 
     public:
+        /* Constructor */
         Solver(Instance *problem_instance);
+        
         Result SolveCurrentInstance();
+        Result GetSolution(int &ret);
 };
 
 int RectDistance(Vertex *v, Vertex *w);
