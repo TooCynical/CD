@@ -31,7 +31,6 @@ bool Vertex::HasCoords(int x, int y, int z) {
     return (_x == x && _y == y && _z == z);
 }
 
-
 /* Getters / Setters */
 int Vertex::GetX() { return _x; }
 int Vertex::GetY() { return _y; }
@@ -58,4 +57,11 @@ void Vertex::Print() {
 void Vertex::PrintNeighbours() {
     for (int i = 0; i < _n_neigh; i++)
         _neigh[i]->Print();
+}
+
+/* Return the rectilinear distance between two vertices */
+int RectDistance(Vertex *v, Vertex *w) {
+    return  (abs(v->GetX() - w->GetX()) +
+            abs(v->GetY() - w->GetY()) +
+            abs(v->GetZ() - w->GetZ()));
 }

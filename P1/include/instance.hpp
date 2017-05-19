@@ -37,6 +37,7 @@ class Instance {
         Result SetHananGrid();
         Result SetNeighbours();
         Result SetTerminals(int **term_locs);
+        Result SortTerminals();
 
     public:
         /* Constructor */

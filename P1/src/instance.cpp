@@ -90,6 +90,40 @@ Result Instance::SetTerminals(int **term_locs) {
     return SUCCESS;
 }
 
+/* Reorder _terminals so that _terminals[0] refers to the 
+ * terminal closed to the center of mass of the terminal set */
+Result Instance::SortTerminals() {
+    /* Find center of mass */
+    int x_sum, y_sum, z_sum;
+    x_sum = y_sum = z_sum = 0;
+    for (int i = 0; i < _n_terminals; i++) {
+        x_sum += _terminals[i]->GetX();
+        y_sum += _terminals[i]->GetY();
+        z_sum += _terminals[i]->GetZ();
+    }
+    int x_center = x_sum / _n_terminals;
+    int y_center = y_sum / _n_terminals;
+    int z_center = z_sum / _n_terminals;
+    Vertex *center = new Vertex(x_center, y_center, z_center);
+
+    /* Find terminal closed to center */
+    int min_index = 0;
+    int min = RectDistance(_terminals[0], center);
+    for (int i = 0; i < _n_terminals; i++) {
+        if (RectDistance(_terminals[i], center) < min) {
+            min = RectDistance(_terminals[i], center);
+            min_index = i;
+        }
+    }
+    cout << "Center mass: " << min_index << "\n";
+    /* Swap two terminals */
+    Vertex *temp = _terminals[0];
+    _terminals[0] = _terminals[min_index];
+    _terminals[min_index] = temp;
+    free(center);
+    return SUCCESS;
+}
+
 /* Set up all datastructures given a 1D array of terminal locations,
  * which are represented as a 1D array themselves. */
 Instance::Instance(int n, int **term_locs) {
@@ -103,6 +137,7 @@ Instance::Instance(int n, int **term_locs) {
     SetNeighbours();
 
     SetTerminals(term_locs);
+    SortTerminals();
 }
 
 /* Getters / Setters */

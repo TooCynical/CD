@@ -63,4 +63,6 @@ class Vertex {
         void PrintNeighbours();
 };
 
+int RectDistance(Vertex *v, Vertex *w);
+
 #endif

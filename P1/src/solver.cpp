@@ -208,10 +208,3 @@ Result Solver::GetSolution (int &ret) {
         return FAIL;
     }
 }
-
-/* Return the rectilinear distance between two vertices */
-int RectDistance(Vertex *v, Vertex *w) {
-    return  (abs(v->GetX() - w->GetX()) +
-            abs(v->GetY() - w->GetY()) +
-            abs(v->GetZ() - w->GetZ()));
-}

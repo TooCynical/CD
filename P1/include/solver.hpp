@@ -41,6 +41,4 @@ class Solver {
         Result GetSolution(int &ret);
 };
 
-int RectDistance(Vertex *v, Vertex *w);
-
 #endif
