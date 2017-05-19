@@ -11,6 +11,7 @@
     class Label;
     class Vertex;
 
+    /* Bounding box lower bound. */
     int BBLowerBound(Label *l, Vertex **terminals, int n);
 
 #endif

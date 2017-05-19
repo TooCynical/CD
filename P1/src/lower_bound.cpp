@@ -34,6 +34,5 @@ int BBLowerBound(Label *l, Vertex **terminals, int n) {
                 z_max = terminals[i]->GetZ();
         }
     }
-    return 0;
     return (x_max - x_min) + (y_max - y_min) + (z_max - z_min);
 }
