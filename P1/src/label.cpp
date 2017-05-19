@@ -52,9 +52,16 @@ Result Label::SetLowerBound(int l) {
     return SUCCESS;
 }
 
-Result Label::SetInP() { 
-    _in_P = true; 
-    return SUCCESS;
+/* Set _in_P to true. Return
+ * FAIL if _in_P was already true */
+Result Label::SetInP() {
+    if (!_in_P) {
+        _in_P = true; 
+        return SUCCESS;
+    }
+    else {
+        return FAIL;
+    }
 }
 Result Label::SetBeenInQ() {
     _been_in_Q = true;
