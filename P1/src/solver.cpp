@@ -77,13 +77,11 @@ Result Solver::SolveCurrentInstance() {
     cout << "Considered "<< count << " vertices \n";
 
     bitset<BITSET_SIZE> b;
-    int index = _problem_instance->GetTerminals()[0]->_label_hash[final_terminal_set];
-    Label *l = _problem_instance->GetTerminals()[0]->_labels[index];
+    int index = _problem_instance->GetTerminals()[0]->
+                        GetLabelHash()[0][final_terminal_set];
+    Label *l = _problem_instance->GetTerminals()[0]->
+                        GetLabels()[0][index];
     cout << "Result: " << l->GetL() << "\n";
-
-    // bitset<BITSET_SIZE> *k = l->GetBitset();
-    // cout << _problem_instance->GetTerminals()[2]->_label_hash[*k];
-
     return SUCCESS;
 }
 
@@ -164,7 +162,7 @@ Result Solver::Merge(Label *first_label) {
 }
 
 int RectDistance(Vertex *v, Vertex *w) {
-    return  (abs(v->getX() - w->getX()) +
-            abs(v->getY() - w->getY()) +
-            abs(v->getZ() - w->getZ()));
+    return  (abs(v->GetX() - w->GetX()) +
+            abs(v->GetY() - w->GetY()) +
+            abs(v->GetZ() - w->GetZ()));
 }

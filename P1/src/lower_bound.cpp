@@ -12,26 +12,26 @@ int BBLowerBound(Label *l, Vertex **terminals, int n) {
     int z_max, z_min;
     
     /* Set initial values based on vertex in label */
-    x_max = x_min = l->GetVertex()->getX();
-    y_max = y_min = l->GetVertex()->getY();
-    z_max = z_min = l->GetVertex()->getZ();
+    x_max = x_min = l->GetVertex()->GetX();
+    y_max = y_min = l->GetVertex()->GetY();
+    z_max = z_min = l->GetVertex()->GetZ();
 
     /* Loop over all terminals in the complement of the labels
      * terminal set and update values accordingly */
     for (int i = 0; i < n; i ++) {
         if (!l->GetBitset()[0].test(i)) {
-            if (terminals[i]->getX() < x_min)
-                x_min = terminals[i]->getX();
-            if (terminals[i]->getX() > x_max)
-                x_max = terminals[i]->getX();
-            if (terminals[i]->getY() < y_min)
-                y_min = terminals[i]->getY();
-            if (terminals[i]->getY() > y_max)
-                y_max = terminals[i]->getY();
-            if (terminals[i]->getZ() < z_min)
-                z_min = terminals[i]->getZ();
-            if (terminals[i]->getZ() > z_max)
-                z_max = terminals[i]->getZ();
+            if (terminals[i]->GetX() < x_min)
+                x_min = terminals[i]->GetX();
+            if (terminals[i]->GetX() > x_max)
+                x_max = terminals[i]->GetX();
+            if (terminals[i]->GetY() < y_min)
+                y_min = terminals[i]->GetY();
+            if (terminals[i]->GetY() > y_max)
+                y_max = terminals[i]->GetY();
+            if (terminals[i]->GetZ() < z_min)
+                z_min = terminals[i]->GetZ();
+            if (terminals[i]->GetZ() > z_max)
+                z_max = terminals[i]->GetZ();
         }
     }
     return 0;

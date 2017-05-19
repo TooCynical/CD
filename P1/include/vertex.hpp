@@ -20,7 +20,7 @@ class Vertex;
 class Instance;
 
 class Vertex {
-    public:
+    private:
         int _x, _y, _z;
 
         int _n_neigh;                   // Number of neighbours set.
@@ -29,19 +29,25 @@ class Vertex {
         int _n_labels;                  // Number of lables with l < infty.
         vector<Label*> _labels;         // References to labels with l < infty.
 
+        bool _is_root;                  // Is this the root vertex?
+
+        /* Hash table containing the index of a label in _labels, 
+        * if it is indeed in _labels. */
         unordered_map<bitset<BITSET_SIZE>, int> _label_hash;   
-        // Hash table containing the index of a label in _labels, 
-        // if it is indeed in _labels.
 
-        bool _is_root;
 
-    // public:
+    public:
+        /* Constructor */
         Vertex(int x, int y, int z);
         
-        // TODO: Rename / Refactor.
-        int getX();
-        int getY();
-        int getZ();
+        Result AddNeighbour(Vertex* w);
+        Result AddLabel(Label *l);
+        bool HasCoords(int x, int y, int z);
+
+        /* Getters / Setters */
+        int GetX();
+        int GetY();
+        int GetZ();
 
         bool IsRoot() const;
         Result SetRoot();
@@ -52,14 +58,9 @@ class Vertex {
         vector<Label*> *GetLabels();
         unordered_map<bitset<BITSET_SIZE>, int> *GetLabelHash();
         
+        /* IO-functions for testing */
         void Print();
         void PrintNeighbours();
-
-        Result AddNeighbour(Vertex* w);
-        Result AddLabel(Label *l);
-
-        // bool operator<(const Vertex& other) const;
-        bool HasCoords(int x, int y, int z);
 };
 
 #endif

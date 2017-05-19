@@ -51,7 +51,6 @@ class Instance {
         /* IO-functions for testing */
         void PrintTerminals();
         void PrintVertices();
-
 };
 
 #endif
