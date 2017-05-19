@@ -35,21 +35,20 @@ class Label {
     public:
         Label(Vertex *v, bitset<BITSET_SIZE> I);
 
-        
         /* Getters / Setters */
         int GetL() const;
         int GetLowerBound() const;
         bool IsLSet() const;
+        bool IsLowerBoundSet() const;
         bool IsInP() const;
         bool BeenInQ() const;
-        bool IsLowerBoundSet() const;
         Vertex *GetVertex() const;
         bitset<BITSET_SIZE> *GetBitset();
 
         Result SetL(int l);
+        Result SetLowerBound(int l);
         Result SetInP();
         Result SetBeenInQ();
-        Result SetLowerBound(int l);
 
         /* IO-functions for testing */
         void Print();

@@ -7,6 +7,11 @@ using namespace std;
  * a Steiner Tree on its complement) given the 
  * terminal set used and the number of total terminals */ 
 int BBLowerBound(Label *l, Vertex **terminals, int n) {
+    /* If root terminal in the terminal set of the label 
+     * return 0 */
+    if (l->GetBitset()[0].test(0))
+        return 0;
+
     int x_max, x_min;
     int y_max, y_min;
     int z_max, z_min;
@@ -20,6 +25,7 @@ int BBLowerBound(Label *l, Vertex **terminals, int n) {
      * terminal set and update values accordingly */
     for (int i = 0; i < n; i ++) {
         if (!l->GetBitset()[0].test(i)) {
+            // terminals[i]->Print();
             if (terminals[i]->GetX() < x_min)
                 x_min = terminals[i]->GetX();
             if (terminals[i]->GetX() > x_max)

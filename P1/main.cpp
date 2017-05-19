@@ -11,9 +11,12 @@ using namespace std;
 int main(int argc, char* argv[]) {
     Instance *inst;
     ParseFile(argv[1], inst);
+
     Solver *S = new Solver(inst);
     S->SolveCurrentInstance();
+    
     int solution;
     S->GetSolution(solution);
+    
     cout << "Solution: " << solution << "\n";
 }

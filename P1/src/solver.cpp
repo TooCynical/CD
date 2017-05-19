@@ -7,7 +7,10 @@
 Result Solver::AddLabelToN(Label* l) {
     if (!l->BeenInQ()) {
         l->SetBeenInQ();
-        l->SetLowerBound(0);
+        int lower_bound = BBLowerBound(l, 
+                                       _problem_instance->GetTerminals(),
+                                       _problem_instance->GetNTerminals());
+        l->SetLowerBound(lower_bound);
         _N.push(l);
         return SUCCESS;
     }
@@ -61,7 +64,8 @@ Result Solver::ConsiderNeighbours(Label *v_label) {
         Vertex *w = v->GetNeigh()[0][i];
         
         auto it = w->GetLabelHash()[0].find(b);
-        /* (w, I) not yet set so set it and add it to _N and the label array of w */
+        /* (w, I) not yet set so set it and add it to _N 
+         * and the label array of w */
         if (it == w->GetLabelHash()[0].end()) {
             Label *w_label = new Label(w, b);
             w_label->SetL(v_label->GetL() + RectDistance(v, w));
@@ -150,6 +154,8 @@ Result Solver::SolveCurrentInstance() {
 
     while (_N.size() > 0) {
 
+
+        cout << "Size of priority queue: " << _N.size() << "\n";
         /* Fetch the highest piority label from _N, and
          * add it to P */
         current_label = _N.top(); 

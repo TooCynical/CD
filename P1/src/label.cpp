@@ -12,23 +12,6 @@ Label::Label(Vertex *v, bitset<BITSET_SIZE> I) {
     _lower_bound_set = false;
 }
 
-Result Label::SetL(int l) {
-    _l_set = true;
-    _l = l;
-    return SUCCESS;
-}
-
-Vertex *Label::GetVertex() const {
-    return _v;
-}
-
-bitset<BITSET_SIZE> *Label::GetBitset() {
-    return &_I;
-}
-
-bool Label::IsLSet() const { return _l_set; }
-bool Label::IsLowerBoundSet() const { return _lower_bound_set; }
-
 int Label::GetL() const {
     if (_l_set)
         return _l;
@@ -47,10 +30,25 @@ int Label::GetLowerBound() const {
     }
 }
 
-/* Compute a lower bound for the complement of this label */
+/* Getters / Setters */
+
+bool Label::IsLSet() const { return _l_set; }
+bool Label::IsLowerBoundSet() const { return _lower_bound_set; }
+bool Label::IsInP() const { return _in_P; }
+bool Label::BeenInQ() const { return _been_in_Q; }
+Vertex *Label::GetVertex() const { return _v; }
+bitset<BITSET_SIZE> *Label::GetBitset() { return &_I; }
+
+
+Result Label::SetL(int l) {
+    _l_set = true;
+    _l = l;
+    return SUCCESS;
+}
+
 Result Label::SetLowerBound(int l) {
-    _lower_bound = 0;
     _lower_bound_set = true;
+    _lower_bound = l;
     return SUCCESS;
 }
 
@@ -63,9 +61,7 @@ Result Label::SetBeenInQ() {
     return SUCCESS;
 }
 
-bool Label::IsInP() const { return _in_P; }
-bool Label::BeenInQ() const { return _been_in_Q; }
-
+/* IO-functions for testing */
 void Label::Print() {
     cout << "Vertex: \n";
     _v->Print();
@@ -76,11 +72,11 @@ void Label::Print() {
 bool operator<(const Label& a, const Label& b) {
     if (!a.IsLSet() || !b.IsLSet()) {
         cout << "WARNING: Comparing Labels with unset l-values!\n";
-        return true;
+        exit(1);
     }
     if (!a.IsLowerBoundSet() || !b.IsLowerBoundSet()) {
         cout << "WARNING: Comparing Labels with unset lower bounds!\n";
-        return true;
+        exit(1);
     }
     return a.GetL() + a.GetLowerBound() > b.GetL() + b.GetLowerBound();
 }
