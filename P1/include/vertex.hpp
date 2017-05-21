@@ -37,8 +37,9 @@ class Vertex {
 
 
     public:
-        /* Constructor */
+        /* Constructor / Destructor */
         Vertex(int x, int y, int z);
+        ~Vertex();
         
         Result AddNeighbour(Vertex* w);
         Result AddLabel(Label *l);

@@ -12,6 +12,10 @@ Label::Label(Vertex *v, bitset<BITSET_SIZE> I) {
     _lower_bound_set = false;
 }
 
+Label::~Label() {
+    //    
+}
+
 int Label::GetL() const {
     if (_l_set)
         return _l;
@@ -31,7 +35,6 @@ int Label::GetLowerBound() const {
 }
 
 /* Getters / Setters */
-
 bool Label::IsLSet() const { return _l_set; }
 bool Label::IsLowerBoundSet() const { return _lower_bound_set; }
 bool Label::IsInP() const { return _in_P; }

@@ -11,6 +11,13 @@ Vertex::Vertex(int x, int y, int z) {
     _is_root = false;
 }
 
+Vertex::~Vertex() {
+    for (int i = 0; i < _n_labels; i++) {
+        delete _labels[i];
+    }
+    _label_hash.clear();
+}
+
 /* Add w to _neigh and increase number of neighbours. */
 Result Vertex::AddNeighbour(Vertex* w) {
     _neigh.push_back(w);

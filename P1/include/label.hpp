@@ -33,7 +33,9 @@ class Label {
                                 // been in the priority-Q before.
 
     public:
+        /* Constructor / Destructor. */
         Label(Vertex *v, bitset<BITSET_SIZE> I);
+        ~Label();
 
         /* Getters / Setters */
         int GetL() const;

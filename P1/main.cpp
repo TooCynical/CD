@@ -5,6 +5,7 @@
 
 #include <stdlib.h>
 #include <iostream>
+#include <bitset>
 
 using namespace std;
 
@@ -17,6 +18,12 @@ int main(int argc, char* argv[]) {
     
     int solution;
     S->GetSolution(solution);
-    
+    if (DOUBLE_INPUT_COORDS)
+        solution /= 2;
+
+    // cout << "MST: " << MST(b, inst->GetTerminals(), inst->GetNTerminals()) << "\n";
     cout << "Solution: " << solution << "\n";
+
+    delete inst;
+    delete S;
 }

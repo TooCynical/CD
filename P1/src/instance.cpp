@@ -115,12 +115,14 @@ Result Instance::SortTerminals() {
             min_index = i;
         }
     }
-    cout << "Center mass: " << min_index << "\n";
+    delete center;
+
     /* Swap two terminals */
     Vertex *temp = _terminals[0];
     _terminals[0] = _terminals[min_index];
     _terminals[min_index] = temp;
-    free(center);
+
+
     return SUCCESS;
 }
 
@@ -139,6 +141,24 @@ Instance::Instance(int n, int **term_locs) {
     SetTerminals(term_locs);
     SortTerminals();
 }
+
+Instance::~Instance() {
+    /* Delete all vertices */
+    for (int i = 0; i < _n_vertices; i++) {
+        delete _V[i];
+    }
+
+    /* Delete the Hanan grid */
+    for (int i = 0; i < _n_x_values; i++) {
+        for (int j = 0; j < _n_y_values; j++) {
+            free(_hanan_grid[i][j]);
+        }
+        free(_hanan_grid[i]);
+    }
+    free(_hanan_grid);
+    free(_terminals);
+}
+
 
 /* Getters / Setters */
 vector<Vertex*> *Instance::GetV() { return &_V; }

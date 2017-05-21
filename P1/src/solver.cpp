@@ -1,21 +1,34 @@
 #include "solver.hpp"
 
-/* Add a label to the priority Q _N and
+// int labelcounter = 0;
+
+/* Add a label to the priority queue _N and
  * compute the lower bound for the label 
  * if this hasn't happened before. */
 Result Solver::AddLabelToN(Label* l) {
     if (!l->IsLowerBoundSet()) {
         l->SetBeenInQ();
-        int lower_bound = BBLowerBound(l, 
+        int MST_bound = MSTLowerBound(l, 
                                        _problem_instance->GetTerminals(),
                                        _problem_instance->GetNTerminals());
+        int BB_bound = BBLowerBound(l, 
+                                       _problem_instance->GetTerminals(),
+                                       _problem_instance->GetNTerminals());
+        
+        int lower_bound;
+        if (BB_bound > MST_bound) {
+            lower_bound = BB_bound;
+        }
+        else {
+            lower_bound = MST_bound;
+        }
         l->SetLowerBound(lower_bound);
     }
     _N.push(l);
     return SUCCESS;
 }
 
-/* Add (s, {s}) to _N for each termianl s unequal to 
+/* Add (s, {s}) to _N for each terminal s unequal to 
  * the root. */
 Result Solver::SetInitialN() {
     int n = _problem_instance->GetNTerminals();
@@ -25,6 +38,7 @@ Result Solver::SetInitialN() {
         
         Vertex *s = _problem_instance->GetTerminals()[i];
         Label *l = new Label(s, b);
+        //labelcounter ++;
         
         l->SetL(0);
         s->AddLabel(l);
@@ -42,6 +56,7 @@ Result Solver::SetInitialLabels() {
     for (int i = 0; i < n; i++) {
         Vertex *v = _problem_instance->GetV()[0][i];
         Label *l = new Label(v, b);
+        // labelcounter ++;
         l->SetL(0);
         l->SetInP();
         v->AddLabel(l);
@@ -64,6 +79,7 @@ Result Solver::ConsiderNeighbours(Label *v_label) {
          * and the label array of w */
         if (it == w->GetLabelHash()[0].end()) {
             Label *w_label = new Label(w, b);
+            // labelcounter ++;
             w_label->SetL(v_label->GetL() + RectDistance(v, w));
             w->AddLabel(w_label);
             AddLabelToN(w_label);
@@ -93,6 +109,13 @@ Result Solver::Merge(Label *I_label) {
     Vertex* v = I_label->GetVertex();
     bitset<BITSET_SIZE> b1 = I_label->GetBitset()[0];
     vector<Label*> labels = v->GetLabels()[0];
+
+    // int n_sets = pow(2, _problem_instance->GetNTerminals() - 1) /
+    //          pow(2, b1.count());
+    // cout << "labels: " << labels.size() << " sets: " << n_sets << "\n";
+    // if (labels.size() > n_sets)
+        // cout << labels.size() << " " << n_sets << "\n";
+
     for (unsigned int i = 0; i < labels.size(); i++) {
         Label *J_label = labels[i];
         bitset<BITSET_SIZE> b2 = J_label->GetBitset()[0];
@@ -102,12 +125,14 @@ Result Solver::Merge(Label *I_label) {
         if (b2.count() > 0  && 
             !b2.test(0)     &&
             (b1 & b2).none()) {
+
             bitset<BITSET_SIZE> b12 = b1 | b2;
             auto it = v->GetLabelHash()[0].find(b12);
             /* If (v, IuJ) not yet set, set it and add it to _N and 
              * the label array of v. In this case (v, IuJ) is not in P */
             if (it == v->GetLabelHash()[0].end()) {
                 Label *IJ_label = new Label(v, b12);
+                // labelcounter ++;
                 IJ_label->SetL(I_label->GetL() + J_label->GetL());
                 v->AddLabel(IJ_label);
                 AddLabelToN(IJ_label);
@@ -151,15 +176,17 @@ Result Solver::SolveCurrentInstance() {
     SetInitialLabels();
 
     Label *current_label;
-    int iteration_counter = 0;
+    // int iteration_counter = 0;
 
     while (_N.size() > 0) {
-        iteration_counter ++;
+        // iteration_counter ++;
 
-        if (!(iteration_counter % 10000)) {
-            cout << "Size of priority queue: " << _N.size() << "\n";
-            cout << "Iteration: " << iteration_counter << "\n";
-        }
+        // if (!(iteration_counter % 10000)) {
+        //     cout << "Size of priority queue: " << _N.size() << "\n";
+        //     cout << "Iteration: " << iteration_counter << "\n";
+        //     cout << "Labels created: " << labelcounter << "\n";
+        // }
+
         /* Fetch the highest piority label from _N */
         current_label = _N.top(); 
         _N.pop();
@@ -181,10 +208,10 @@ Result Solver::SolveCurrentInstance() {
         ConsiderNeighbours(current_label);
         
         /* Perform the merge-step */
-        Merge(current_label);
+        Merge(current_label);    
     }
 
-    cout << "Iteration: " << iteration_counter << "\n";
+    // cout << "Iteration: " << iteration_counter << "\n";
 
     /* To find the solution, get l(root, {Terminals - root}) */
     int index = _problem_instance->GetTerminals()[0]->

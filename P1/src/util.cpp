@@ -7,3 +7,4 @@ Result Free2DArray(int** array, int n) {
     free(array);
     return SUCCESS;
 }
+

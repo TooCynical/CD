@@ -12,6 +12,7 @@
 #include <bitset>
 #include <queue>
 #include <iterator>
+#include <cmath>
 
 
 using namespace std;
@@ -24,6 +25,10 @@ class Solver {
         int _solution_value;                    // Value of the solution to
                                                 // given instance.
         bool _solution_found;                   // Has a solution been found?
+
+        /* Hash table containing MST(I) for a terminal set I, if 
+         * it has been computed already. */
+        unordered_map<bitset<BITSET_SIZE>, int> _label_hash;   
 
         Result AddLabelToN(Label *l);
 

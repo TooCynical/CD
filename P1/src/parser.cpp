@@ -41,6 +41,9 @@ Result ParseTerminals (fstream& input_file, int n, int **term_locs) {
                 return FAIL;
             }
             input_file >> term_locs[i][j];
+            /* Sometimes we want to force even coordinates. */
+            if (DOUBLE_INPUT_COORDS)
+                term_locs[i][j] *= 2;
         }
     }
     return SUCCESS;

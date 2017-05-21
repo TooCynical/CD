@@ -40,8 +40,9 @@ class Instance {
         Result SortTerminals();
 
     public:
-        /* Constructor */
+        /* Constructor / Destructor*/
         Instance(int n, int **term_locs);
+        ~Instance();
 
         /* Getters / Setters */
         vector<Vertex*> *GetV();
