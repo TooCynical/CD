@@ -2,7 +2,7 @@
 #define UTIL_H
 
 #define BITSET_SIZE 64
-#define DOUBLE_INPUT_COORDS 0
+#define DOUBLE_INPUT_COORDS 1
 
 #include <stdlib.h>
 

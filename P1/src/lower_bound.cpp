@@ -6,7 +6,6 @@ LowerBoundComputator::LowerBoundComputator(Instance *inst) {
     _underlying_instance = inst;
 }
 
-
 /* Compute the bounding box lower bound for a 
  * a label (i.e. the bounding box lower bound for
  * a Steiner Tree on its complement) given the 

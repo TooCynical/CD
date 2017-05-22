@@ -8,12 +8,7 @@ Label::Label(Vertex *v, bitset<BITSET_SIZE> I) {
 
     _l_set = false;
     _in_P = false;
-    _been_in_Q = false;
     _lower_bound_set = false;
-}
-
-Label::~Label() {
-    //    
 }
 
 int Label::GetL() const {
@@ -38,7 +33,6 @@ int Label::GetLowerBound() const {
 bool Label::IsLSet() const { return _l_set; }
 bool Label::IsLowerBoundSet() const { return _lower_bound_set; }
 bool Label::IsInP() const { return _in_P; }
-bool Label::BeenInQ() const { return _been_in_Q; }
 Vertex *Label::GetVertex() const { return _v; }
 bitset<BITSET_SIZE> *Label::GetBitset() { return &_I; }
 
@@ -65,10 +59,6 @@ Result Label::SetInP() {
     else {
         return FAIL;
     }
-}
-Result Label::SetBeenInQ() {
-    _been_in_Q = true;
-    return SUCCESS;
 }
 
 /* IO-functions for testing */

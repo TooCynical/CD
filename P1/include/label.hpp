@@ -29,13 +29,10 @@ class Label {
         bool _lower_bound_set;  // Has lower bound been computed yet?
 
         bool _in_P;             // Is this label in P?
-        bool _been_in_Q;        // Keep track of whether this label has 
-                                // been in the priority-Q before.
 
     public:
         /* Constructor / Destructor. */
         Label(Vertex *v, bitset<BITSET_SIZE> I);
-        ~Label();
 
         /* Getters / Setters */
         int GetL() const;

@@ -1,13 +1,12 @@
 #include "solver.hpp"
 
-// int labelcounter = 0;
+int labelcounter = 0;
 
 /* Add a label to the priority queue _N and
  * compute the lower bound for the label 
  * if this hasn't happened before. */
 Result Solver::AddLabelToN(Label* l) {
     if (!l->IsLowerBoundSet()) {
-        l->SetBeenInQ();
         int MST_bound = _lower_bound_comp->MSTLowerBound(l);
         int BB_bound = _lower_bound_comp->BBLowerBound(l);
         int lower_bound;
@@ -33,7 +32,7 @@ Result Solver::SetInitialN() {
         
         Vertex *s = _problem_instance->GetTerminals()[i];
         Label *l = new Label(s, b);
-        //labelcounter ++;
+        labelcounter ++;
         
         l->SetL(0);
         s->AddLabel(l);
@@ -51,7 +50,7 @@ Result Solver::SetInitialLabels() {
     for (int i = 0; i < n; i++) {
         Vertex *v = _problem_instance->GetV()[0][i];
         Label *l = new Label(v, b);
-        // labelcounter ++;
+        labelcounter ++;
         l->SetL(0);
         l->SetInP();
         v->AddLabel(l);
@@ -74,11 +73,10 @@ Result Solver::ConsiderNeighbours(Label *v_label) {
          * and the label array of w */
         if (it == w->GetLabelHash()[0].end()) {
             Label *w_label = new Label(w, b);
-            // labelcounter ++;
+            labelcounter ++;
             w_label->SetL(v_label->GetL() + RectDistance(v, w));
             w->AddLabel(w_label);
             AddLabelToN(w_label);
-
         }
         /* (w, I) already set, check if l(v, I) + c({v, w}) < l(w, I) and 
          * if so replace l(w, I) by this value and add (w, I) to _N */
@@ -127,7 +125,7 @@ Result Solver::Merge(Label *I_label) {
              * the label array of v. In this case (v, IuJ) is not in P */
             if (it == v->GetLabelHash()[0].end()) {
                 Label *IJ_label = new Label(v, b12);
-                // labelcounter ++;
+                labelcounter ++;
                 IJ_label->SetL(I_label->GetL() + J_label->GetL());
                 v->AddLabel(IJ_label);
                 AddLabelToN(IJ_label);
@@ -172,10 +170,10 @@ Result Solver::SolveCurrentInstance() {
     SetInitialLabels();
 
     Label *current_label;
-    // int iteration_counter = 0;
+    int iteration_counter = 0;
 
     while (_N.size() > 0) {
-        // iteration_counter ++;
+        iteration_counter ++;
 
         // if (!(iteration_counter % 10000)) {
         //     cout << "Size of priority queue: " << _N.size() << "\n";
