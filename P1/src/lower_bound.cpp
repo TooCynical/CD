@@ -2,15 +2,23 @@
 
 using namespace std;
 
+LowerBoundComputator::LowerBoundComputator(Instance *inst) {
+    _underlying_instance = inst;
+}
+
+
 /* Compute the bounding box lower bound for a 
  * a label (i.e. the bounding box lower bound for
  * a Steiner Tree on its complement) given the 
  * terminal set used and the number of total terminals. */ 
-int BBLowerBound(Label *l, Vertex **terminals, int n) {
+int LowerBoundComputator::BBLowerBound(Label *l) {
     /* If root terminal in the terminal set of the label 
      * return 0 */
     if (l->GetBitset()[0].test(0))
         return 0;
+
+    Vertex **terminals = _underlying_instance->GetTerminals();
+    int n = _underlying_instance->GetNTerminals();
 
     int x_max, x_min;
     int y_max, y_min;
@@ -25,7 +33,6 @@ int BBLowerBound(Label *l, Vertex **terminals, int n) {
      * terminal set and update values accordingly */
     for (int i = 0; i < n; i ++) {
         if (!l->GetBitset()[0].test(i)) {
-            // terminals[i]->Print();
             if (terminals[i]->GetX() < x_min)
                 x_min = terminals[i]->GetX();
             if (terminals[i]->GetX() > x_max)
@@ -47,9 +54,12 @@ int BBLowerBound(Label *l, Vertex **terminals, int n) {
  * on the given subset of terminals using a O(n^2)-
  * implementation of Prim's Algorithm, where n is the 
  * total number of terminals */
- int MST(bitset<BITSET_SIZE> I, Vertex **terminals, int n) {
+ int LowerBoundComputator::MST(bitset<BITSET_SIZE> I) {
     /* First make new references to the relevant terminals */
     int n_rel_terminals = I.count();
+
+    Vertex **terminals = _underlying_instance->GetTerminals();
+    int n = _underlying_instance->GetNTerminals();
     
     /* An MST on <= 1 vertex has length 0. */
     if (n_rel_terminals <= 1)
@@ -111,11 +121,14 @@ int BBLowerBound(Label *l, Vertex **terminals, int n) {
 
 /* Compute the MST Lower Bound for the complement of the 
  * terminal set of the given label */
-int MSTLowerBound(Label *l, Vertex **terminals, int n) {
+int LowerBoundComputator::MSTLowerBound(Label *l) {
     /* If root terminal in the terminal set of the label 
      * return 0. */
     if (l->GetBitset()[0].test(0))
         return 0;
+
+    Vertex **terminals = _underlying_instance->GetTerminals();
+    int n = _underlying_instance->GetNTerminals();
 
     /* Get the complementary bitset */
     bitset<BITSET_SIZE> I;
@@ -126,8 +139,18 @@ int MSTLowerBound(Label *l, Vertex **terminals, int n) {
 
     Vertex* v = l->GetVertex();
 
-    /* Find length of MST on I */
-    int MST_length = MST(I, terminals, n);
+
+    /* Find length of MST on I. First check if it was computed already. 
+     * If not, compute it and add it to the hash table. */
+    int MST_length;
+    auto it = _MST_hash.find(l->GetBitset()[0]);
+    if (it != _MST_hash.end()) {
+        MST_length = it->second;
+    } 
+    else {
+        MST_length = MST(I);
+        _MST_hash.insert(make_pair(l->GetBitset()[0], MST_length));
+    }
     
     /* Find terminal in I closest to v */
     int min_dist = INT_MAX;

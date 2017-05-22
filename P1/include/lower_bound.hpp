@@ -9,19 +9,36 @@
 #include <vector>
 #include <bitset>
 #include <climits>
+#include <unordered_map>
 
 using namespace std;
 
 /* Forward declaration */
 class Label;
 class Vertex;
+class Instance;
 
-/* Bounding box lower bound. */
-int BBLowerBound(Label *l, Vertex **terminals, int n);
+class LowerBoundComputator {
+    private:
+        Instance *_underlying_instance;
 
-/* MST lower bound */
-int MSTLowerBound(Label *l, Vertex **terminals, int n);
-/* Compute the length of an MST on the given terminal set. */
-int MST(bitset<BITSET_SIZE> I, Vertex **terminals, int n);
+        /* Hash table containing MST(I) for a terminal set I, if 
+         * it has been computed already. */
+        unordered_map<bitset<BITSET_SIZE>, int> _MST_hash;
+
+        /* Compute the length of an MST on the given terminal set. */
+        int MST(bitset<BITSET_SIZE> I);
+
+    public:
+        /* Constructor */
+        LowerBoundComputator(Instance *inst);
+
+        /* Bounding box lower bound. */
+        int BBLowerBound(Label *l);
+
+        /* MST lower bound */
+        int MSTLowerBound(Label *l);
+};
+
 
 #endif

@@ -8,13 +8,8 @@
 Result Solver::AddLabelToN(Label* l) {
     if (!l->IsLowerBoundSet()) {
         l->SetBeenInQ();
-        int MST_bound = MSTLowerBound(l, 
-                                       _problem_instance->GetTerminals(),
-                                       _problem_instance->GetNTerminals());
-        int BB_bound = BBLowerBound(l, 
-                                       _problem_instance->GetTerminals(),
-                                       _problem_instance->GetNTerminals());
-        
+        int MST_bound = _lower_bound_comp->MSTLowerBound(l);
+        int BB_bound = _lower_bound_comp->BBLowerBound(l);
         int lower_bound;
         if (BB_bound > MST_bound) {
             lower_bound = BB_bound;
@@ -157,6 +152,7 @@ Result Solver::Merge(Label *I_label) {
 /* Constructor */
 Solver::Solver(Instance *problem_instance) {
     _problem_instance = problem_instance;
+    _lower_bound_comp = new LowerBoundComputator(problem_instance);
     _solution_found = false;
 }
 

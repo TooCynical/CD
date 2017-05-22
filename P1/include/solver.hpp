@@ -6,7 +6,7 @@
 #include "instance.hpp"
 #include "label.hpp"
 
-
+#include <vector>
 #include <iostream>
 #include <stdlib.h>
 #include <bitset>
@@ -26,9 +26,7 @@ class Solver {
                                                 // given instance.
         bool _solution_found;                   // Has a solution been found?
 
-        /* Hash table containing MST(I) for a terminal set I, if 
-         * it has been computed already. */
-        unordered_map<bitset<BITSET_SIZE>, int> _label_hash;   
+        LowerBoundComputator *_lower_bound_comp;
 
         Result AddLabelToN(Label *l);
 
