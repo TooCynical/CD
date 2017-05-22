@@ -10,8 +10,15 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
+
+    if (DOUBLE_INPUT_COORDS);
+        cout << "Warning: All vertex coordinates have been doubled!\n";
+
     Instance *inst;
     ParseFile(argv[1], inst);
+
+    cout << "Number of terminals: " << inst->GetNTerminals() << "\n";
+    cout << "Number of vertices: " << inst->GetNVertices() << "\n";
 
     Solver *S = new Solver(inst);
     S->SolveCurrentInstance();

@@ -2,6 +2,16 @@
 
 int labelcounter = 0;
 
+Result Solver::SetGlobalUpperBound() {
+    bitset<BITSET_SIZE> all_terminals;
+    for (int i = 0; i < _problem_instance->GetNTerminals(); i++) {
+        all_terminals.set(i);
+    }
+    _global_upper_bound = _lower_bound_comp->MST(all_terminals);
+    cout << _global_upper_bound / 2 << "\n";
+    return SUCCESS;
+}
+
 /* Add a label to the priority queue _N and
  * compute the lower bound for the label 
  * if this hasn't happened before. */
@@ -18,7 +28,10 @@ Result Solver::AddLabelToN(Label* l) {
         }
         l->SetLowerBound(lower_bound);
     }
-    _N.push(l);
+    /* Don't add labels that certainly won't contribute to a solution:
+     * see Lemma 14. */
+    if (l->GetL() + l->GetLowerBound() <= _global_upper_bound)
+        _N.push(l);
     return SUCCESS;
 }
 
@@ -35,14 +48,16 @@ Result Solver::SetInitialN() {
         labelcounter ++;
         
         l->SetL(0);
-        s->AddLabel(l);
-        AddLabelToN(l);
+        /* Try to add label to N, if this succeeds add it to v. */
+        if (AddLabelToN(l) == SUCCESS)
+            s->AddLabel(l);
+
     }
     return SUCCESS;
 }
 
 /* Add (s, emptyset) for all vertices s with 
- * l(s, emptyset) = 0. */
+ * l(s, emptyset) = 0 and put these labels in P. */
 Result Solver::SetInitialLabels() {
     int n = _problem_instance->GetNVertices();
     bitset<BITSET_SIZE> b;
@@ -75,8 +90,9 @@ Result Solver::ConsiderNeighbours(Label *v_label) {
             Label *w_label = new Label(w, b);
             labelcounter ++;
             w_label->SetL(v_label->GetL() + RectDistance(v, w));
-            w->AddLabel(w_label);
-            AddLabelToN(w_label);
+            /* Try to add label to N, if this succeeds add it to v. */
+            if (AddLabelToN(w_label) == SUCCESS)
+                w->AddLabel(w_label);
         }
         /* (w, I) already set, check if l(v, I) + c({v, w}) < l(w, I) and 
          * if so replace l(w, I) by this value and add (w, I) to _N */
@@ -86,9 +102,7 @@ Result Solver::ConsiderNeighbours(Label *v_label) {
             
             if (!w_label->IsInP() && 
                 v_label->GetL() + RectDistance(v,w) < w_label->GetL()) {
-
                 w_label->SetL(v_label->GetL() + RectDistance(v,w));
-
                 AddLabelToN(w_label);
             }
         }
@@ -127,8 +141,10 @@ Result Solver::Merge(Label *I_label) {
                 Label *IJ_label = new Label(v, b12);
                 labelcounter ++;
                 IJ_label->SetL(I_label->GetL() + J_label->GetL());
-                v->AddLabel(IJ_label);
-                AddLabelToN(IJ_label);
+                
+                /* Try to add label to N, if this succeeds add it to v. */
+                if (AddLabelToN(IJ_label) == SUCCESS)
+                    v->AddLabel(IJ_label);
             }
             /* If (v, IuJ) already set, check if l(v, I) + l(v, J) < l(v, IuJ)
              * and l(v, IuJ) is not in P. If so replace l(v, IuJ) by this 
@@ -147,11 +163,16 @@ Result Solver::Merge(Label *I_label) {
     return SUCCESS;
 }
 
-/* Constructor */
+/* Constructor / Destructor. */
 Solver::Solver(Instance *problem_instance) {
     _problem_instance = problem_instance;
     _lower_bound_comp = new LowerBoundComputator(problem_instance);
+    SetGlobalUpperBound();
     _solution_found = false;
+}
+
+Solver::~Solver() {
+    delete _lower_bound_comp;
 }
 
 /* Attempt to solve the given instance */
@@ -175,11 +196,12 @@ Result Solver::SolveCurrentInstance() {
     while (_N.size() > 0) {
         iteration_counter ++;
 
-        // if (!(iteration_counter % 10000)) {
-        //     cout << "Size of priority queue: " << _N.size() << "\n";
-        //     cout << "Iteration: " << iteration_counter << "\n";
-        //     cout << "Labels created: " << labelcounter << "\n";
-        // }
+        if (!(iteration_counter % 10000)) {
+            cout << "Iteration: " << iteration_counter << "\n";
+            cout << "Size of priority queue: " << _N.size() << "\n";
+            cout << "Labels created: " << labelcounter << "\n";
+            cout << "Current Label value: " << current_label->GetL() + current_label->GetLowerBound() << "\n\n";
+        }
 
         /* Fetch the highest piority label from _N */
         current_label = _N.top(); 

@@ -25,11 +25,13 @@ class Solver {
         int _solution_value;                    // Value of the solution to
                                                 // given instance.
         bool _solution_found;                   // Has a solution been found?
+        int _global_upper_bound;                // Upper bound for this instance.
 
         LowerBoundComputator *_lower_bound_comp;
 
         Result AddLabelToN(Label *l);
 
+        Result SetGlobalUpperBound();
         Result SetInitialN();
         Result SetInitialLabels();
 
@@ -37,9 +39,10 @@ class Solver {
         Result Merge(Label *v_label);
 
     public:
-        /* Constructor */
+        /* Constructor / Destructor. */
         Solver(Instance *problem_instance);
-        
+        ~Solver();
+
         Result SolveCurrentInstance();
         Result GetSolution(int &ret);
 };

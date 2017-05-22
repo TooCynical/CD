@@ -26,12 +26,12 @@ class LowerBoundComputator {
          * it has been computed already. */
         unordered_map<bitset<BITSET_SIZE>, int> _MST_hash;
 
-        /* Compute the length of an MST on the given terminal set. */
-        int MST(bitset<BITSET_SIZE> I);
-
     public:
         /* Constructor */
         LowerBoundComputator(Instance *inst);
+
+        /* Compute the length of an MST on the given terminal set. */
+        int MST(bitset<BITSET_SIZE> I);
 
         /* Bounding box lower bound. */
         int BBLowerBound(Label *l);
