@@ -13,6 +13,7 @@
 #include <queue>
 #include <iterator>
 #include <cmath>
+#include <unordered_map>
 
 
 using namespace std;
@@ -26,8 +27,8 @@ class Solver {
                                                 // given instance.
         bool _solution_found;                   // Has a solution been found?
         int _global_upper_bound;                // Upper bound for this instance.
-
-        LowerBoundComputator *_lower_bound_comp;
+        
+        BoundComputator *_lower_bound_comp;
 
         Result AddLabelToN(Label *l);
 

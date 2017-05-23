@@ -8,7 +8,7 @@ Result Solver::SetGlobalUpperBound() {
         all_terminals.set(i);
     }
     _global_upper_bound = _lower_bound_comp->MST(all_terminals);
-    cout << "MST upper bound: " << _global_upper_bound << "\n";
+    // cout << "MST upper bound: " << _global_upper_bound << "\n";
     return SUCCESS;
 }
 
@@ -19,19 +19,15 @@ Result Solver::AddLabelToN(Label* l) {
     if (!l->IsLowerBoundSet()) {
         int MST_bound = _lower_bound_comp->MSTLowerBound(l);
         int BB_bound = _lower_bound_comp->BBLowerBound(l);
-        int lower_bound;
-        if (BB_bound > MST_bound) {
-            lower_bound = BB_bound;
-        }
-        else {
-            lower_bound = MST_bound;
-        }
+        int lower_bound = max(BB_bound, MST_bound);
         l->SetLowerBound(lower_bound);
     }
     /* Don't add labels that certainly won't contribute to a solution:
      * see Lemma 14. */
-    if (l->GetL() + l->GetLowerBound() <= _global_upper_bound)
+    if (l->GetL() <= _global_upper_bound && 
+        !_lower_bound_comp->CompareToUpperBound(l->GetBitset()[0], l->GetL()))
         _N.push(l);
+
     return SUCCESS;
 }
 
@@ -157,7 +153,7 @@ Solver::Solver(Instance *problem_instance) {
     _problem_instance = problem_instance;
     _solution_found = false;
 
-    _lower_bound_comp = new LowerBoundComputator(problem_instance);
+    _lower_bound_comp = new BoundComputator(problem_instance);
     SetGlobalUpperBound();
 }
 
@@ -187,17 +183,19 @@ Result Solver::SolveCurrentInstance() {
     while (_N.size() > 0) {
         iteration_counter ++;
 
-        if (!(iteration_counter % 10000)) {
-            cout << "Iteration: " << iteration_counter << "\n";
-            cout << "Size of priority queue: " << _N.size() << "\n";
-            cout << "Labels created: " << labelcounter << "\n";
-            cout << "Current Label value: " << current_label->GetL() + 
-                current_label->GetLowerBound() << "\n\n";
-        }
+        // if (!(iteration_counter % 10000)) {
+            // cout << "Iteration: " << iteration_counter << "\n";
+            // cout << "Size of priority queue: " << _N.size() << "\n";
+            // cout << "Labels created: " << labelcounter << "\n";
+            // cout << "Current Label value: " << current_label->GetL() + 
+                // current_label->GetLowerBound() << "\n\n";
+        // }
 
         /* Fetch the highest piority label from _N */
         current_label = _N.top(); 
         _N.pop();
+
+        _lower_bound_comp->UpdateUpperBound(current_label);
 
         /* Add label to P. If it already was in P, then this is 
          * a token label (i.e. it is copy left over from when
@@ -219,12 +217,14 @@ Result Solver::SolveCurrentInstance() {
         Merge(current_label);    
     }
 
-    // cout << "Iteration: " << iteration_counter << "\n";
-
     Label *l;
-    root->GetLabelByBitset(final_terminal_set, l);
-    _solution_value = l->GetL();
-    _solution_found = true;
+    if (root->GetLabelByBitset(final_terminal_set, l) == SUCCESS) {
+        _solution_value = l->GetL();
+        _solution_found = true;
+    }
+    else {
+        cout << "ERROR: N empty before solution was found!\n";
+    }
 
     return SUCCESS;
 }
