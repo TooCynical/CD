@@ -8,7 +8,7 @@ Result Solver::SetGlobalUpperBound() {
         all_terminals.set(i);
     }
     _global_upper_bound = _lower_bound_comp->MST(all_terminals);
-    cout << _global_upper_bound / 2 << "\n";
+    cout << "MST upper bound: " << _global_upper_bound << "\n";
     return SUCCESS;
 }
 
@@ -77,17 +77,17 @@ Result Solver::SetInitialLabels() {
  * (w, I) and perform the Dijkstra-step if needed. */
 Result Solver::ConsiderNeighbours(Label *v_label) {
     Vertex *v = v_label->GetVertex();
-    bitset<BITSET_SIZE> b = *v_label->GetBitset();
+    bitset<BITSET_SIZE> I = *v_label->GetBitset();
 
     /* Loop over neighbours of v */
     for (int i = 0; i < v->GetNNeigh(); i++) {
         Vertex *w = v->GetNeigh()[0][i];
         
-        auto it = w->GetLabelHash()[0].find(b);
         /* (w, I) not yet set so set it and add it to _N 
          * and the label array of w */
-        if (it == w->GetLabelHash()[0].end()) {
-            Label *w_label = new Label(w, b);
+        Label *w_label;
+        if (w->GetLabelByBitset(I, w_label) == FAIL) {
+            Label *w_label = new Label(w, I);
             labelcounter ++;
             w_label->SetL(v_label->GetL() + RectDistance(v, w));
             /* Try to add label to N, if this succeeds add it to v. */
@@ -97,9 +97,6 @@ Result Solver::ConsiderNeighbours(Label *v_label) {
         /* (w, I) already set, check if l(v, I) + c({v, w}) < l(w, I) and 
          * if so replace l(w, I) by this value and add (w, I) to _N */
         else {
-            int w_label_ind = it->second;
-            Label *w_label = w->GetLabels()[0][w_label_ind];
-            
             if (!w_label->IsInP() && 
                 v_label->GetL() + RectDistance(v,w) < w_label->GetL()) {
                 w_label->SetL(v_label->GetL() + RectDistance(v,w));
@@ -114,31 +111,25 @@ Result Solver::ConsiderNeighbours(Label *v_label) {
 Result Solver::Merge(Label *I_label) {
     /* Loop over all labels in v._labels */
     Vertex* v = I_label->GetVertex();
-    bitset<BITSET_SIZE> b1 = I_label->GetBitset()[0];
+    bitset<BITSET_SIZE> I = I_label->GetBitset()[0];
     vector<Label*> labels = v->GetLabels()[0];
-
-    // int n_sets = pow(2, _problem_instance->GetNTerminals() - 1) /
-    //          pow(2, b1.count());
-    // cout << "labels: " << labels.size() << " sets: " << n_sets << "\n";
-    // if (labels.size() > n_sets)
-        // cout << labels.size() << " " << n_sets << "\n";
 
     for (unsigned int i = 0; i < labels.size(); i++) {
         Label *J_label = labels[i];
-        bitset<BITSET_SIZE> b2 = J_label->GetBitset()[0];
+        bitset<BITSET_SIZE> J = J_label->GetBitset()[0];
         
-        /* J should be non-empty,  not contain root and have 
+        /* J should be non-empty, not contain root and have 
          * no terminals in common with J. */
-        if (b2.count() > 0  && 
-            !b2.test(0)     &&
-            (b1 & b2).none()) {
+        if (J.count() > 0  && 
+            !J.test(0)     &&
+            (I & J).none()) {
 
-            bitset<BITSET_SIZE> b12 = b1 | b2;
-            auto it = v->GetLabelHash()[0].find(b12);
+            bitset<BITSET_SIZE> IJ = I | J;
             /* If (v, IuJ) not yet set, set it and add it to _N and 
              * the label array of v. In this case (v, IuJ) is not in P */
-            if (it == v->GetLabelHash()[0].end()) {
-                Label *IJ_label = new Label(v, b12);
+            Label *IJ_label;
+            if (v->GetLabelByBitset(IJ, IJ_label) == FAIL) {    
+                Label *IJ_label = new Label(v, IJ);
                 labelcounter ++;
                 IJ_label->SetL(I_label->GetL() + J_label->GetL());
                 
@@ -150,8 +141,6 @@ Result Solver::Merge(Label *I_label) {
              * and l(v, IuJ) is not in P. If so replace l(v, IuJ) by this 
              * value and add (v, IuJ) to _N */
             else {
-                int IJ_label_ind = it->second;
-                Label *IJ_label = v->GetLabels()[0][IJ_label_ind];
                 if (!IJ_label->IsInP() &&
                     I_label->GetL() + J_label->GetL() < IJ_label->GetL()) {
                     IJ_label->SetL(I_label->GetL() + J_label->GetL());
@@ -166,9 +155,10 @@ Result Solver::Merge(Label *I_label) {
 /* Constructor / Destructor. */
 Solver::Solver(Instance *problem_instance) {
     _problem_instance = problem_instance;
+    _solution_found = false;
+
     _lower_bound_comp = new LowerBoundComputator(problem_instance);
     SetGlobalUpperBound();
-    _solution_found = false;
 }
 
 Solver::~Solver() {
@@ -180,6 +170,7 @@ Result Solver::SolveCurrentInstance() {
     /* Set the root terminal (which is always just the
      * first one given) and the final terminal set 
      * (i.e. the set containing all terminals but the root). */
+    Vertex *root = _problem_instance->GetTerminals()[0];
     _problem_instance->GetTerminals()[0]->SetRoot();
     bitset<BITSET_SIZE> final_terminal_set;
     for (int i = 1; i < _problem_instance->GetNTerminals(); i++)
@@ -200,7 +191,8 @@ Result Solver::SolveCurrentInstance() {
             cout << "Iteration: " << iteration_counter << "\n";
             cout << "Size of priority queue: " << _N.size() << "\n";
             cout << "Labels created: " << labelcounter << "\n";
-            cout << "Current Label value: " << current_label->GetL() + current_label->GetLowerBound() << "\n\n";
+            cout << "Current Label value: " << current_label->GetL() + 
+                current_label->GetLowerBound() << "\n\n";
         }
 
         /* Fetch the highest piority label from _N */
@@ -229,11 +221,8 @@ Result Solver::SolveCurrentInstance() {
 
     // cout << "Iteration: " << iteration_counter << "\n";
 
-    /* To find the solution, get l(root, {Terminals - root}) */
-    int index = _problem_instance->GetTerminals()[0]->
-                        GetLabelHash()[0][final_terminal_set];
-    Label *l = _problem_instance->GetTerminals()[0]->
-                        GetLabels()[0][index];
+    Label *l;
+    root->GetLabelByBitset(final_terminal_set, l);
     _solution_value = l->GetL();
     _solution_found = true;
 
@@ -250,4 +239,12 @@ Result Solver::GetSolution (int &ret) {
     else {
         return FAIL;
     }
+}
+
+void Solver::Test() {
+    bitset<BITSET_SIZE> I;
+    I.set(2);
+    I.set(1);
+
+    cout << _lower_bound_comp->ComplementDistance(I) << "\n";
 }

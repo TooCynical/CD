@@ -21,6 +21,7 @@ int main(int argc, char* argv[]) {
     cout << "Number of vertices: " << inst->GetNVertices() << "\n";
 
     Solver *S = new Solver(inst);
+    // S->Test();
     S->SolveCurrentInstance();
     
     int solution;

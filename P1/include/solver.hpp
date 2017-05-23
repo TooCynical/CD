@@ -45,6 +45,8 @@ class Solver {
 
         Result SolveCurrentInstance();
         Result GetSolution(int &ret);
+
+        void Test();
 };
 
 #endif

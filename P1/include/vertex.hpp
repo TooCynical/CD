@@ -58,6 +58,8 @@ class Vertex {
 
         vector<Label*> *GetLabels();
         unordered_map<bitset<BITSET_SIZE>, int> *GetLabelHash();
+
+        Result GetLabelByBitset(const bitset<BITSET_SIZE> &I, Label *&ret);
         
         /* IO-functions for testing */
         void Print();

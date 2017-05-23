@@ -56,6 +56,19 @@ unordered_map<bitset<BITSET_SIZE>, int> *Vertex::GetLabelHash() {
     return &_label_hash; 
 }
 
+/* Find the label corresponding to the given bitset, and put a reference to it
+ * in ret. Return FAIL if the label cannot be found. */
+Result Vertex::GetLabelByBitset(const bitset<BITSET_SIZE> &I, Label *&ret) {
+    auto it = _label_hash.find(I);
+    if (it != _label_hash.end()) {
+        ret = _labels[it->second];
+        return SUCCESS;
+    }
+    else {
+        return FAIL;
+    }
+}
+
 /* IO-functions for testing */
 void Vertex::Print() {
     cout << _x << ", " << _y << ", " << _z << "\n";

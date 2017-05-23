@@ -50,11 +50,10 @@ int LowerBoundComputator::BBLowerBound(Label *l) {
 }
 
 /* Compute the length of a minimum spanning tree 
- * on the given subset of terminals using a O(n^2)-
- * implementation of Prim's Algorithm, where n is the 
- * total number of terminals */
- int LowerBoundComputator::MST(bitset<BITSET_SIZE> I) {
-    /* First make new references to the relevant terminals */
+ * on the given subset of terminals using a O(kn^2)-
+ * implementation of Prim's Algorithm, where k is the 
+ * total number of terminals, and n the number of terminals in I. */
+ int LowerBoundComputator::MST(const bitset<BITSET_SIZE> &I) {
     int n_rel_terminals = I.count();
 
     Vertex **terminals = _underlying_instance->GetTerminals();
@@ -64,6 +63,7 @@ int LowerBoundComputator::BBLowerBound(Label *l) {
     if (n_rel_terminals <= 1)
         return 0;
     
+    /* First make new references to the relevant terminals */
     Vertex **rel_terminals = (Vertex**) calloc(n_rel_terminals,
                                                 sizeof(Vertex*));
     int count = 0;
@@ -176,4 +176,41 @@ int LowerBoundComputator::MSTLowerBound(Label *l) {
     }
 
     return (MST_length / 2) + (min_dist + snd_min_dist) / 2;
+}
+
+int LowerBoundComputator::ComplementDistance(const bitset<BITSET_SIZE> &I) {
+    
+    Vertex **terminals = _underlying_instance->GetTerminals();
+    int n = _underlying_instance->GetNTerminals();
+
+    /* Get the coordinates i for which terminals[i] is in I and
+     * those for which it is not. */
+    vector<int> indices_in_I;
+    vector<int> indices_not_in_I;
+    for (int i = 0; i < n; i++) {
+        if (I.test(i))
+            indices_in_I.push_back(i);
+        else
+            indices_not_in_I.push_back(i);
+    }
+
+    if (indices_in_I.size() == 0 || indices_not_in_I.size() == 0) {
+        cout << "ERROR: computing d(R, I-R) for empty I or empty R. \n";
+        exit(1); 
+    }
+
+    /* Now find d(I, R-I) */
+    int min = INT_MAX;
+    // cout << min << "\n";
+    for (unsigned int i = 0; i < indices_in_I.size(); i++) {
+        for (unsigned int j = 0; j < indices_not_in_I.size(); j++) {
+            int k = indices_in_I[i];
+            int l = indices_not_in_I[j];
+            if (RectDistance(terminals[k], terminals[l]) < min) {
+                min = RectDistance(terminals[k], terminals[l]);
+                cout << "(i ,j) : " << k << ", " << l << "\n";
+            }
+        }
+    }
+    return min;
 }
