@@ -42,10 +42,16 @@ bool Vertex::HasCoords(int x, int y, int z) {
 int Vertex::GetX() { return _x; }
 int Vertex::GetY() { return _y; }
 int Vertex::GetZ() { return _z; }
+int Vertex::GetId() const { return _id; }
 
 bool Vertex::IsRoot() const { return _is_root; }
 Result Vertex::SetRoot() { 
     _is_root = true; 
+    return SUCCESS;
+}
+
+Result Vertex::SetId(int id) { 
+    _id = id; 
     return SUCCESS;
 }
 
@@ -67,6 +73,10 @@ Result Vertex::GetLabelByBitset(const bitset<BITSET_SIZE> &I, Label *&ret) {
     else {
         return FAIL;
     }
+}
+
+bool Vertex::operator==(const Vertex& other) { 
+    return _id == other.GetId();
 }
 
 /* IO-functions for testing */

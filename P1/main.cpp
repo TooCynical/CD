@@ -11,26 +11,23 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 
-    if (DOUBLE_INPUT_COORDS);
-        cout << "Warning: All vertex coordinates have been doubled!\n";
-
     Instance *inst;
-    ParseFile(argv[1], inst);
+    if (ParseFile(argv[1], inst) == FAIL)
+        exit(1);
 
-    cout << "Number of terminals: " << inst->GetNTerminals() << "\n";
-    cout << "Number of vertices: " << inst->GetNVertices() << "\n";
 
     Solver *S = new Solver(inst);
     // S->Test();
     S->SolveCurrentInstance();
     
     int solution;
-    S->GetSolution(solution);
+    if (S->GetSolution(solution) == FAIL)
+        exit(1);
+
     if (DOUBLE_INPUT_COORDS)
         solution /= 2;
 
-    // cout << "MST: " << MST(b, inst->GetTerminals(), inst->GetNTerminals()) << "\n";
-    cout << "Solution: " << solution << "\n";
+    cout << solution << "\n";
 
     delete inst;
     delete S;

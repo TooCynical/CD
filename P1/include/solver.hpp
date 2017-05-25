@@ -18,15 +18,31 @@
 
 using namespace std;
 
+/* Comparator for pairs of values and labels. Simply compares 
+ * the integers. */
+struct LabelValuePairComp {
+    bool operator()(const pair<int, Label*> &lhs, 
+                    const pair<int, Label*> &rhs) const {
+        return lhs.first > rhs.first;
+    }
+};
+
 class Solver {
     private:
-        Instance *_problem_instance;            // The underlying problem instance.
-        priority_queue<Label*, vector<Label*>,  // Priority Queue of lables 
-                       LabelPointerComp > _N;   // added during the algorithm.
-        int _solution_value;                    // Value of the solution to
-                                                // given instance.
-        bool _solution_found;                   // Has a solution been found?
-        int _global_upper_bound;                // Upper bound for this instance.
+        Instance *_problem_instance;    // The underlying problem instance.
+        int _solution_value;            // Value of the solution to
+                                        // given instance.
+        bool _solution_found;           // Has a solution been found?
+        int _global_upper_bound;        // Upper bound for this instance.
+
+        /* Priority queue of lables added during the algorithm. This 
+         * horrible line initializes a queue of pairs of integers and
+         * references to labels. The integers represent the value 
+         * l(v, I) + LowerBound(v, R-I) AT THE TIME THE PAIR IS ADDED 
+         * TO THE QUEUE. We need this implementation to deal with the 
+         * dynamic nature of these values. */
+        priority_queue<pair<int, Label*>, vector<pair<int, Label*> >,
+                       LabelValuePairComp> _N;
         
         BoundComputator *_lower_bound_comp;
 

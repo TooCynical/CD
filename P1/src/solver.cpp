@@ -8,7 +8,6 @@ Result Solver::SetGlobalUpperBound() {
         all_terminals.set(i);
     }
     _global_upper_bound = _lower_bound_comp->MST(all_terminals);
-    // cout << "MST upper bound: " << _global_upper_bound << "\n";
     return SUCCESS;
 }
 
@@ -20,13 +19,16 @@ Result Solver::AddLabelToN(Label* l) {
         int MST_bound = _lower_bound_comp->MSTLowerBound(l);
         int BB_bound = _lower_bound_comp->BBLowerBound(l);
         int lower_bound = max(BB_bound, MST_bound);
-        l->SetLowerBound(lower_bound);
+        l->SetLowerBound(lower_bound); 
     }
+
     /* Don't add labels that certainly won't contribute to a solution:
-     * see Lemma 14. */
+     * see Lemma 14 and 15. */
     if (l->GetL() <= _global_upper_bound && 
-        !_lower_bound_comp->CompareToUpperBound(l->GetBitset()[0], l->GetL()))
-        _N.push(l);
+        !_lower_bound_comp->CompareToUpperBound(
+                                    l->GetBitset()[0], l->GetL())) {
+    _N.push(make_pair(l->GetL() + l->GetLowerBound(), l));
+    }
 
     return SUCCESS;
 }
@@ -90,7 +92,7 @@ Result Solver::ConsiderNeighbours(Label *v_label) {
             if (AddLabelToN(w_label) == SUCCESS)
                 w->AddLabel(w_label);
         }
-        /* (w, I) already set, check if l(v, I) + c({v, w}) < l(w, I) and 
+        /* (w, I) already set, check if l(v, I) + d(v, w) < l(w, I) and 
          * if so replace l(w, I) by this value and add (w, I) to _N */
         else {
             if (!w_label->IsInP() && 
@@ -114,13 +116,16 @@ Result Solver::Merge(Label *I_label) {
         Label *J_label = labels[i];
         bitset<BITSET_SIZE> J = J_label->GetBitset()[0];
         
-        /* J should be non-empty, not contain root and have 
-         * no terminals in common with J. */
-        if (J.count() > 0  && 
-            !J.test(0)     &&
-            (I & J).none()) {
+        /* (v,J) should be in P, J should be non-empty, not 
+         * contain root and have no terminals in common with I. */
+        if (
+            J_label->IsInP()    &&
+            J.count() > 0       && 
+            !J.test(0)          &&
+            (I & J).none())  {
 
             bitset<BITSET_SIZE> IJ = I | J;
+
             /* If (v, IuJ) not yet set, set it and add it to _N and 
              * the label array of v. In this case (v, IuJ) is not in P */
             Label *IJ_label;
@@ -128,6 +133,8 @@ Result Solver::Merge(Label *I_label) {
                 Label *IJ_label = new Label(v, IJ);
                 labelcounter ++;
                 IJ_label->SetL(I_label->GetL() + J_label->GetL());
+    
+                _lower_bound_comp->MergeUpperBound(I, J);
                 
                 /* Try to add label to N, if this succeeds add it to v. */
                 if (AddLabelToN(IJ_label) == SUCCESS)
@@ -139,6 +146,9 @@ Result Solver::Merge(Label *I_label) {
             else {
                 if (!IJ_label->IsInP() &&
                     I_label->GetL() + J_label->GetL() < IJ_label->GetL()) {
+     
+                    _lower_bound_comp->MergeUpperBound(I, J);
+     
                     IJ_label->SetL(I_label->GetL() + J_label->GetL());
                     AddLabelToN(IJ_label);
                 }
@@ -183,17 +193,18 @@ Result Solver::SolveCurrentInstance() {
     while (_N.size() > 0) {
         iteration_counter ++;
 
-        // if (!(iteration_counter % 10000)) {
-            // cout << "Iteration: " << iteration_counter << "\n";
-            // cout << "Size of priority queue: " << _N.size() << "\n";
-            // cout << "Labels created: " << labelcounter << "\n";
-            // cout << "Current Label value: " << current_label->GetL() + 
-                // current_label->GetLowerBound() << "\n\n";
-        // }
-
         /* Fetch the highest piority label from _N */
-        current_label = _N.top(); 
+        current_label = _N.top().second; 
         _N.pop();
+
+
+        if (!(iteration_counter % 1)) {
+            cout << "Iteration: " << iteration_counter << "\n";
+            cout << "Size of priority queue: " << _N.size() << "\n";
+            cout << "Labels created: " << labelcounter << "\n";
+            cout << "Current Label value: " << current_label->GetL() + 
+                current_label->GetLowerBound() << "\n\n";
+        }
 
         _lower_bound_comp->UpdateUpperBound(current_label);
 
@@ -224,6 +235,7 @@ Result Solver::SolveCurrentInstance() {
     }
     else {
         cout << "ERROR: N empty before solution was found!\n";
+        return FAIL;
     }
 
     return SUCCESS;
@@ -242,9 +254,9 @@ Result Solver::GetSolution (int &ret) {
 }
 
 void Solver::Test() {
-    bitset<BITSET_SIZE> I;
-    I.set(2);
-    I.set(1);
+    // bitset<BITSET_SIZE> I;
+    // I.set(2);
+    // I.set(1);
 
-    cout << _lower_bound_comp->ComplementDistance(I) << "\n";
+    // cout << _lower_bound_comp->ComplementDistance(I) << "\n";
 }

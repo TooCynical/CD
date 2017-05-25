@@ -21,7 +21,7 @@ class Instance;
 
 class Vertex {
     private:
-        int _x, _y, _z;
+        int _x, _y, _z, _id;
 
         int _n_neigh;                   // Number of neighbours set.
         vector<Vertex*> _neigh;         // Neighbours of vertex in Hanan grid.
@@ -49,6 +49,8 @@ class Vertex {
         int GetX();
         int GetY();
         int GetZ();
+        int GetId() const;
+        Result SetId(int id);
 
         bool IsRoot() const;
         Result SetRoot();
@@ -61,6 +63,8 @@ class Vertex {
 
         Result GetLabelByBitset(const bitset<BITSET_SIZE> &I, Label *&ret);
         
+        bool operator==(const Vertex& other);
+
         /* IO-functions for testing */
         void Print();
         void PrintNeighbours();

@@ -38,6 +38,7 @@ class Instance {
         Result SetNeighbours();
         Result SetTerminals(int **term_locs);
         Result SortTerminals();
+        Result SetIds();
 
     public:
         /* Constructor / Destructor*/

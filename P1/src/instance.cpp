@@ -126,6 +126,14 @@ Result Instance::SortTerminals() {
     return SUCCESS;
 }
 
+Result Instance::SetIds() {
+    for (int i = 0; i < _n_terminals; i++) {
+        _V[i]->SetId(i);
+    }
+    return SUCCESS;
+}
+
+
 /* Set up all datastructures given a 1D array of terminal locations,
  * which are represented as a 1D array themselves. */
 Instance::Instance(int n, int **term_locs) {
@@ -140,6 +148,8 @@ Instance::Instance(int n, int **term_locs) {
 
     SetTerminals(term_locs);
     SortTerminals();
+
+    SetIds();
 }
 
 Instance::~Instance() {

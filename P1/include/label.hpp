@@ -53,15 +53,4 @@ class Label {
         void Print();
 };
 
-/* Operator overloads required to use heaps of Label pointers.
- * Comparison of pointers is derived from comparison of the 
- * referenced labels, which is defined in label.cpp */
-bool operator<(const Label& a, const Label& b);
-
-struct LabelPointerComp {
-    bool operator() (const Label* lhs, const Label* rhs) const {
-        return *lhs < *rhs;
-    }
-};
-
 #endif

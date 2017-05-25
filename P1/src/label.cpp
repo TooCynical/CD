@@ -67,16 +67,3 @@ void Label::Print() {
     _v->Print();
     cout << "Bitset: " << _I << "\n";
 }
-
-/* A label is smaller than another label if it has BIGGER l-value */
-bool operator<(const Label& a, const Label& b) {
-    if (!a.IsLSet() || !b.IsLSet()) {
-        cout << "WARNING: Comparing Labels with unset l-values!\n";
-        exit(1);
-    }
-    if (!a.IsLowerBoundSet() || !b.IsLowerBoundSet()) {
-        cout << "WARNING: Comparing Labels with unset lower bounds!\n";
-        exit(1);
-    }
-    return a.GetL() + a.GetLowerBound() > b.GetL() + b.GetLowerBound();
-}
