@@ -4,21 +4,17 @@ using namespace std;
 
 BoundComputator::BoundComputator(Instance *inst) {
     _underlying_instance = inst;
+    _n_terminals = inst->GetNTerminals();
+    _terminals = inst->GetTerminals();
 }
 
-/* Compute the bounding box lower bound for a 
- * a label (i.e. the bounding box lower bound for
- * a Steiner Tree on its complement) given the 
- * terminal set used and the number of total terminals. */ 
 int BoundComputator::BBLowerBound(Label *l) {
     /* If root terminal in the terminal set of the label 
-     * return 0 */
+     * return 0 and print a warning. */
     if (l->GetBitset()[0].test(0)) {
+        cout << "WARNING: BBLowerBound called for root in I!\n";
         return 0;
     }
-
-    Vertex **terminals = _underlying_instance->GetTerminals();
-    int n = _underlying_instance->GetNTerminals();
 
     int x_max, x_min;
     int y_max, y_min;
@@ -31,34 +27,27 @@ int BoundComputator::BBLowerBound(Label *l) {
 
     /* Loop over all terminals in the complement of the labels
      * terminal set and update values accordingly */
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < _n_terminals; i++) {
         if (!l->GetBitset()[0].test(i)) {
-            if (terminals[i]->GetX() < x_min)
-                x_min = terminals[i]->GetX();
-            if (terminals[i]->GetX() > x_max)
-                x_max = terminals[i]->GetX();
-            if (terminals[i]->GetY() < y_min)
-                y_min = terminals[i]->GetY();
-            if (terminals[i]->GetY() > y_max)
-                y_max = terminals[i]->GetY();
-            if (terminals[i]->GetZ() < z_min)
-                z_min = terminals[i]->GetZ();
-            if (terminals[i]->GetZ() > z_max)
-                z_max = terminals[i]->GetZ();
+            if (_terminals[i]->GetX() < x_min)
+                x_min = _terminals[i]->GetX();
+            if (_terminals[i]->GetX() > x_max)
+                x_max = _terminals[i]->GetX();
+            if (_terminals[i]->GetY() < y_min)
+                y_min = _terminals[i]->GetY();
+            if (_terminals[i]->GetY() > y_max)
+                y_max = _terminals[i]->GetY();
+            if (_terminals[i]->GetZ() < z_min)
+                z_min = _terminals[i]->GetZ();
+            if (_terminals[i]->GetZ() > z_max)
+                z_max = _terminals[i]->GetZ();
         }
     }
     return (x_max - x_min) + (y_max - y_min) + (z_max - z_min);
 }
 
-/* Compute the length of a minimum spanning tree 
- * on the given subset of terminals using a O(kn^2)-
- * implementation of Prim's Algorithm, where k is the 
- * total number of terminals, and n the number of terminals in I. */
- int BoundComputator::MST(const bitset<BITSET_SIZE> &I) {
+int BoundComputator::MST(const bitset<BITSET_SIZE> &I) {
     int n_rel_terminals = I.count();
-
-    Vertex **terminals = _underlying_instance->GetTerminals();
-    int n = _underlying_instance->GetNTerminals();
     
     /* An MST on <= 1 vertex has length 0. */
     if (n_rel_terminals <= 1)
@@ -68,9 +57,9 @@ int BoundComputator::BBLowerBound(Label *l) {
     Vertex **rel_terminals = (Vertex**) calloc(n_rel_terminals,
                                                 sizeof(Vertex*));
     int count = 0;
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < _n_terminals; i++) {
         if (I.test(i)) {
-            rel_terminals[count] = terminals[i];
+            rel_terminals[count] = _terminals[i];
             count ++;
         }
     }
@@ -89,6 +78,7 @@ int BoundComputator::BBLowerBound(Label *l) {
     int min = INT_MAX;
     int min_index = 0;
     int tree_cost = 0;
+    int cur_distance;
 
     for (int j = 0; j < n_rel_terminals; j++) {
         min = INT_MAX;
@@ -104,14 +94,15 @@ int BoundComputator::BBLowerBound(Label *l) {
         tree_cost += costs[min_index];
         in_tree[min_index] = true;
         for (int i = 0; i < n_rel_terminals; i++) {
-            if (RectDistance(rel_terminals[i], rel_terminals[min_index]) < 
-                costs[i] && i != min_index) {
-                costs[i] = RectDistance(rel_terminals[i], 
+            cur_distance = RectDistance(rel_terminals[i], 
                                         rel_terminals[min_index]);
+            if (cur_distance < costs[i] && i != min_index) {
+                costs[i] = cur_distance;
             }
         }
     }
 
+    /* Reclaim memory. */
     free(rel_terminals);
     free(costs);
     free(in_tree);
@@ -119,22 +110,19 @@ int BoundComputator::BBLowerBound(Label *l) {
     return tree_cost;
  }
 
-/* Compute the MST Lower Bound for the complement of the 
- * terminal set of the given label */
-int BoundComputator::MSTLowerBound(Label *l) {
+int BoundComputator::OneTreeLowerBound(Label *l) {
     /* If root terminal in the terminal set of the label 
-     * return 0. */
-    if (l->GetBitset()[0].test(0))
+     * return 0 and print a warning. */
+    if (l->GetBitset()[0].test(0)) {
+        cout << "WARNING: OneTreeLowerBound called for root in I!\n";
         return 0;
-
-    Vertex **terminals = _underlying_instance->GetTerminals();
-    int n = _underlying_instance->GetNTerminals();
+    }
 
     Vertex* v = l->GetVertex();
 
-    /* Get the complementary bitset */
+    /* Get the complementary bitset. */
     bitset<BITSET_SIZE> I;
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < _n_terminals; i++) {
         if (!l->GetBitset()[0].test(i))
             I.set(i);
     }
@@ -151,52 +139,52 @@ int BoundComputator::MSTLowerBound(Label *l) {
         _MST_hash.insert(make_pair(l->GetBitset()[0], MST_length));
     }
     
-    /* Find terminal in I closest to v */
+    /* Find terminal in I closest to v. */
     int min_dist = INT_MAX;
     int min_index;
-    for (int i = 0; i < n; i++) {
-        if (I.test(i) && RectDistance(v, terminals[i]) < min_dist) {
-            min_dist = RectDistance(v, terminals[i]);
+    int cur_dist;
+    for (int i = 0; i < _n_terminals; i++) {
+        cur_dist = RectDistance(v, _terminals[i]);
+        if (I.test(i) && cur_dist < min_dist) {
+            min_dist = cur_dist;
             min_index = i;
         }
     }
 
+    /* If I has only one terminal we need not find second closest
+     * terminal to v */
     if (I.count() == 1)
         return (MST_length / 2) + min_dist;
 
-    /* Find distance to terminal second closest to v */
+    /* Find distance to terminal in I second closest to v */
     int snd_min_dist = INT_MAX;
 
-    for (int i = 0; i < n; i++) {
-        if (I.test(i)           && 
-                i != min_index  &&
-                RectDistance(v, terminals[i]) < snd_min_dist) {
-            snd_min_dist = RectDistance(v, terminals[i]);
+    for (int i = 0; i < _n_terminals; i++) {
+        cur_dist = RectDistance(v, _terminals[i]);
+        if (I.test(i) && i != min_index && cur_dist < snd_min_dist) {
+            snd_min_dist = cur_dist;
         }
     }
 
     return (MST_length / 2) + (min_dist + snd_min_dist) / 2;
 }
 
-/* Compute d(I, R-I) for given terminal set I in time O(|I|*|R-I|). */
 Result BoundComputator::ComplementDistance(const bitset<BITSET_SIZE> &I,
                                            int &ret_dist,
                                            int &ret_ind) {
     
-    Vertex **terminals = _underlying_instance->GetTerminals();
-    int n = _underlying_instance->GetNTerminals();
-
     /* Get the coordinates i for which terminals[i] is in I and
      * those for which it is not. */
     vector<int> indices_in_I;
     vector<int> indices_not_in_I;
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < _n_terminals; i++) {
         if (I.test(i))
             indices_in_I.push_back(i);
         else
             indices_not_in_I.push_back(i);
     }
 
+    /* I and R-I should never be empty! */
     if (indices_in_I.size() == 0 || indices_not_in_I.size() == 0) {
         cout << "ERROR: computing d(R, I-R) for empty I or empty I-R. \n";
         exit(1); 
@@ -210,8 +198,8 @@ Result BoundComputator::ComplementDistance(const bitset<BITSET_SIZE> &I,
         for (unsigned int j = 0; j < indices_not_in_I.size(); j++) {
             int k = indices_in_I[i];
             int l = indices_not_in_I[j];
-            if (RectDistance(terminals[k], terminals[l]) < min) {
-                min = RectDistance(terminals[k], terminals[l]);
+            if (RectDistance(_terminals[k], _terminals[l]) < min) {
+                min = RectDistance(_terminals[k], _terminals[l]);
                 min_ind = l;
             }
         }
@@ -223,16 +211,13 @@ Result BoundComputator::ComplementDistance(const bitset<BITSET_SIZE> &I,
     return SUCCESS;
 }
 
-/* Compute d(v, R-I) for given terminal set I in O(|R-I|). */
 Result BoundComputator::VertexComplementDistance(
         const bitset<BITSET_SIZE> &I, 
         Vertex *v, 
         int &ret_dist, 
         int &ret_ind) {
 
-    Vertex **terminals = _underlying_instance->GetTerminals();
-    int n = _underlying_instance->GetNTerminals();
-
+    /* The root should never be in I. */
     if (I.test(0)) {
         cout << "ERROR: computing d(v, I-R) for root in I. \n";
         exit(1); 
@@ -240,9 +225,10 @@ Result BoundComputator::VertexComplementDistance(
 
     int min = INT_MAX;
     int min_ind;
-    for (int i = 0; i < n; i++) {
-        if (!I.test(i) && RectDistance(v, terminals[i]) < min) {
-            min = RectDistance(v, terminals[i]);
+    /* Loop over all terminals in R-I to find the closest one to v. */
+    for (int i = 0; i < _n_terminals; i++) {
+        if (!I.test(i) && RectDistance(v, _terminals[i]) < min) {
+            min = RectDistance(v, _terminals[i]);
             min_ind = i;
         }
     }
@@ -252,34 +238,32 @@ Result BoundComputator::VertexComplementDistance(
     return SUCCESS;
 }
 
-/* Return whether value > U(I), the local upper bound for I. 
- * We implement this like this in order to elegantly deal 
- * with the case that U(I) is not yet set. */
 bool BoundComputator::CompareToUpperBound(bitset<BITSET_SIZE> &I, int value) {
-    /* Attempt to fetch U(I) */
+    /* Attempt to fetch U(I) from the hash table */
     auto it = _upper_bound_hash.find(I);
-    /* U(I) set, compare it to value */
+    /* If A(I) is set, compare U(I) to value. */
     if (it != _upper_bound_hash.end()) {
         return (value > it->second.first);
     } 
-    /* U(I) not set (i.e. U(I) = infty) */
+    /* If A(I) is not set (i.e. U(I) = infty) we 
+     * return false. */
     else {
         return false;
     }
 }
 
-/* Fetch d(I, R-I) from the hash table or compute it if not yet set */
 Result BoundComputator::GetComplementDistance(const bitset<BITSET_SIZE> &I,
                                               int &ret_dist,
                                               int &ret_ind) {
-    /* Attempt to fetch d(I, R-I). */
+    /* Attempt to fetch d(I, R-I) from the hash table. */
     auto it = _distance_hash.find(I);
-    /* d(I, R-I) set, return it. */
+    /* If d(I, R-I) set return it. */
     if (it != _distance_hash.end()) {
         ret_dist = it->second.first;
         ret_ind = it->second.second;
     } 
-    /* R-I not set, compute it, set it, and return it. */
+    /* If R-I not set, compute it, insert it in the hash table,
+     * and return it. */
     else {
         ComplementDistance(I, ret_dist, ret_ind);
         _distance_hash.insert(make_pair(I, make_pair(ret_dist, ret_ind)));
@@ -287,16 +271,13 @@ Result BoundComputator::GetComplementDistance(const bitset<BITSET_SIZE> &I,
     return SUCCESS;
 }
 
-/* Update U(I) provided that the given label (v, I)
- * minimizes l(v,I) + lb(v, I) for labels in N and 
- * v is not in I. */
 Result BoundComputator::UpdateUpperBound(Label *l) {
     
     bitset<BITSET_SIZE> I = *(l->GetBitset());
 
     /* Compute l(v,I) + min (d(I, R-I), d(v, R-I)) and the index 
-     * of the terminal in R- I closest to v or closest to I,
-     * respectively. */
+     * of the terminal in R-I closest to v or closest to I,
+     * accordingly. */
     int vertex_dist, vertex_ind, compl_dist, compl_ind, min_ind;
     GetComplementDistance(I, compl_dist, compl_ind);
     VertexComplementDistance(I, l->GetVertex(), vertex_dist, vertex_ind);
@@ -345,47 +326,28 @@ Result BoundComputator::MergeUpperBound(const bitset<BITSET_SIZE> &I,
         (_upper_bound_hash[J].second & I).any())
         return FAIL;
 
-    /* Find U(I) + U(J) and (S(I) u S(J)) - (I u J) */
+    /* Find U(I) + U(J) and (S(I) u S(J)) - (I u J). */
     int sum_U = _upper_bound_hash[I].first + _upper_bound_hash[J].first;
 
-    /* First find union */
+    /* First find union then remove I and J. */
     bitset<BITSET_SIZE> new_S = _upper_bound_hash[I].second | 
                                 _upper_bound_hash[J].second;
-
-    /* Then remove unwanted elements. */ 
     new_S = (new_S & ~I) & ~J;
 
-    /* Attempt to fetch A(IJ) */
+    /* Attempt to fetch A(IuJ). */
     auto it = _upper_bound_hash.find(IJ);
-    /* A(I) set. */
+    /* If A(I u J) set: Check if U(I) + U(J) < U(IuJ) 
+     * and update U(I u J) and S(I u J) if so. */
     if (it != _upper_bound_hash.end()) {
-        /* Check if U(I) + U(J) < U(IJ) and update U(IJ) if so. */
         if (sum_U < it->second.first) {
             it->second.first = sum_U;
             it->second.second = new_S;
         }
     } 
-    /* A(IJ) not set. Set it.*/
+    /* If A(I u J) not set, set it.*/
     else {
         _upper_bound_hash.insert(make_pair(IJ, make_pair(sum_U, new_S)));
     }
 
     return SUCCESS;
-}
-
-/* Return whether the terminals given by I intersect with the 
- * set of vertices given by S. */
-bool BoundComputator::SetIntersectsTerminalSet(const bitset<BITSET_SIZE> &I, 
-                                              set<int> &S) {
-    Vertex **terminals = _underlying_instance->GetTerminals();
-    int n = _underlying_instance->GetNTerminals();
-
-
-    for (int i = 0; i < n; i++) {
-        if (I.test(i)) {
-            if (S.count(terminals[i]->GetId()) > 0)
-                return true;
-        }
-    }
-    return false;
 }

@@ -16,7 +16,7 @@ Result Solver::SetGlobalUpperBound() {
  * if this hasn't happened before. */
 Result Solver::AddLabelToN(Label* l) {
     if (!l->IsLowerBoundSet()) {
-        int MST_bound = _lower_bound_comp->MSTLowerBound(l);
+        int MST_bound = _lower_bound_comp->OneTreeLowerBound(l);
         int BB_bound = _lower_bound_comp->BBLowerBound(l);
         int lower_bound = max(BB_bound, MST_bound);
         l->SetLowerBound(lower_bound); 
