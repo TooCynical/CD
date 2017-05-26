@@ -144,8 +144,8 @@ int BoundComputator::OneTreeLowerBound(Label *l) {
     int min_index;
     int cur_dist;
     for (int i = 0; i < _n_terminals; i++) {
-        cur_dist = RectDistance(v, _terminals[i]);
-        if (I.test(i) && cur_dist < min_dist) {
+        if (I.test(i) && 
+            (cur_dist = RectDistance(v, _terminals[i])) < min_dist) {
             min_dist = cur_dist;
             min_index = i;
         }
@@ -160,8 +160,8 @@ int BoundComputator::OneTreeLowerBound(Label *l) {
     int snd_min_dist = INT_MAX;
 
     for (int i = 0; i < _n_terminals; i++) {
-        cur_dist = RectDistance(v, _terminals[i]);
-        if (I.test(i) && i != min_index && cur_dist < snd_min_dist) {
+        if (I.test(i) && i != min_index && 
+            (cur_dist = RectDistance(v, _terminals[i])) < snd_min_dist) {
             snd_min_dist = cur_dist;
         }
     }
@@ -194,12 +194,14 @@ Result BoundComputator::ComplementDistance(const bitset<BITSET_SIZE> &I,
      * j in R-I. */
     int min = INT_MAX;
     int min_ind;
+    int cur_dist;
     for (unsigned int i = 0; i < indices_in_I.size(); i++) {
         for (unsigned int j = 0; j < indices_not_in_I.size(); j++) {
             int k = indices_in_I[i];
             int l = indices_not_in_I[j];
-            if (RectDistance(_terminals[k], _terminals[l]) < min) {
-                min = RectDistance(_terminals[k], _terminals[l]);
+            if ((cur_dist = RectDistance(_terminals[k], _terminals[l])) 
+                    < min) {
+                min = cur_dist;
                 min_ind = l;
             }
         }
@@ -351,3 +353,5 @@ Result BoundComputator::MergeUpperBound(const bitset<BITSET_SIZE> &I,
 
     return SUCCESS;
 }
+
+// int GetLowerBound(Label *l);

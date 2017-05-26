@@ -32,6 +32,9 @@ class BoundComputator {
         Vertex **_terminals;    // References to the terminals in 
                                 // the underlying instance.
 
+        bool _use_BB_lower_bound;           // Use Bounding Box lb?
+        bool _use_OneTree_lower_bound;      // Use 1-Tree lb?
+
         /* Hash table containing MST(I) for a terminal set I, if 
          * it has been computed already. */
         unordered_map<bitset<BITSET_SIZE>, int> _MST_hash;
@@ -92,7 +95,7 @@ class BoundComputator {
                                const bitset<BITSET_SIZE> &J);
 
         /* Constructor */
-        BoundComputator(Instance *inst);
+        BoundComputator(Instance *inst);//, bool use_BB, bool _use_one_tree);
 
         /* Compute the length of an MST on the given terminal set using
          * Prim's algorithm running in O(|R|^2). */
@@ -106,6 +109,15 @@ class BoundComputator {
          * The required value MST(I) is fetched from the hash table if 
          * possible, and computed otherwise. */
         int OneTreeLowerBound(Label *l);
+
+        /* Return the lb(v, I) for the given label, where lb is 
+         * a lower bound function determined by the values of 
+         * _use_BB_lower_bound and _use_MST_lower_bound. */
+        int GetLowerBound(Label *l);
+
+        /* Getters / Setters. */
+        Result SetUseBBLowerBound();
+        Result SetUseOneTreeLowerBound();
 };
 
 
