@@ -31,7 +31,7 @@ class BoundComputator {
 
         /* Hash table containing d(I, R-I) for a terminal set I, if 
          * it has been computed already */
-        unordered_map<bitset<BITSET_SIZE>, int> _distance_hash;
+        unordered_map<bitset<BITSET_SIZE>, pair<int, int> > _distance_hash;
 
         /* Hash containing the upper bound U(I) for a terminal set I. */
         // unordered_map<bitset<BITSET_SIZE>, int> _upper_bound_hash;
@@ -44,11 +44,15 @@ class BoundComputator {
         unordered_map<bitset<BITSET_SIZE>, pair<int, bitset<BITSET_SIZE> > > 
         _upper_bound_hash;
 
-        int GetComplementDistance(const bitset<BITSET_SIZE> &I);
+        Result GetComplementDistance(const bitset<BITSET_SIZE> &I,
+                                     int &ret_dist,
+                                     int &ret_ind);
 
         /* Compute the distance d(I, R-I) between a terminal set and 
          * its complement. */
-        int ComplementDistance(const bitset<BITSET_SIZE> &I);
+        Result ComplementDistance(const bitset<BITSET_SIZE> &I, 
+                                  int &ret_dist,
+                                  int &ret_ind);
 
         /* Compute the distance d(v, I-R) between a vertex and the complement
          * of the given bitset. */

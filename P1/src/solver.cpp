@@ -198,13 +198,13 @@ Result Solver::SolveCurrentInstance() {
         _N.pop();
 
 
-        if (!(iteration_counter % 1)) {
-            cout << "Iteration: " << iteration_counter << "\n";
-            cout << "Size of priority queue: " << _N.size() << "\n";
-            cout << "Labels created: " << labelcounter << "\n";
-            cout << "Current Label value: " << current_label->GetL() + 
-                current_label->GetLowerBound() << "\n\n";
-        }
+        // if (!(iteration_counter % 1)) {
+        //     cout << "Iteration: " << iteration_counter << "\n";
+        //     cout << "Size of priority queue: " << _N.size() << "\n";
+        //     cout << "Labels created: " << labelcounter << "\n";
+        //     cout << "Current Label value: " << current_label->GetL() + 
+        //         current_label->GetLowerBound() << "\n\n";
+        // }
 
         _lower_bound_comp->UpdateUpperBound(current_label);
 
