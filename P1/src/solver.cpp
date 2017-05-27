@@ -78,14 +78,14 @@ Result Solver::ConsiderNeighbours(Label *v_label) {
     bitset<BITSET_SIZE> I = *v_label->GetBitset();
 
     /* Loop over neighbours of v */
-    for (int i = 0; i < v->GetNNeigh(); i++) {
-        Vertex *w = v->GetNeigh()[0][i];
+    for (int i = 0; i < v->GetNNeighbours(); i++) {
+        Vertex *w = v->GetNeighbours()[i];
         
         /* (w, I) not yet set so set it and add it to _N 
          * and the label array of w */
         Label *w_label;
-        if (w->GetLabelByBitset(I, w_label) == FAIL) {
-            Label *w_label = new Label(w, I);
+        if ((w_label = w->GetLabelByBitset(I)) == NULL) {
+            w_label = new Label(w, I);
             labelcounter ++;
             w_label->SetL(v_label->GetL() + RectDistance(v, w));
             /* Try to add label to N, if this succeeds add it to v. */
@@ -110,7 +110,7 @@ Result Solver::Merge(Label *I_label) {
     /* Loop over all labels in v._labels */
     Vertex* v = I_label->GetVertex();
     bitset<BITSET_SIZE> I = I_label->GetBitset()[0];
-    vector<Label*> labels = v->GetLabels()[0];
+    vector<Label*> labels = v->GetLabels();
 
     for (unsigned int i = 0; i < labels.size(); i++) {
         Label *J_label = labels[i];
@@ -129,8 +129,8 @@ Result Solver::Merge(Label *I_label) {
             /* If (v, IuJ) not yet set, set it and add it to _N and 
              * the label array of v. In this case (v, IuJ) is not in P */
             Label *IJ_label;
-            if (v->GetLabelByBitset(IJ, IJ_label) == FAIL) {    
-                Label *IJ_label = new Label(v, IJ);
+            if ((IJ_label = v->GetLabelByBitset(IJ)) == NULL) {    
+                IJ_label = new Label(v, IJ);
                 labelcounter ++;
                 IJ_label->SetL(I_label->GetL() + J_label->GetL());
     
@@ -229,7 +229,7 @@ Result Solver::SolveCurrentInstance() {
     }
 
     Label *l;
-    if (root->GetLabelByBitset(final_terminal_set, l) == SUCCESS) {
+    if ((l = root->GetLabelByBitset(final_terminal_set)) != NULL) {
         _solution_value = l->GetL();
         _solution_found = true;
     }

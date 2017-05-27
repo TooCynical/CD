@@ -21,7 +21,8 @@ class Instance;
 
 class Vertex {
     private:
-        int _x, _y, _z, _id;
+        int _x, _y, _z;
+        int _id = -1;
 
         int _n_neigh;                   // Number of neighbours set.
         vector<Vertex*> _neigh;         // Neighbours of vertex in Hanan grid.
@@ -41,35 +42,57 @@ class Vertex {
         Vertex(int x, int y, int z);
         ~Vertex();
         
+        /* Add given vertex to the neighbours of this vertex and increase
+         * the number of neighbours. */
         Result AddNeighbour(Vertex* w);
+
+        /* Add given reference to label to _labels and add its index 
+         * to the hash table for labels. */
         Result AddLabel(Label *l);
-        bool HasCoords(int x, int y, int z);
+
+        /* Return whether the vertex is located at given coordinates. */
+        bool HasCoords(int x, int y, int z) const;
 
         /* Getters / Setters */
-        int GetX();
-        int GetY();
-        int GetZ();
-        int GetId() const;
+        const int& GetX() const;
+        const int& GetY() const;
+        const int& GetZ() const;
+        const int& GetId() const;
+
+        /* Set an ID for this vertex, which must be positive. Return FAIL
+         * if an ID was already set. */
         Result SetId(int id);
 
+        /* Return whether this vertex is the root. */
         bool IsRoot() const;
+
+        /* Make this vertex the root. Return FAIL if it was already root. */
         Result SetRoot();
 
-        int GetNNeigh();
-        vector<Vertex*> *GetNeigh();
+        /* Return the amount of neighbours of this vertex. */
+        const int &GetNNeighbours() const;
 
-        vector<Label*> *GetLabels();
-        unordered_map<bitset<BITSET_SIZE>, int> *GetLabelHash();
+        /* Return a reference to the neighbours of this vertex. */
+        const vector<Vertex*> &GetNeighbours() const;
 
-        Result GetLabelByBitset(const bitset<BITSET_SIZE> &I, Label *&ret);
+        /* Return a reference to the labels corresponding to this vertex. */
+        const vector<Label*> &GetLabels() const;
+
+        /* Find the label corresponding to the given bitset in the hash
+         * table and return a reference to it. Return NULL if the label 
+         * cannot be found. */
+        Label* GetLabelByBitset(const bitset<BITSET_SIZE> &I) const;
         
+        /* Operator overload that returns whether the IDs of the given
+         * vertices are identical. */
         bool operator==(const Vertex& other);
 
         /* IO-functions for testing */
-        void Print();
-        void PrintNeighbours();
+        void Print() const;
+        void PrintNeighbours() const;
 };
 
+/* Return the rectilinear distance between two vertices. */
 int RectDistance(Vertex *v, Vertex *w);
 
 #endif
