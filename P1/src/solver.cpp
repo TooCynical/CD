@@ -60,7 +60,7 @@ Result Solver::SetInitialLabels() {
     bitset<BITSET_SIZE> b;
     
     for (int i = 0; i < n; i++) {
-        Vertex *v = _problem_instance->GetV()[0][i];
+        Vertex *v = _problem_instance->GetVertices()[i];
         Label *l = new Label(v, b);
         labelcounter ++;
         l->SetL(0);

@@ -11,13 +11,15 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 
-    Instance *inst;
-    if (ParseFile(argv[1], inst) == FAIL)
-        exit(1);
+    /* Check that */
 
+    Instance *inst;
+    if (ParseFile(argv[1], inst) == FAIL) {
+        cout << "Main: Failed to parse file.\n";
+        exit(1);
+    }
 
     Solver *S = new Solver(inst);
-    // S->Test();
     S->SolveCurrentInstance();
     
     int solution;
