@@ -26,7 +26,7 @@ Result Vertex::AddNeighbour(Vertex* w) {
 
 Result Vertex::AddLabel(Label *l) {
     _labels.push_back(l);
-    _label_hash.insert(make_pair(*l->GetBitset(), _n_labels));
+    _label_hash.insert(make_pair(l->GetBitset(), _n_labels));
     _n_labels ++;
     return SUCCESS;
 }

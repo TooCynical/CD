@@ -76,7 +76,7 @@ class BoundComputator {
 
     public:
         /* Return whether value > U(I), the local upper bound for I. */
-        bool CompareToUpperBound(bitset<BITSET_SIZE> &I, int value);
+        bool CompareToUpperBound(const bitset<BITSET_SIZE> &I, int value);
 
         /* Update the local upper bound U(I) given a label of the form 
          * (v, I) by setting 

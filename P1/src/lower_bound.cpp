@@ -11,7 +11,7 @@ BoundComputator::BoundComputator(Instance *inst) {
 int BoundComputator::BBLowerBound(Label *l) {
     /* If root terminal in the terminal set of the label 
      * return 0 and print a warning. */
-    if (l->GetBitset()[0].test(0)) {
+    if (l->GetBitset().test(0)) {
         cout << "WARNING: BBLowerBound called for root in I!\n";
         return 0;
     }
@@ -28,7 +28,7 @@ int BoundComputator::BBLowerBound(Label *l) {
     /* Loop over all terminals in the complement of the labels
      * terminal set and update values accordingly */
     for (int i = 0; i < _n_terminals; i++) {
-        if (!l->GetBitset()[0].test(i)) {
+        if (!l->GetBitset().test(i)) {
             if (_terminals[i]->GetX() < x_min)
                 x_min = _terminals[i]->GetX();
             if (_terminals[i]->GetX() > x_max)
@@ -113,7 +113,7 @@ int BoundComputator::MST(const bitset<BITSET_SIZE> &I) {
 int BoundComputator::OneTreeLowerBound(Label *l) {
     /* If root terminal in the terminal set of the label 
      * return 0 and print a warning. */
-    if (l->GetBitset()[0].test(0)) {
+    if (l->GetBitset().test(0)) {
         cout << "WARNING: OneTreeLowerBound called for root in I!\n";
         return 0;
     }
@@ -123,20 +123,20 @@ int BoundComputator::OneTreeLowerBound(Label *l) {
     /* Get the complementary bitset. */
     bitset<BITSET_SIZE> I;
     for (int i = 0; i < _n_terminals; i++) {
-        if (!l->GetBitset()[0].test(i))
+        if (!l->GetBitset().test(i))
             I.set(i);
     }
 
     /* Find length of MST on I. First check if it was computed already. 
      * If not, compute it and add it to the hash table. */
     int MST_length;
-    auto it = _MST_hash.find(l->GetBitset()[0]);
+    auto it = _MST_hash.find(l->GetBitset());
     if (it != _MST_hash.end()) {
         MST_length = it->second;
     } 
     else {
         MST_length = MST(I);
-        _MST_hash.insert(make_pair(l->GetBitset()[0], MST_length));
+        _MST_hash.insert(make_pair(l->GetBitset(), MST_length));
     }
     
     /* Find terminal in I closest to v. */
@@ -240,7 +240,8 @@ Result BoundComputator::VertexComplementDistance(
     return SUCCESS;
 }
 
-bool BoundComputator::CompareToUpperBound(bitset<BITSET_SIZE> &I, int value) {
+bool BoundComputator::CompareToUpperBound(const bitset<BITSET_SIZE> &I, 
+                                          int value) {
     /* Attempt to fetch U(I) from the hash table */
     auto it = _upper_bound_hash.find(I);
     /* If A(I) is set, compare U(I) to value. */
@@ -275,7 +276,7 @@ Result BoundComputator::GetComplementDistance(const bitset<BITSET_SIZE> &I,
 
 Result BoundComputator::UpdateUpperBound(Label *l) {
     
-    bitset<BITSET_SIZE> I = *(l->GetBitset());
+    bitset<BITSET_SIZE> I = l->GetBitset();
 
     /* Compute l(v,I) + min (d(I, R-I), d(v, R-I)) and the index 
      * of the terminal in R-I closest to v or closest to I,

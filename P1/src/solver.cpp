@@ -26,7 +26,7 @@ Result Solver::AddLabelToN(Label* l) {
      * see Lemma 14 and 15. */
     if (l->GetL() <= _global_upper_bound && 
         !_lower_bound_comp->CompareToUpperBound(
-                                    l->GetBitset()[0], l->GetL())) {
+                                    l->GetBitset(), l->GetL())) {
     _N.push(make_pair(l->GetL() + l->GetLowerBound(), l));
     }
 
@@ -49,7 +49,6 @@ Result Solver::SetInitialN() {
         /* Try to add label to N, if this succeeds add it to v. */
         if (AddLabelToN(l) == SUCCESS)
             s->AddLabel(l);
-
     }
     return SUCCESS;
 }
@@ -75,7 +74,7 @@ Result Solver::SetInitialLabels() {
  * (w, I) and perform the Dijkstra-step if needed. */
 Result Solver::ConsiderNeighbours(Label *v_label) {
     Vertex *v = v_label->GetVertex();
-    bitset<BITSET_SIZE> I = *v_label->GetBitset();
+    bitset<BITSET_SIZE> I = v_label->GetBitset();
 
     /* Loop over neighbours of v */
     for (int i = 0; i < v->GetNNeighbours(); i++) {
@@ -109,12 +108,12 @@ Result Solver::ConsiderNeighbours(Label *v_label) {
 Result Solver::Merge(Label *I_label) {
     /* Loop over all labels in v._labels */
     Vertex* v = I_label->GetVertex();
-    bitset<BITSET_SIZE> I = I_label->GetBitset()[0];
+    bitset<BITSET_SIZE> I = I_label->GetBitset();
     vector<Label*> labels = v->GetLabels();
 
     for (unsigned int i = 0; i < labels.size(); i++) {
         Label *J_label = labels[i];
-        bitset<BITSET_SIZE> J = J_label->GetBitset()[0];
+        bitset<BITSET_SIZE> J = J_label->GetBitset();
         
         /* (v,J) should be in P, J should be non-empty, not 
          * contain root and have no terminals in common with I. */
@@ -218,7 +217,7 @@ Result Solver::SolveCurrentInstance() {
         /* Check if current label = (root, terminals - {root})
          * in which case we are done */
         if (current_label->GetVertex()->IsRoot() && 
-            current_label->GetBitset()[0] == final_terminal_set)
+            current_label->GetBitset() == final_terminal_set)
             break;
 
         /* Perform the Dijkstra-step for each neighbour */

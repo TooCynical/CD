@@ -12,15 +12,15 @@
 
 using namespace std;
 
-/* Forward declaration */
+/* Forward declarations. */
 class Vertex;
 class Label;
 class Instance;
 
 class Label {
     private:
-        Vertex *_v;
-        bitset<BITSET_SIZE> _I;
+        Vertex *_v;             // Vertex associated with this label.
+        bitset<BITSET_SIZE> _I; // Terminal set associated with this label.
   
         int _l;                 // Tentative value for this label.
         bool _l_set;            // Does this label have a tentative value yet?
@@ -31,26 +31,37 @@ class Label {
         bool _in_P;             // Is this label in P?
 
     public:
-        /* Constructor / Destructor. */
+        /* Constructor. */
         Label(Vertex *v, bitset<BITSET_SIZE> I);
 
-        /* Getters / Setters */
+        /* Basic getters. */
         int GetL() const;
         int GetLowerBound() const;
         bool IsLSet() const;
         bool IsLowerBoundSet() const;
         bool IsInP() const;
-        bool BeenInQ() const;
-        Vertex *GetVertex() const;
-        bitset<BITSET_SIZE> *GetBitset();
 
+        /* Return a reference to the vertex associated with 
+         * this label. */
+        Vertex *GetVertex() const;
+
+        /* Return the bitset representing the terminal set 
+         * associated with this label. */
+        const bitset<BITSET_SIZE> &GetBitset() const;
+
+        /* Set a value for _l and set _l_set to true. */
         Result SetL(int l);
+        
+        /* Set a value for _lower_bound and set 
+         * _lower_bound_set to true. */
         Result SetLowerBound(int l);
+
+        /* Set _in_P to true. Return FAIL
+         * if _in_P was already true. */
         Result SetInP();
-        Result SetBeenInQ();
 
         /* IO-functions for testing */
-        void Print();
+        void Print() const;
 };
 
 #endif

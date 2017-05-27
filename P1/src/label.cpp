@@ -29,12 +29,15 @@ int Label::GetLowerBound() const {
     }
 }
 
-/* Getters / Setters */
 bool Label::IsLSet() const { return _l_set; }
+
 bool Label::IsLowerBoundSet() const { return _lower_bound_set; }
+
 bool Label::IsInP() const { return _in_P; }
+
 Vertex *Label::GetVertex() const { return _v; }
-bitset<BITSET_SIZE> *Label::GetBitset() { return &_I; }
+
+const bitset<BITSET_SIZE> &Label::GetBitset() const { return _I; }
 
 
 Result Label::SetL(int l) {
@@ -49,8 +52,6 @@ Result Label::SetLowerBound(int l) {
     return SUCCESS;
 }
 
-/* Set _in_P to true. Return
- * FAIL if _in_P was already true */
 Result Label::SetInP() {
     if (!_in_P) {
         _in_P = true; 
@@ -61,8 +62,7 @@ Result Label::SetInP() {
     }
 }
 
-/* IO-functions for testing */
-void Label::Print() {
+void Label::Print() const {
     cout << "Vertex: \n";
     _v->Print();
     cout << "Bitset: " << _I << "\n";
