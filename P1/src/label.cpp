@@ -2,7 +2,7 @@
 
 using namespace std;
 
-Label::Label(Vertex *v, bitset<BITSET_SIZE> I) {
+Label::Label(Vertex *v, const bitset<BITSET_SIZE> &I) {
     _v = v;
     _I = I;
 

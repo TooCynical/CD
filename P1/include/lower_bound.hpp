@@ -24,7 +24,7 @@ class Instance;
 class BoundComputator {
     private:
         /* The problem instance for which this BoundComputator should
-         * compute bounds */
+         * compute bounds. */
         Instance *_underlying_instance;
         
         int _n_terminals;       // The amount of terminals in the 
@@ -33,7 +33,7 @@ class BoundComputator {
                                 // the underlying instance.
 
         bool _use_BB_lower_bound;           // Use Bounding Box lb?
-        bool _use_OneTree_lower_bound;      // Use 1-Tree lb?
+        bool _use_onetree_lower_bound;      // Use 1-Tree lb?
 
         /* Hash table containing MST(I) for a terminal set I, if 
          * it has been computed already. */

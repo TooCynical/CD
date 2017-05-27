@@ -6,6 +6,9 @@ BoundComputator::BoundComputator(Instance *inst) {
     _underlying_instance = inst;
     _n_terminals = inst->GetNTerminals();
     _terminals = inst->GetTerminals();
+
+    _use_BB_lower_bound = true;
+    _use_onetree_lower_bound = true;
 }
 
 int BoundComputator::BBLowerBound(Label *l) {
@@ -355,4 +358,12 @@ Result BoundComputator::MergeUpperBound(const bitset<BITSET_SIZE> &I,
     return SUCCESS;
 }
 
-// int GetLowerBound(Label *l);
+int BoundComputator::GetLowerBound(Label *l) {
+    if (_use_BB_lower_bound && _use_onetree_lower_bound)
+        return max(BBLowerBound(l), OneTreeLowerBound(l));
+    if (_use_BB_lower_bound)
+        return BBLowerBound(l);
+    if (_use_onetree_lower_bound)
+        return OneTreeLowerBound(l);
+    return 0;       
+}

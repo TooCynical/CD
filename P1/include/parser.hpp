@@ -25,6 +25,3 @@ Result CheckForDuplicateLines(const char* file_name);
 Result ParseTerminals (fstream& input_file, int n, int **term_locs);
 
 #endif
-
-
-//TODO: Check whether all lines contain three integers */

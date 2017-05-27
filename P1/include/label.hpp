@@ -32,7 +32,7 @@ class Label {
 
     public:
         /* Constructor. */
-        Label(Vertex *v, bitset<BITSET_SIZE> I);
+        Label(Vertex *v, const bitset<BITSET_SIZE> &I);
 
         /* Basic getters. */
         int GetL() const;
