@@ -57,6 +57,8 @@ class Vertex {
         const int& GetX() const;
         const int& GetY() const;
         const int& GetZ() const;
+
+        /* Return ID of this vertex. Print a warning if it was unset (<0). */
         const int& GetId() const;
 
         /* Set an ID for this vertex, which must be positive. Return FAIL

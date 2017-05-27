@@ -38,9 +38,17 @@ bool Vertex::HasCoords(int x, int y, int z) const {
 const int& Vertex::GetX() const { return _x; }
 const int& Vertex::GetY() const { return _y; }
 const int& Vertex::GetZ() const { return _z; }
-const int& Vertex::GetId() const { return _id; }
 
-bool Vertex::IsRoot() const { return _is_root; }
+const int& Vertex::GetId() const { 
+    if (_id >= 0)
+        return _id;
+    else {
+        cout << "WARNING: requesting unset ID for vertex.";
+        return _id;
+    }
+}
+
+bool Vertex::IsRoot() const { return _is_root; } 
 
 Result Vertex::SetId(int id) {
     if (id < 0)
