@@ -50,43 +50,37 @@ int BoundComputator::BBLowerBound(Label *l) {
 }
 
 int BoundComputator::MST(const bitset<BITSET_SIZE> &I) {
-    int n_rel_terminals = I.count();
     
-    /* An MST on <= 1 vertex has length 0. */
-    if (n_rel_terminals <= 1)
-        return 0;
-    
-    /* First make new references to the relevant terminals */
-    Vertex **rel_terminals = (Vertex**) calloc(n_rel_terminals,
-                                                sizeof(Vertex*));
-    int count = 0;
-    for (int i = 0; i < _n_terminals; i++) {
-        if (I.test(i)) {
-            rel_terminals[count] = _terminals[i];
-            count ++;
-        }
+    vector<Vertex*> terminals_in_I;
+    for (int i = 0; i < _n_terminals; i++){
+        if (I.test(i))
+            terminals_in_I.push_back(_terminals[i]);
     }
 
+    int n_terminals_in_I = terminals_in_I.size();
+
+    /* An MST on <= 1 vertex has length 0. */
+    if (n_terminals_in_I <= 1)
+        return 0;
+ 
     /* Array containing cheapest cost of a connection to each vertex. 
      * Initially set all values to infinity except for costs[0]. */
-    int *costs = (int*) calloc(n_rel_terminals, sizeof(int));
-    for(int i = 1; i < n_rel_terminals; i++) {
-        costs[i] = INT_MAX;
-    }
+    vector<int> costs(n_terminals_in_I, INT_MAX);
+    costs[0] = 0;
 
     /* Array indicating which terminals are already in the tree,
      * initially add the first one. */
-    bool *in_tree = (bool*) calloc(n_rel_terminals, sizeof(int));
-    
+    vector<bool> in_tree(n_terminals_in_I, false);
+
     int min = INT_MAX;
     int min_index = 0;
     int tree_cost = 0;
     int cur_distance;
 
-    for (int j = 0; j < n_rel_terminals; j++) {
+    for (int j = 0; j < n_terminals_in_I; j++) {
         min = INT_MAX;
         /* Find terminal with minimum cost and add it to tree. */
-        for (int i = 0; i < n_rel_terminals; i++) {
+        for (int i = 0; i < n_terminals_in_I; i++) {
             if (costs[i] < min && !in_tree[i]) {
                 min = costs[i];
                 min_index = i;
@@ -96,19 +90,14 @@ int BoundComputator::MST(const bitset<BITSET_SIZE> &I) {
         /* Update terminal costs and total tree cost. */
         tree_cost += costs[min_index];
         in_tree[min_index] = true;
-        for (int i = 0; i < n_rel_terminals; i++) {
-            cur_distance = RectDistance(rel_terminals[i], 
-                                        rel_terminals[min_index]);
+        for (int i = 0; i < n_terminals_in_I; i++) {
+            cur_distance = RectDistance(terminals_in_I[i], 
+                                        terminals_in_I[min_index]);
             if (cur_distance < costs[i] && i != min_index) {
                 costs[i] = cur_distance;
             }
         }
     }
-
-    /* Reclaim memory. */
-    free(rel_terminals);
-    free(costs);
-    free(in_tree);
 
     return tree_cost;
  }
@@ -124,51 +113,50 @@ int BoundComputator::OneTreeLowerBound(Label *l) {
     Vertex* v = l->GetVertex();
 
     /* Get the complementary bitset. */
-    bitset<BITSET_SIZE> I;
-    for (int i = 0; i < _n_terminals; i++) {
-        if (!l->GetBitset().test(i))
-            I.set(i);
-    }
+    bitset<BITSET_SIZE> I = l->GetBitset();
+    bitset<BITSET_SIZE> C = ~l->GetBitset();
 
-    /* Find length of MST on I. First check if it was computed already. 
+    /* Find length of MST on C. First check if it was computed already. 
      * If not, compute it and add it to the hash table. */
     int MST_length;
-    auto it = _MST_hash.find(l->GetBitset());
+    auto it = _MST_hash.find(I);
     if (it != _MST_hash.end()) {
         MST_length = it->second;
     } 
     else {
-        MST_length = MST(I);
-        _MST_hash.insert(make_pair(l->GetBitset(), MST_length));
+        MST_length = MST(C);
+        _MST_hash.insert(make_pair(I, MST_length));
     }
     
-    /* Find terminal in I closest to v. */
+    /* Find terminal in C closest to v and second closest to v. */
     int min_dist = INT_MAX;
+    int snd_min_dist = INT_MAX;
     int min_index;
     int cur_dist;
     for (int i = 0; i < _n_terminals; i++) {
-        if (I.test(i) && 
-            (cur_dist = RectDistance(v, _terminals[i])) < min_dist) {
-            min_dist = cur_dist;
-            min_index = i;
+        if (C.test(i)) {
+            if ((cur_dist = RectDistance(v, _terminals[i])) < min_dist) {
+                snd_min_dist = min_dist;
+                min_dist = cur_dist;
+                min_index = i;
+            }
+            if (i != min_index && cur_dist < snd_min_dist)
+                snd_min_dist = cur_dist;
         }
     }
 
-    /* If I has only one terminal we need not find second closest
-     * terminal to v */
-    if (I.count() == 1)
+    /* Case for |C| = 1: */
+    if (_n_terminals - I.count() == 1)
         return (MST_length / 2) + min_dist;
 
-    /* Find distance to terminal in I second closest to v */
-    int snd_min_dist = INT_MAX;
-
-    for (int i = 0; i < _n_terminals; i++) {
-        if (I.test(i) && i != min_index && 
-            (cur_dist = RectDistance(v, _terminals[i])) < snd_min_dist) {
-            snd_min_dist = cur_dist;
-        }
+    /* If snd_min_dist is still infty at this point something
+     * is very wrong. */
+    if (snd_min_dist == INT_MAX) {
+        cout << "ERROR: snd_min_dist infty!\n";
+        exit(1);
     }
 
+    /* Case for |C| > 1: */
     return (MST_length / 2) + (min_dist + snd_min_dist) / 2;
 }
 
@@ -230,10 +218,11 @@ Result BoundComputator::VertexComplementDistance(
 
     int min = INT_MAX;
     int min_ind;
+    int cur_dist;
     /* Loop over all terminals in R-I to find the closest one to v. */
     for (int i = 0; i < _n_terminals; i++) {
-        if (!I.test(i) && RectDistance(v, _terminals[i]) < min) {
-            min = RectDistance(v, _terminals[i]);
+        if (!I.test(i) && (cur_dist = RectDistance(v, _terminals[i])) < min) {
+            min = cur_dist;
             min_ind = i;
         }
     }
@@ -243,19 +232,19 @@ Result BoundComputator::VertexComplementDistance(
     return SUCCESS;
 }
 
-bool BoundComputator::CompareToUpperBound(const bitset<BITSET_SIZE> &I, 
-                                          int value) {
+bool BoundComputator::CompareToUpperBound(Label* l) {
+    bitset<BITSET_SIZE> I = l->GetBitset();
+
     /* Attempt to fetch U(I) from the hash table */
     auto it = _upper_bound_hash.find(I);
     /* If A(I) is set, compare U(I) to value. */
     if (it != _upper_bound_hash.end()) {
-        return (value > it->second.first);
+        return (l->GetL() > it->second.first);
     } 
     /* If A(I) is not set (i.e. U(I) = infty) we 
      * return false. */
-    else {
+    else
         return false;
-    }
 }
 
 Result BoundComputator::GetComplementDistance(const bitset<BITSET_SIZE> &I,

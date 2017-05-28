@@ -15,21 +15,17 @@ Result Solver::SetGlobalUpperBound() {
  * compute the lower bound for the label 
  * if this hasn't happened before. */
 Result Solver::AddLabelToN(Label* l) {
-    if (!l->IsLowerBoundSet()) {
-        // int MST_bound = _lower_bound_comp->OneTreeLowerBound(l);
-        // int BB_bound = _lower_bound_comp->BBLowerBound(l);
-        // int lower_bound = max(BB_bound, MST_bound);
+    if (!l->IsLowerBoundSet())
         l->SetLowerBound(_lower_bound_comp->GetLowerBound(l)); 
-    }
 
     /* Don't add labels that certainly won't contribute to a solution:
      * see Lemma 14 and 15. */
-    if (l->GetL() <= _global_upper_bound && 
-        !_lower_bound_comp->CompareToUpperBound(
-                                    l->GetBitset(), l->GetL())) {
-    _N.push(make_pair(l->GetL() + l->GetLowerBound(), l));
-    }
+    if (l->GetL() > _global_upper_bound)
+        return SUCCESS;
+    if (_lower_bound_comp->CompareToUpperBound(l))
+        return SUCCESS;
 
+    _N.push(make_pair(l->GetL() + l->GetLowerBound(), l));
     return SUCCESS;
 }
 
@@ -117,16 +113,15 @@ Result Solver::Merge(Label *I_label) {
         
         /* (v,J) should be in P, J should be non-empty, not 
          * contain root and have no terminals in common with I. */
-        if (
-            J_label->IsInP()    &&
+        if (J_label->IsInP()    &&
             J.count() > 0       && 
             !J.test(0)          &&
             (I & J).none())  {
 
             bitset<BITSET_SIZE> IJ = I | J;
 
-            /* If (v, IuJ) not yet set, set it and add it to _N and 
-             * the label array of v. In this case (v, IuJ) is not in P */
+            /* If (v, I u J) not yet set, set it and add it to _N and 
+             * the label array of v. In this case (v, I u J) is not in P */
             Label *IJ_label;
             if ((IJ_label = v->GetLabelByBitset(IJ)) == NULL) {    
                 IJ_label = new Label(v, IJ);
@@ -206,6 +201,10 @@ Result Solver::SolveCurrentInstance() {
         // }
 
         _lower_bound_comp->UpdateUpperBound(current_label);
+
+        /* Attempt to prune according to Lemma 15. */
+        if (_lower_bound_comp->CompareToUpperBound(current_label))
+            continue;
 
         /* Add label to P. If it already was in P, then this is 
          * a token label (i.e. it is copy left over from when

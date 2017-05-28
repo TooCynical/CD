@@ -35,7 +35,7 @@ class BoundComputator {
         bool _use_BB_lower_bound;           // Use Bounding Box lb?
         bool _use_onetree_lower_bound;      // Use 1-Tree lb?
 
-        /* Hash table containing MST(I) for a terminal set I, if 
+        /* Hash table containing MST(R-I) for a terminal set I, if 
          * it has been computed already. */
         unordered_map<bitset<BITSET_SIZE>, int> _MST_hash;
 
@@ -75,8 +75,8 @@ class BoundComputator {
                                         int &ret_ind);
 
     public:
-        /* Return whether value > U(I), the local upper bound for I. */
-        bool CompareToUpperBound(const bitset<BITSET_SIZE> &I, int value);
+        /* Return l(v, I) > U(I), the local upper bound for I. */
+        bool CompareToUpperBound(Label *l);
 
         /* Update the local upper bound U(I) given a label of the form 
          * (v, I) by setting 

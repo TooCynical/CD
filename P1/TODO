@@ -1,0 +1,11 @@
+- Parser: Check whether all lines contain three integers 
+    (see all_one_line edgecase).
+- LowerBound: Implement GetLowerBound / SetUseBBLowerBound / 
+    SetUseOneTreeLowerBound. (done)
+- Add Prune to solver after popping heap. (done)
+- Update Merge to check whether to loop or list labels.
+- Currently the fact that labels are stored in Vertex objects breaks
+    depencies / is not nice. Maybe introduce some VertexWrapper and store
+    those in Solver.
+- Optimize OneTreeLowerBound and MST.
+
