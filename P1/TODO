@@ -8,4 +8,6 @@
     depencies / is not nice. Maybe introduce some VertexWrapper and store
     those in Solver.
 - Optimize OneTreeLowerBound and MST.
+- Cleanup Solver.
+
 

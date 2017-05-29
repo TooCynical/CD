@@ -2,7 +2,6 @@
 
 using namespace std;
 
-
 Result Instance::SetXYZ(int **term_locs) {
     for (int i = 0; i < _n_terminals; i++) {
         _x_values.insert(term_locs[i][0]);

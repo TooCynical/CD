@@ -1,36 +1,29 @@
 #include "solver.hpp"
 
-int labelcounter = 0;
-
 Result Solver::SetGlobalUpperBound() {
     bitset<BITSET_SIZE> all_terminals;
     for (int i = 0; i < _problem_instance->GetNTerminals(); i++) {
         all_terminals.set(i);
     }
-    _global_upper_bound = _lower_bound_comp->MST(all_terminals);
+    _global_upper_bound = _bound_comp->MST(all_terminals);
     return SUCCESS;
 }
 
-/* Add a label to the priority queue _N and
- * compute the lower bound for the label 
- * if this hasn't happened before. */
 Result Solver::AddLabelToN(Label* l) {
     if (!l->IsLowerBoundSet())
-        l->SetLowerBound(_lower_bound_comp->GetLowerBound(l)); 
+        l->SetLowerBound(_bound_comp->GetLowerBound(l)); 
 
     /* Don't add labels that certainly won't contribute to a solution:
      * see Lemma 14 and 15. */
     if (l->GetL() > _global_upper_bound)
         return SUCCESS;
-    if (_lower_bound_comp->CompareToUpperBound(l))
+    if (_bound_comp->CompareToUpperBound(l))
         return SUCCESS;
 
     _N.push(make_pair(l->GetL() + l->GetLowerBound(), l));
     return SUCCESS;
 }
 
-/* Add (s, {s}) to _N for each terminal s unequal to 
- * the root. */
 Result Solver::SetInitialN() {
     int n = _problem_instance->GetNTerminals();
     for (int i = 1; i < n; i++) {
@@ -39,18 +32,14 @@ Result Solver::SetInitialN() {
         
         Vertex *s = _problem_instance->GetTerminals()[i];
         Label *l = new Label(s, b);
-        labelcounter ++;
         
         l->SetL(0);
-        /* Try to add label to N, if this succeeds add it to v. */
         if (AddLabelToN(l) == SUCCESS)
             s->AddLabel(l);
     }
     return SUCCESS;
 }
 
-/* Add (s, emptyset) for all vertices s with 
- * l(s, emptyset) = 0 and put these labels in P. */
 Result Solver::SetInitialLabels() {
     int n = _problem_instance->GetNVertices();
     bitset<BITSET_SIZE> b;
@@ -58,7 +47,6 @@ Result Solver::SetInitialLabels() {
     for (int i = 0; i < n; i++) {
         Vertex *v = _problem_instance->GetVertices()[i];
         Label *l = new Label(v, b);
-        labelcounter ++;
         l->SetL(0);
         l->SetInP();
         v->AddLabel(l);
@@ -66,8 +54,6 @@ Result Solver::SetInitialLabels() {
     return SUCCESS;   
 }
 
-/* Consider for the given label (v, I) all neighbours
- * (w, I) and perform the Dijkstra-step if needed. */
 Result Solver::ConsiderNeighbours(Label *v_label) {
     Vertex *v = v_label->GetVertex();
     bitset<BITSET_SIZE> I = v_label->GetBitset();
@@ -81,7 +67,6 @@ Result Solver::ConsiderNeighbours(Label *v_label) {
         Label *w_label;
         if ((w_label = w->GetLabelByBitset(I)) == NULL) {
             w_label = new Label(w, I);
-            labelcounter ++;
             w_label->SetL(v_label->GetL() + RectDistance(v, w));
             /* Try to add label to N, if this succeeds add it to v. */
             if (AddLabelToN(w_label) == SUCCESS)
@@ -100,7 +85,6 @@ Result Solver::ConsiderNeighbours(Label *v_label) {
     return SUCCESS;
 }
 
-/* Perform the merge-step for given label */
 Result Solver::Merge(Label *I_label) {
     /* Loop over all labels in v._labels */
     Vertex* v = I_label->GetVertex();
@@ -125,10 +109,10 @@ Result Solver::Merge(Label *I_label) {
             Label *IJ_label;
             if ((IJ_label = v->GetLabelByBitset(IJ)) == NULL) {    
                 IJ_label = new Label(v, IJ);
-                labelcounter ++;
                 IJ_label->SetL(I_label->GetL() + J_label->GetL());
     
-                _lower_bound_comp->MergeUpperBound(I, J);
+                /* Attempt to improve the local upper bound for I u J. */
+                _bound_comp->MergeUpperBound(I, J);
                 
                 /* Try to add label to N, if this succeeds add it to v. */
                 if (AddLabelToN(IJ_label) == SUCCESS)
@@ -136,12 +120,13 @@ Result Solver::Merge(Label *I_label) {
             }
             /* If (v, IuJ) already set, check if l(v, I) + l(v, J) < l(v, IuJ)
              * and l(v, IuJ) is not in P. If so replace l(v, IuJ) by this 
-             * value and add (v, IuJ) to _N */
+             * value and add (v, IuJ) to N */
             else {
                 if (!IJ_label->IsInP() &&
                     I_label->GetL() + J_label->GetL() < IJ_label->GetL()) {
      
-                    _lower_bound_comp->MergeUpperBound(I, J);
+                    /* Attempt to improve the local upper bound for I u J. */
+                    _bound_comp->MergeUpperBound(I, J);
      
                     IJ_label->SetL(I_label->GetL() + J_label->GetL());
                     AddLabelToN(IJ_label);
@@ -152,21 +137,18 @@ Result Solver::Merge(Label *I_label) {
     return SUCCESS;
 }
 
-/* Constructor / Destructor. */
 Solver::Solver(Instance *problem_instance) {
     _problem_instance = problem_instance;
-    _solution_found = false;
 
-    _lower_bound_comp = new BoundComputator(problem_instance);
+    _bound_comp = new BoundComputator(problem_instance);
     SetGlobalUpperBound();
 }
 
 Solver::~Solver() {
-    delete _lower_bound_comp;
+    delete _bound_comp;
 }
 
-/* Attempt to solve the given instance */
-Result Solver::SolveCurrentInstance() {
+Result Solver::SolveCurrentInstance(int &ret) {
     /* Set the root terminal (which is always just the
      * first one given) and the final terminal set 
      * (i.e. the set containing all terminals but the root). */
@@ -176,34 +158,23 @@ Result Solver::SolveCurrentInstance() {
     for (int i = 1; i < _problem_instance->GetNTerminals(); i++)
         final_terminal_set.set(i);
 
-    /* Add (s, {s}) to _N for each termianl s unequal to 
+    /* Add (s, {s}) to _N for each terminal s unequal to 
      * the root, and set (s, emptyset) for all vertices s. */
     SetInitialN();
     SetInitialLabels();
 
     Label *current_label;
-    int iteration_counter = 0;
 
     while (_N.size() > 0) {
-        iteration_counter ++;
 
         /* Fetch the highest piority label from _N */
         current_label = _N.top().second; 
         _N.pop();
 
-
-        // if (!(iteration_counter % 1)) {
-        //     cout << "Iteration: " << iteration_counter << "\n";
-        //     cout << "Size of priority queue: " << _N.size() << "\n";
-        //     cout << "Labels created: " << labelcounter << "\n";
-        //     cout << "Current Label value: " << current_label->GetL() + 
-        //         current_label->GetLowerBound() << "\n\n";
-        // }
-
-        _lower_bound_comp->UpdateUpperBound(current_label);
+        _bound_comp->UpdateUpperBound(current_label);
 
         /* Attempt to prune according to Lemma 15. */
-        if (_lower_bound_comp->CompareToUpperBound(current_label))
+        if (_bound_comp->CompareToUpperBound(current_label))
             continue;
 
         /* Add label to P. If it already was in P, then this is 
@@ -226,35 +197,14 @@ Result Solver::SolveCurrentInstance() {
         Merge(current_label);    
     }
 
+    /* Try and find l(root, R - {root}) and return it if found. */
     Label *l;
     if ((l = root->GetLabelByBitset(final_terminal_set)) != NULL) {
-        _solution_value = l->GetL();
-        _solution_found = true;
+        ret = l->GetL();
+        return SUCCESS;
     }
     else {
         cout << "ERROR: N empty before solution was found!\n";
         return FAIL;
     }
-
-    return SUCCESS;
-}
-
-/* Put solution to given instance in ret, 
- * if one has been found already */
-Result Solver::GetSolution (int &ret) {
-    if (_solution_found) {
-        ret = _solution_value;
-        return SUCCESS;
-    }
-    else {
-        return FAIL;
-    }
-}
-
-void Solver::Test() {
-    // bitset<BITSET_SIZE> I;
-    // I.set(2);
-    // I.set(1);
-
-    // cout << _lower_bound_comp->ComplementDistance(I) << "\n";
 }

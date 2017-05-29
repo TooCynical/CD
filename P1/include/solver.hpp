@@ -18,7 +18,7 @@
 
 using namespace std;
 
-/* Comparator for pairs of values and labels. Simply compares 
+/* Comparator for pairs of integers and labels. Simply compares 
  * the integers. */
 struct LabelValuePairComp {
     bool operator()(const pair<int, Label*> &lhs, 
@@ -30,9 +30,7 @@ struct LabelValuePairComp {
 class Solver {
     private:
         Instance *_problem_instance;    // The underlying problem instance.
-        int _solution_value;            // Value of the solution to
-                                        // given instance.
-        bool _solution_found;           // Has a solution been found?
+        BoundComputator *_bound_comp;   // Bound computator for this instance.
         int _global_upper_bound;        // Upper bound for this instance.
 
         /* Priority queue of lables added during the algorithm. This 
@@ -44,15 +42,29 @@ class Solver {
         priority_queue<pair<int, Label*>, vector<pair<int, Label*> >,
                        LabelValuePairComp> _N;
         
-        BoundComputator *_lower_bound_comp;
 
+        /* Set a global upper bound for the current instance by
+         * computing the value of an MST on R. */
+        Result SetGlobalUpperBound();
+
+        /* Add a label to the priority queue _N and
+        *  compute the lower bound for the label 
+        *  if this hasn't happened before. */
         Result AddLabelToN(Label *l);
 
-        Result SetGlobalUpperBound();
+        /* Add (s, {s}) to _N for each terminal s unequal to 
+         * the root. */
         Result SetInitialN();
+
+        /* Add (s, emptyset) for all vertices s with 
+         * l(s, emptyset) = 0 and put these labels in P. */
         Result SetInitialLabels();
 
+        /* Consider for the given label (v, I) all neighbours
+         * (w, I) and perform the Dijkstra-step if needed. */   
         Result ConsiderNeighbours(Label *l);
+
+        /* Perform the merge-step for the given label. */
         Result Merge(Label *v_label);
 
     public:
@@ -60,10 +72,9 @@ class Solver {
         Solver(Instance *problem_instance);
         ~Solver();
 
-        Result SolveCurrentInstance();
-        Result GetSolution(int &ret);
-
-        void Test();
+        /* Attempt to solve the current instance. Return SUCCESS and
+         * place solution in ret if successful, return FAIL otherwise. */
+        Result SolveCurrentInstance(int &ret);
 };
 
 #endif

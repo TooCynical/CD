@@ -11,7 +11,11 @@ using namespace std;
 
 int main(int argc, char* argv[]) {
 
-    /* Check that */
+    if (MAX_TERMINALS > BITSET_SIZE) {
+        cout << "Constant MAX_TERMINALS > constant BITSET_SIZE which " <<
+                "is not allowed. Please modify this in util.hpp!\n";
+        exit(1);
+    }
 
     Instance *inst;
     if (ParseFile(argv[1], inst) == FAIL) {
@@ -20,10 +24,9 @@ int main(int argc, char* argv[]) {
     }
 
     Solver *S = new Solver(inst);
-    S->SolveCurrentInstance();
     
     int solution;
-    if (S->GetSolution(solution) == FAIL)
+    if (S->SolveCurrentInstance(solution) == FAIL)
         exit(1);
 
     if (DOUBLE_INPUT_COORDS)
