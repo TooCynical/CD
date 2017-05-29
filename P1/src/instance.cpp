@@ -145,7 +145,7 @@ Instance::~Instance() {
         delete _V[i];
     }
 
-    /* Delete the Hanan grid */
+    /* Free the Hanan grid */
     for (int i = 0; i < _n_x_values; i++) {
         for (int j = 0; j < _n_y_values; j++) {
             free(_hanan_grid[i][j]);

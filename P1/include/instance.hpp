@@ -10,7 +10,7 @@
 
 using namespace std;
 
-/* Forward declarations */
+/* Forward declarations. */
 class Vertex;
 
 class Instance {
@@ -65,13 +65,13 @@ class Instance {
         Instance(int n, int **term_locs);
         ~Instance();
 
-        /* Getters / Setters */
+        /* Getters / Setters. */
         const int &GetNTerminals() const;
         const int &GetNVertices() const;
         const vector<Vertex*> &GetVertices() const;
         Vertex **GetTerminals();
 
-        /* IO-functions for testing */
+        /* IO-functions for testing. */
         void PrintTerminals();
         void PrintVertices();
 };

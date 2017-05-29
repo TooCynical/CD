@@ -6,8 +6,8 @@
 - Update Merge to check whether to loop or list labels.
 - Currently the fact that labels are stored in Vertex objects breaks
     depencies / is not nice. Maybe introduce some VertexWrapper and store
-    those in Solver.
+    those in Solver (scrapped).
 - Optimize OneTreeLowerBound and MST.
-- Cleanup Solver.
-
-
+- Cleanup Solver (done).
+- !!!Make it so that pruned / not-added labels are actually not added to 
+     vertices!!! May need change of label hash in vertex.

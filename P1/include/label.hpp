@@ -30,11 +30,12 @@ class Label {
 
         bool _in_P;             // Is this label in P?
 
+
     public:
         /* Constructor. */
         Label(Vertex *v, const bitset<BITSET_SIZE> &I);
 
-        /* Basic getters. */
+        /* Getters. */
         int GetL() const;
         int GetLowerBound() const;
         bool IsLSet() const;
