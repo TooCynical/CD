@@ -1,3 +1,48 @@
+/*  Lucas Slot (lfh.slot@gmail.com)
+ *  Ardalan Khazraei (ardalan.khazraei@gmail.com)
+ *
+ * June 2017
+ * University of Bonn 
+ *
+ * solver.hpp
+ *
+ *
+ * Solver is a class that, given a valid Instance object representing
+ * an instance of the 3d rectilinear steiner tree problem contains 
+ * functionality to compute an optimal solution to this problem using
+ * the Dijsktra-Steiner algorithm with future costs and pruning, as 
+ * described by Hougardy et al. (2015).
+ * The lower and upper bounds on labels are computed by a BoundComputator
+ * object, which the solver will initialize based on given options (i.e.
+ * Bounding Box, One-Tree or both). The solver itself, then,
+ * performs the core algorithm and keeps track of the priority queue
+ * used. Detailed explanation of each of Solver's members and methods
+ * are found in the declarations below. 
+ *
+ *
+ * Solver assumes, but does not check, that:
+ *      The size of the vector of vertices in the given instance does not 
+ *      exceed 64^3.
+ *      The array of terminals in the given instance contains only references
+ *      to vertices of the given instance, and its size does not exceed 
+ *      the size of the constant BITSET_SIZE =< 64.     
+ *      The x,y,z-values of the vertices in the given instance are all EVEN,
+ *      and their values are between 0 - 2000.
+ *      The vertices and terminals in the given instance are all unique,
+ *      that is no two terminals have the same coordinates, and no two 
+ *      vertices have the same coordinates.
+ *
+ *
+ * Notation used:
+ *      N           : The priority queue. 
+ *      P           : The set of all permanently valued labels. 
+ *      R           : The set of all terminals
+ *      l(v,I)      : the (tentative) value of a label.
+ *      LB(v, I)    : the (permanent) lower bound for a label.
+ *      root        : The root terminal (always the first terminal
+ *                    in the array _terminals in the given instance).
+ */
+
 #ifndef SOLVER_HPP
 #define SOLVER_HPP
 
@@ -36,7 +81,7 @@ class Solver {
         /* Priority queue of lables added during the algorithm. This 
          * horrible line initializes a queue of pairs of integers and
          * references to labels. The integers represent the value 
-         * l(v, I) + LowerBound(v, R-I) AT THE TIME THE PAIR IS ADDED 
+         * l(v, I) + LB(v, R-I) AT THE TIME THE PAIR IS ADDED 
          * TO THE QUEUE. We need this implementation to deal with the 
          * dynamic nature of these values. */
         priority_queue<pair<int, Label*>, vector<pair<int, Label*> >,
@@ -52,7 +97,7 @@ class Solver {
         *  if this hasn't happened before. */
         Result AddLabelToN(Label *l);
 
-        /* Add (s, {s}) to _N for each terminal s unequal to 
+        /* Add (s, {s}) to N for each terminal s unequal to 
          * the root. */
         Result SetInitialN();
 

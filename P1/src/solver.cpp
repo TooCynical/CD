@@ -15,10 +15,12 @@ Result Solver::AddLabelToN(Label* l) {
 
     /* Don't add labels that certainly won't contribute to a solution:
      * see Lemma 14 and 15. */
-    if (l->GetL() > _global_upper_bound)
-        return SUCCESS;
-    if (_bound_comp->CompareToUpperBound(l))
-        return SUCCESS;
+    if (l->GetL() > _global_upper_bound) {
+        return FAIL;
+    }
+    if (_bound_comp->CompareToUpperBound(l)) {
+        return FAIL;
+    }
 
     _N.push(make_pair(l->GetL() + l->GetLowerBound(), l));
     return SUCCESS;
@@ -36,6 +38,8 @@ Result Solver::SetInitialN() {
         l->SetL(0);
         if (AddLabelToN(l) == SUCCESS)
             s->AddLabel(l);
+        else
+            delete l;
     }
     return SUCCESS;
 }
@@ -68,9 +72,12 @@ Result Solver::ConsiderNeighbours(Label *v_label) {
         if ((w_label = w->GetLabelByBitset(I)) == NULL) {
             w_label = new Label(w, I);
             w_label->SetL(v_label->GetL() + RectDistance(v, w));
-            /* Try to add label to N, if this succeeds add it to v. */
+            /* Try to add label to N. If this succeeds add it to v.
+             * If not, delete label. */
             if (AddLabelToN(w_label) == SUCCESS)
                 w->AddLabel(w_label);
+            else
+                delete w_label;
         }
         /* (w, I) already set, check if l(v, I) + d(v, w) < l(w, I) and 
          * if so replace l(w, I) by this value and add (w, I) to _N */
@@ -114,9 +121,12 @@ Result Solver::Merge(Label *I_label) {
                 /* Attempt to improve the local upper bound for I u J. */
                 _bound_comp->MergeUpperBound(I, J);
                 
-                /* Try to add label to N, if this succeeds add it to v. */
+                /* Try to add label to N. If this succeeds add it to v. 
+                 * If not, delete label. */
                 if (AddLabelToN(IJ_label) == SUCCESS)
                     v->AddLabel(IJ_label);
+                else
+                    delete IJ_label;
             }
             /* If (v, IuJ) already set, check if l(v, I) + l(v, J) < l(v, IuJ)
              * and l(v, IuJ) is not in P. If so replace l(v, IuJ) by this 
@@ -167,10 +177,11 @@ Result Solver::SolveCurrentInstance(int &ret) {
 
     while (_N.size() > 0) {
 
-        /* Fetch the highest piority label from _N */
+        /* Fetch the highest piority label from N */
         current_label = _N.top().second; 
         _N.pop();
 
+        /* Update the local upper bound for I. */
         _bound_comp->UpdateUpperBound(current_label);
 
         /* Attempt to prune according to Lemma 15. */

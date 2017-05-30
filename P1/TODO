@@ -9,5 +9,7 @@
     those in Solver (scrapped).
 - Optimize OneTreeLowerBound and MST.
 - Cleanup Solver (done).
-- !!!Make it so that pruned / not-added labels are actually not added to 
-     vertices!!! May need change of label hash in vertex.
+- Actually remove pruned labels that were already added to a vertex. 
+    Or maybe add some sort of pruned-boolean (scrapped: no time-safe and buggy).
+- Prevent that labels not added to N are created and immediately destroyed 
+    (scrapped).

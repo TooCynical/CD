@@ -1,3 +1,12 @@
+/*  Lucas Slot (lfh.slot@gmail.com)
+ *  Ardalan Khazraei (ardalan.khazraei@gmail.com)
+ *
+ * June 2017
+ * University of Bonn 
+ *
+ * label.hpp
+ */
+
 #ifndef LABEL_HPP
 #define LABEL_HPP
 
@@ -32,6 +41,8 @@ class Label {
 
 
     public:
+        bool _pruned = false;
+
         /* Constructor. */
         Label(Vertex *v, const bitset<BITSET_SIZE> &I);
 
