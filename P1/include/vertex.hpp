@@ -1,3 +1,21 @@
+/* Lucas Slot (lfh.slot@gmail.com)
+ * Ardalan Khazraei (ardalan.khazraei@gmail.com)
+ *
+ * June 2017
+ * University of Bonn 
+ *
+ * solver.hpp
+ *
+ *
+ * Vertex is a class that, given three integers x, y, z represents
+ * a vertex in R^3 at location (x,y,z). A Vertex can be assigned
+ * neighbours (which are references to other vertices) and labels,
+ * which it will save in vectors. Additionaly, a Vertex v is capable
+ * of finding in constant time any label (v, I) assigned to it, given
+ * I, using a hash table. Detailed explanations of Vertex's members
+ * and methods can be found below in the declarations.
+ */ 
+
 #ifndef VERTEX_HPP
 #define VERTEX_HPP
 

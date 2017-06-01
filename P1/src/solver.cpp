@@ -159,10 +159,10 @@ Result Solver::Merge(Label *I_label) {
     return SUCCESS;
 }
 
-Solver::Solver(Instance *problem_instance) {
+Solver::Solver(Instance *problem_instance, LowerBoundOptions *opts) {
     _problem_instance = problem_instance;
 
-    _bound_comp = new BoundComputator(problem_instance);
+    _bound_comp = new BoundComputator(problem_instance, opts);
     SetGlobalUpperBound();
 }
 

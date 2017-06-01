@@ -10,6 +10,8 @@
  * representing an instance of the 3d rectilinear steiner tree problem
  * contains functionality to compute lower bounds and upper bounds
  * used in the Dijkstra-Steiner algorithm with future costs and pruning.
+ * A LowerBoundOptions struct should be provided to specify which lower
+ * bound(s) should be used.
  * In particular, it is capable of computing:
  *      - The length of an MST on a given terminal set
  *      - The bounding box lower bound BB(v, I) of a label.
@@ -68,6 +70,11 @@ using namespace std;
 class Label;
 class Vertex;
 class Instance;
+
+struct LowerBoundOptions {
+    bool _use_BB_lower_bound;
+    bool _use_onetree_lower_bound;
+};
 
 class BoundComputator {
     private:
@@ -143,7 +150,7 @@ class BoundComputator {
                                const bitset<BITSET_SIZE> &J);
 
         /* Constructor */
-        BoundComputator(Instance *inst);//, bool use_BB, bool _use_one_tree);
+        BoundComputator(Instance *inst, LowerBoundOptions *opts);
 
         /* Compute the length of an MST on the given terminal set using
          * Prim's algorithm running in O(|R|^2). */
@@ -167,6 +174,5 @@ class BoundComputator {
         Result SetUseBBLowerBound();
         Result SetUseOneTreeLowerBound();
 };
-
 
 #endif

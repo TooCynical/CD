@@ -1,3 +1,15 @@
+/* Lucas Slot (lfh.slot@gmail.com)
+ * Ardalan Khazraei (ardalan.khazraei@gmail.com)
+ *
+ * June 2017
+ * University of Bonn 
+ *
+ * parser.cpp
+ *
+ *
+ * Implementation of functionality described in parser.hpp.
+ */
+
 #include "parser.hpp"
 
 using namespace std;

@@ -1,3 +1,21 @@
+/* Lucas Slot (lfh.slot@gmail.com)
+ * Ardalan Khazraei (ardalan.khazraei@gmail.com)
+ *
+ * June 2017
+ * University of Bonn 
+ *
+ * parser.hpp
+ *
+ *
+ * Parser contains functions to parse a correctly formatted input file
+ * resulting in an integer n, and an n x 3 array of integers. Parser will
+ * check that:
+ *      - The input file exists and is formatted as described in the exercise
+ *      - The given amount of terminals does not exceed constant MAX_TERMINALS
+ *      - The given coordinates lie between 0 and the constant MAX_COORD
+ *      - The input file does not contain duplicate lines.
+ */
+
 #ifndef PARSER_H
 #define PARSER_H
 

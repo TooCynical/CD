@@ -1,3 +1,15 @@
+/* Lucas Slot (lfh.slot@gmail.com)
+ * Ardalan Khazraei (ardalan.khazraei@gmail.com)
+ *
+ * June 2017
+ * University of Bonn 
+ *
+ * vertex.cpp
+ *
+ *
+ * Implementation of functionality described in vertex.hpp.
+ */
+
 #include "vertex.hpp"
 
 using namespace std;

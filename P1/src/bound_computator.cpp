@@ -14,13 +14,21 @@
 
 using namespace std;
 
-BoundComputator::BoundComputator(Instance *inst) {
+BoundComputator::BoundComputator(Instance *inst, LowerBoundOptions *opts) {
     _underlying_instance = inst;
     _n_terminals = inst->GetNTerminals();
     _terminals = inst->GetTerminals();
 
-    _use_BB_lower_bound = true;
-    _use_onetree_lower_bound = true;
+    /* Extract lower bound options */
+    if (opts != NULL) {
+        _use_BB_lower_bound = opts->_use_BB_lower_bound;
+        _use_onetree_lower_bound = opts->_use_onetree_lower_bound;
+    }
+    /* By default use BB and OneTree lower bounds. */
+    else {
+        _use_BB_lower_bound = true;
+        _use_onetree_lower_bound = true;    
+    }
 }
 
 int BoundComputator::BBLowerBound(Label *l) {

@@ -114,7 +114,7 @@ class Solver {
 
     public:
         /* Constructor / Destructor. */
-        Solver(Instance *problem_instance);
+        Solver(Instance *problem_instance, LowerBoundOptions *opts);
         ~Solver();
 
         /* Attempt to solve the current instance. Return SUCCESS and

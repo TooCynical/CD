@@ -23,7 +23,12 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
-    Solver *S = new Solver(inst);
+    LowerBoundOptions *opts = (LowerBoundOptions*) 
+                              calloc(1, sizeof(LowerBoundOptions));
+    opts->_use_BB_lower_bound = true;
+    opts-> _use_onetree_lower_bound = false;
+
+    Solver *S = new Solver(inst, opts);
     
     int solution;
     if (S->SolveCurrentInstance(solution) == FAIL)
