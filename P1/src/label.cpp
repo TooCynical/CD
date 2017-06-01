@@ -1,3 +1,15 @@
+/* Lucas Slot (lfh.slot@gmail.com)
+ * Ardalan Khazraei (ardalan.khazraei@gmail.com)
+ *
+ * June 2017
+ * University of Bonn 
+ *
+ * label.cpp
+ *
+ *
+ * Implementation of functionality described in label.hpp.
+ */
+
 #include "label.hpp"
 
 using namespace std;

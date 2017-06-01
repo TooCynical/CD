@@ -1,7 +1,7 @@
 import commands
 
-bpath = './../bin/main'
-tfpath = './cases/'
+bpath = './bin/main'
+tfpath = './testing/cases/assertion/'
 
 # First set of tests.
 correct_output = ['2598', '3048', '2772', '3389', '4035', '4060']
@@ -44,12 +44,12 @@ for i in range(5, 11):
         print "Test succeeded for testC" + str(i)
 
 
-# Given instances.
-correct_output = ['971', '1932', '1645', '2235', '3504']
-for i in range(1, 6):
-    output = commands.getstatusoutput(bpath + ' ' + tfpath + 'i0' + str(i))[1]
-    if not (output == correct_output[i - 1]):
-        print "Test failed for i0" + str(i)
-        print output, correct_output[i - 1]
-    else:
-        print "Test succeeded for i0" + str(i)
+# # Given instances.
+# correct_output = ['971', '1932', '1645', '2235', '3504']
+# for i in range(1, 6):
+#     output = commands.getstatusoutput(bpath + ' ' + tfpath + 'given/i0' + str(i))[1]
+#     if not (output == correct_output[i - 1]):
+#         print "Test failed for i0" + str(i)
+#         print output, correct_output[i - 1]
+#     else:
+#         print "Test succeeded for i0" + str(i)

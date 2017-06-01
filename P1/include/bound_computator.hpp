@@ -1,3 +1,51 @@
+/*  Lucas Slot (lfh.slot@gmail.com)
+ *  Ardalan Khazraei (ardalan.khazraei@gmail.com)
+ *
+ * June 2017
+ * University of Bonn 
+ *
+ * bound_computator.hpp
+ *
+ * BoundComputator is a class that, given a valid Instance object
+ * representing an instance of the 3d rectilinear steiner tree problem
+ * contains functionality to compute lower bounds and upper bounds
+ * used in the Dijkstra-Steiner algorithm with future costs and pruning.
+ * In particular, it is capable of computing:
+ *      - The length of an MST on a given terminal set
+ *      - The bounding box lower bound BB(v, I) of a label.
+ *      - The One-Tree lower bound MST(v, I) of a label.
+ *
+ *      - A local upper bound U(I) for a bitset I given a label
+ *        (v, I).
+ *      - A local upper bound U(I u J) given two bitsets I and J.
+ *
+ *      - The distance between a terminal set I and its complement.
+ *      - The distance between a vertex v and the complement
+ *        of a terminal set I.
+ *      - The vertex / terminal attaining these minimum distances.
+ *  
+ * In order to efficiently make use of / look up previous computational
+ * results, BoundComputator contains hash tables using bitsets
+ * as keys, containing MST(I), A(I), d(I, R-I).
+ *
+ *
+ * BoundComputator makes the same assumptions on the given instance
+ * Solver does.
+ * 
+ *
+ * Notation used:
+ *      P           : The set of all permanently valued labels. 
+ *      R           : The set of all terminals
+ *      l(v,I)      : the (tentative) value of a label.
+ *      LB(v, I)    : the (permanent) lower bound for a label.
+ *      root        : The root terminal (always the first terminal
+ *                    in the array _terminals in the given instance).
+ *      U(I)        : The best local upper bound for the terminal set I.
+ *      S(I)        : The set of terminals used to compute U(I) for a 
+ *                    terminal set I.
+ *      A(I)        : The pair (U(I), S(I)) for a terminal set I.
+ */
+
 #ifndef LOWERBOUND_HPP
 #define LOWERBOUND_HPP
 

@@ -5,6 +5,20 @@
  * University of Bonn 
  *
  * label.hpp
+ *
+ *
+ * Label is a class that, for a vertex v and a bitset I,
+ * keeps track of all data related to the label (v, I), i.e.
+ *      - The most current tentative value l(v, I).
+ *      - The value of the lower bound lb(v, I)
+ *      - Whether (v, I) is permanent (is in P).
+ *
+ * Functionality of the class is limited to accessors and modifiers for the
+ * data above. Detailed explanations of each of Label's members and methods
+ * are found in the declarations below.
+ *
+ *
+ * Notation used: same as Solver and BoundComputator.
  */
 
 #ifndef LABEL_HPP
@@ -13,7 +27,7 @@
 #include "util.hpp"
 #include "vertex.hpp"
 #include "instance.hpp"
-#include "lower_bound.hpp"
+#include "bound_computator.hpp"
 
 #include <iostream>
 #include <stdlib.h>
@@ -41,8 +55,6 @@ class Label {
 
 
     public:
-        bool _pruned = false;
-
         /* Constructor. */
         Label(Vertex *v, const bitset<BITSET_SIZE> &I);
 

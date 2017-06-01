@@ -1,3 +1,14 @@
+/*  Lucas Slot (lfh.slot@gmail.com)
+ *  Ardalan Khazraei (ardalan.khazraei@gmail.com)
+ *
+ * June 2017
+ * University of Bonn 
+ *
+ * util.hpp
+ *
+ * Basic utility functions and constants.
+ */
+
 #ifndef UTIL_H
 #define UTIL_H
 

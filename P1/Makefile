@@ -9,6 +9,9 @@ all: dirs
 run: all
 	./bin/main
 
+test: all
+	python ./testing/assert_testcases.py
+
 dirs: 
 	mkdir -p bin
 

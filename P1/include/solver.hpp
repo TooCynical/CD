@@ -1,5 +1,5 @@
-/*  Lucas Slot (lfh.slot@gmail.com)
- *  Ardalan Khazraei (ardalan.khazraei@gmail.com)
+/* Lucas Slot (lfh.slot@gmail.com)
+ * Ardalan Khazraei (ardalan.khazraei@gmail.com)
  *
  * June 2017
  * University of Bonn 
@@ -50,6 +50,7 @@
 #include "vertex.hpp"
 #include "instance.hpp"
 #include "label.hpp"
+#include "bound_computator.hpp"
 
 #include <vector>
 #include <iostream>
@@ -59,7 +60,6 @@
 #include <iterator>
 #include <cmath>
 #include <unordered_map>
-
 
 using namespace std;
 

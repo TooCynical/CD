@@ -1,4 +1,16 @@
-#include "lower_bound.hpp"
+/* Lucas Slot (lfh.slot@gmail.com)
+ * Ardalan Khazraei (ardalan.khazraei@gmail.com)
+ *
+ * June 2017
+ * University of Bonn 
+ *
+ * bound_computator.cpp
+ *
+ *
+ * Implementation of functionality described in bound_computator.hpp.
+ */
+
+#include "bound_computator.hpp"
 
 using namespace std;
 

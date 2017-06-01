@@ -1,3 +1,15 @@
+/*  Lucas Slot (lfh.slot@gmail.com)
+ *  Ardalan Khazraei (ardalan.khazraei@gmail.com)
+ *
+ * June 2017
+ * University of Bonn 
+ *
+ * instance.cpp
+ *
+ *
+ * Implementation of functionality described in instance.hpp
+ */
+
 #include "instance.hpp"
 
 using namespace std;

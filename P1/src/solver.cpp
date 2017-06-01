@@ -1,3 +1,15 @@
+/* Lucas Slot (lfh.slot@gmail.com)
+ * Ardalan Khazraei (ardalan.khazraei@gmail.com)
+ *
+ * June 2017
+ * University of Bonn 
+ *
+ * solver.cpp
+ *
+ *
+ * Implementation of functionality described in solver.hpp.
+ */
+
 #include "solver.hpp"
 
 Result Solver::SetGlobalUpperBound() {
