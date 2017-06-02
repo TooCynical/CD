@@ -5,7 +5,6 @@
 
 #include <stdlib.h>
 #include <iostream>
-#include <bitset>
 
 using namespace std;
 
@@ -23,16 +22,19 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
-    LowerBoundOptions *opts = (LowerBoundOptions*) 
-                              calloc(1, sizeof(LowerBoundOptions));
+    /* Make a BoundComputator. */
+    BoundOptions *opts = (BoundOptions*) calloc(1, sizeof(BoundOptions));
     opts->_use_BB_lower_bound = true;
     opts-> _use_onetree_lower_bound = false;
+    BoundComputator *bound_comp = new BoundComputator(inst, opts);
 
-    Solver *S = new Solver(inst, opts);
-    
+    Solver *S = new Solver(inst, bound_comp);
+
     int solution;
-    if (S->SolveCurrentInstance(solution) == FAIL)
+    if (S->SolveCurrentInstance(solution) == FAIL) {
+        cout << "Main: failed to find solution.\n";
         exit(1);
+    }
 
     if (DOUBLE_INPUT_COORDS)
         solution /= 2;
@@ -40,5 +42,6 @@ int main(int argc, char* argv[]) {
     cout << solution << "\n";
 
     delete inst;
+    delete bound_comp;
     delete S;
 }

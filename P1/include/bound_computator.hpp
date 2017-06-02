@@ -71,9 +71,15 @@ class Label;
 class Vertex;
 class Instance;
 
-struct LowerBoundOptions {
+struct BoundOptions {
     bool _use_BB_lower_bound;
     bool _use_onetree_lower_bound;
+};
+
+struct PerimeterCoords {
+    int _x_max, _x_min;
+    int _y_max, _y_min;
+    int _z_max, _z_min;
 };
 
 class BoundComputator {
@@ -104,6 +110,10 @@ class BoundComputator {
          * S(I) is the set of terminals used to find U(I). */
         unordered_map<bitset<BITSET_SIZE>, pair<int, bitset<BITSET_SIZE> > > 
         _upper_bound_hash;
+
+        /* Hash table containg pairs (x_max, x_min, y_max, y_min) for 
+         * a terminal set I. */
+        unordered_map<bitset<BITSET_SIZE>, PerimeterCoords> _perimeter_hash;
 
         /* Find the distance d(I, R-I) between a terminal set and its
          * complement, as well as the index of the terminal i in R-I 
@@ -150,15 +160,20 @@ class BoundComputator {
                                const bitset<BITSET_SIZE> &J);
 
         /* Constructor */
-        BoundComputator(Instance *inst, LowerBoundOptions *opts);
+        BoundComputator(Instance *inst, BoundOptions *opts);
+
+        /* Compute the coordinates of the perimeter of I, that is
+         * x_max, x_min, y_max, y_min, z_max, z_min for I. */
+        PerimeterCoords Perimeter(const bitset<BITSET_SIZE> &I);
+
+        /* Compute the bounding box length BB({v} u I) for the given (v, I)
+         * The required perimeter of I is fetched from the hash table if
+         * possible, and computed otherwise. */
+        int BBLowerBound(Label *l);
 
         /* Compute the length of an MST on the given terminal set using
          * Prim's algorithm running in O(|R|^2). */
         int MST(const bitset<BITSET_SIZE> &I);
-
-        /* Compute the bounding box length BB({v} u I) for the given label in
-         * O(|I| + 1) */
-        int BBLowerBound(Label *l);
 
         /* Compute the 1-tree lower bound for the given label (v, I). 
          * The required value MST(I) is fetched from the hash table if 

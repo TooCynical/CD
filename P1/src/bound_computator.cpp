@@ -14,7 +14,7 @@
 
 using namespace std;
 
-BoundComputator::BoundComputator(Instance *inst, LowerBoundOptions *opts) {
+BoundComputator::BoundComputator(Instance *inst, BoundOptions *opts) {
     _underlying_instance = inst;
     _n_terminals = inst->GetNTerminals();
     _terminals = inst->GetTerminals();
@@ -23,6 +23,7 @@ BoundComputator::BoundComputator(Instance *inst, LowerBoundOptions *opts) {
     if (opts != NULL) {
         _use_BB_lower_bound = opts->_use_BB_lower_bound;
         _use_onetree_lower_bound = opts->_use_onetree_lower_bound;
+        free(opts);
     }
     /* By default use BB and OneTree lower bounds. */
     else {
@@ -31,27 +32,31 @@ BoundComputator::BoundComputator(Instance *inst, LowerBoundOptions *opts) {
     }
 }
 
-int BoundComputator::BBLowerBound(Label *l) {
+PerimeterCoords BoundComputator::Perimeter(const bitset<BITSET_SIZE> &I) {    
     /* If root terminal in the terminal set of the label 
      * return 0 and print a warning. */
-    if (l->GetBitset().test(0)) {
-        cout << "WARNING: BBLowerBound called for root in I!\n";
-        return 0;
+    if (I.test(0)) {
+        cout << "ERROR: Perimeter called for root in I!\n";
+        exit(1);
+    }
+
+    /* Empty terminal set. */
+    if (!I.any()) {
+        cout << "ERROR: Perimeter called for empty terminal set\n";        
+        exit(1);
     }
 
     int x_max, x_min;
     int y_max, y_min;
     int z_max, z_min;
     
-    /* Set initial values based on vertex in label */
-    x_max = x_min = l->GetVertex()->GetX();
-    y_max = y_min = l->GetVertex()->GetY();
-    z_max = z_min = l->GetVertex()->GetZ();
+    x_min = y_min = z_min = MAX_COORD * (1 + DOUBLE_INPUT_COORDS);
+    x_max = y_max = z_max = 0;
 
     /* Loop over all terminals in the complement of the labels
      * terminal set and update values accordingly */
     for (int i = 0; i < _n_terminals; i++) {
-        if (!l->GetBitset().test(i)) {
+        if (!I.test(i)) {
             if (_terminals[i]->GetX() < x_min)
                 x_min = _terminals[i]->GetX();
             if (_terminals[i]->GetX() > x_max)
@@ -66,6 +71,46 @@ int BoundComputator::BBLowerBound(Label *l) {
                 z_max = _terminals[i]->GetZ();
         }
     }
+
+    PerimeterCoords ret;
+    ret._x_max = x_max;
+    ret._x_min = x_min;
+    ret._y_max = y_max;
+    ret._y_min = y_min;
+    ret._z_max = z_max;
+    ret._z_min = z_min;
+    return ret;
+}
+
+int BoundComputator::BBLowerBound(Label *l) {
+    bitset<BITSET_SIZE> I = l->GetBitset();
+
+    /* If root terminal in the terminal set of the label 
+     * return 0 and print a warning. */
+    if (I.test(0)) {
+        cout << "WARNING: BBLowerBound called for root in I!\n";
+        return 0;
+    }
+
+    /* Try to fetch the perimeter from the hash table, 
+     * compute it otherwise. */
+    PerimeterCoords I_perimeter;
+    auto it = _perimeter_hash.find(I);
+    if (it != _perimeter_hash.end()) {
+        I_perimeter = it->second;
+    } 
+    else {
+        I_perimeter = Perimeter(I);
+        _perimeter_hash.insert(make_pair(I, I_perimeter));
+    }
+
+    int x_max = max(l->GetVertex()->GetX(), I_perimeter._x_max);
+    int x_min = min(l->GetVertex()->GetX(), I_perimeter._x_min);
+    int y_max = max(l->GetVertex()->GetY(), I_perimeter._y_max);
+    int y_min = min(l->GetVertex()->GetY(), I_perimeter._y_min);
+    int z_max = max(l->GetVertex()->GetZ(), I_perimeter._z_max);
+    int z_min = min(l->GetVertex()->GetZ(), I_perimeter._z_min);
+
     return (x_max - x_min) + (y_max - y_min) + (z_max - z_min);
 }
 
@@ -123,6 +168,7 @@ int BoundComputator::MST(const bitset<BITSET_SIZE> &I) {
  }
 
 int BoundComputator::OneTreeLowerBound(Label *l) {
+
     /* If root terminal in the terminal set of the label 
      * return 0 and print a warning. */
     if (l->GetBitset().test(0)) {
@@ -374,5 +420,5 @@ int BoundComputator::GetLowerBound(Label *l) {
         return BBLowerBound(l);
     if (_use_onetree_lower_bound)
         return OneTreeLowerBound(l);
-    return 0;       
+    return 0;
 }

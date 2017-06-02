@@ -114,8 +114,7 @@ class Solver {
 
     public:
         /* Constructor / Destructor. */
-        Solver(Instance *problem_instance, LowerBoundOptions *opts);
-        ~Solver();
+        Solver(Instance *problem_instance, BoundComputator *bound_comp);
 
         /* Attempt to solve the current instance. Return SUCCESS and
          * place solution in ret if successful, return FAIL otherwise. */

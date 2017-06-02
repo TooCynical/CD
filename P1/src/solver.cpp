@@ -159,16 +159,16 @@ Result Solver::Merge(Label *I_label) {
     return SUCCESS;
 }
 
-Solver::Solver(Instance *problem_instance, LowerBoundOptions *opts) {
+Solver::Solver(Instance *problem_instance, BoundComputator *bound_comp) {
     _problem_instance = problem_instance;
+    _bound_comp = bound_comp;
 
-    _bound_comp = new BoundComputator(problem_instance, opts);
     SetGlobalUpperBound();
 }
 
-Solver::~Solver() {
-    delete _bound_comp;
-}
+// Solver::~Solver() {
+//     delete _bound_comp;
+// }
 
 Result Solver::SolveCurrentInstance(int &ret) {
     /* Set the root terminal (which is always just the
