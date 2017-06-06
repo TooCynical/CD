@@ -39,6 +39,9 @@ Result ParseFile (const char* file_name, Instance*& ret);
 /* Check whether the input file contains duplicate lines. */
 Result CheckForDuplicateLines(const char* file_name);
 
+/* Check whether the input file contains lines that are too long. */
+Result CheckForLongLines(const char* file_name);
+
 /* Attempt to read terminal locations from file. */
 Result ParseTerminals (fstream& input_file, int n, int **term_locs);
 

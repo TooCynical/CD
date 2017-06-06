@@ -13,8 +13,7 @@
  * the Dijsktra-Steiner algorithm with future costs and pruning, as 
  * described by Hougardy et al. (2015).
  * The lower and upper bounds on labels are computed by a BoundComputator
- * object, which the solver will initialize based on given options (i.e.
- * Bounding Box, One-Tree or both). The solver itself, then,
+ * object, which should also be provided. The solver itself, then,
  * performs the core algorithm and keeps track of the priority queue
  * used. Detailed explanation of each of Solver's members and methods
  * are found in the declarations below. 
@@ -22,7 +21,7 @@
  *
  * Solver assumes, but does not check, that:
  *      The size of the vector of vertices in the given instance does not 
- *      exceed 64^3.
+ *      exceed 64^3 and contains at least 1 vertex.
  *      The array of terminals in the given instance contains only references
  *      to vertices of the given instance, and its size does not exceed 
  *      the size of the constant BITSET_SIZE =< 64.     

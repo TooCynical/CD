@@ -17,12 +17,6 @@ using namespace std;
 Result ParseFile (const char* file_name, Instance*& ret) {
     int n;
 
-    /* Make sure there are no duplicate lines in the file. */
-    if (CheckForDuplicateLines(file_name) == FAIL) {
-        cout << "ParseFile: Input file contains duplicate lines.\n";
-        return FAIL;
-    }
-
     /* Try to open file. */
     fstream input_file(file_name);
     if (!input_file) {
@@ -30,6 +24,18 @@ Result ParseFile (const char* file_name, Instance*& ret) {
         return FAIL;
     }
 
+    /* Make sure there are no duplicate lines in the file. */
+    if (CheckForDuplicateLines(file_name) == FAIL) {
+        cout << "ParseFile: Input file contains duplicate lines.\n";
+        return FAIL;
+    }
+
+    /* Make sure there are no lines with too many integers on them. */
+    if (CheckForLongLines(file_name) == FAIL) {
+        cout << "ParseFile: Input file contains long lines.\n";
+        return FAIL;
+    }    
+    
     /* Try to read number of terminals. */
     input_file >> n;
     if (input_file.fail()) {
@@ -73,8 +79,35 @@ Result CheckForDuplicateLines(const char* file_name) {
 
     /* Read each line, at it to lines and make sure
      * that no duplicates were added. */
+    
     while (getline(input_file, line)) {        
         if (!lines.insert(line).second)
+            return FAIL;
+
+    }
+    return SUCCESS;
+}
+
+Result CheckForLongLines(const char* file_name) {
+    fstream input_file(file_name);
+    string line;
+    set<string> lines;
+    int count, dummy;
+
+    /* Skip first line. */
+    getline(input_file, line);
+
+    /* Read each line and make sure it contains no more than
+     * 4 tokens (three ints and an endline). */
+    while (getline(input_file, line)) {        
+        count = 0;
+        stringstream line_stream(line);
+        while (line_stream) {
+            line_stream >> dummy;
+            if(!input_file.fail())
+                count ++;
+        }
+        if (count > 4)
             return FAIL;
     }
     return SUCCESS;

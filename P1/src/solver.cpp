@@ -105,22 +105,26 @@ Result Solver::ConsiderNeighbours(Label *v_label) {
 }
 
 Result Solver::Merge(Label *I_label) {
-    /* Loop over all labels in v._labels */
     Vertex* v = I_label->GetVertex();
     bitset<BITSET_SIZE> I = I_label->GetBitset();
     vector<Label*> labels = v->GetLabels();
 
+    /* Loop over all labels associated with v. In the
+     * implementation by Hougardy et al. the loop runs
+     * over all valid (v, J) instead (regardless if they 
+     * are associated with v yet) if this allows us to 
+     * consider fewer options. We choose not to implement
+     * this as it is very rare for this to happen with 
+     * <=20 terminals. */
     for (unsigned int i = 0; i < labels.size(); i++) {
         Label *J_label = labels[i];
         bitset<BITSET_SIZE> J = J_label->GetBitset();
         
         /* (v,J) should be in P, J should be non-empty, not 
          * contain root and have no terminals in common with I. */
-        if (J_label->IsInP()    &&
-            J.count() > 0       && 
-            !J.test(0)          &&
-            (I & J).none())  {
-
+        if (J_label->IsInP() && J.count() > 0
+                             && !J.test(0) &&
+                                (I & J).none()) {
             bitset<BITSET_SIZE> IJ = I | J;
 
             /* If (v, I u J) not yet set, set it and add it to _N and 
@@ -166,10 +170,6 @@ Solver::Solver(Instance *problem_instance, BoundComputator *bound_comp) {
     SetGlobalUpperBound();
 }
 
-// Solver::~Solver() {
-//     delete _bound_comp;
-// }
-
 Result Solver::SolveCurrentInstance(int &ret) {
     /* Set the root terminal (which is always just the
      * first one given) and the final terminal set 
@@ -188,7 +188,6 @@ Result Solver::SolveCurrentInstance(int &ret) {
     Label *current_label;
 
     while (_N.size() > 0) {
-
         /* Fetch the highest piority label from N */
         current_label = _N.top().second; 
         _N.pop();
