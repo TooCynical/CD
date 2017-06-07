@@ -33,13 +33,6 @@ BoundComputator::BoundComputator(Instance *inst, BoundOptions *opts) {
 }
 
 PerimeterCoords BoundComputator::Perimeter(const bitset<BITSET_SIZE> &I) {    
-    /* If root terminal in the terminal set of the label 
-     * return 0 and print a warning. */
-    if (I.test(0)) {
-        cout << "ERROR: Perimeter called for root in I!\n";
-        exit(1);
-    }
-
     /* Empty terminal set. */
     if (!I.any()) {
         cout << "ERROR: Perimeter called for empty terminal set\n";        
@@ -84,13 +77,6 @@ PerimeterCoords BoundComputator::Perimeter(const bitset<BITSET_SIZE> &I) {
 
 int BoundComputator::BBLowerBound(Label *l) {
     bitset<BITSET_SIZE> I = l->GetBitset();
-
-    /* If root terminal in the terminal set of the label 
-     * return 0 and print a warning. */
-    if (I.test(0)) {
-        cout << "WARNING: BBLowerBound called for root in I!\n";
-        return 0;
-    }
 
     /* Try to fetch the perimeter from the hash table, 
      * compute it otherwise. */
@@ -168,13 +154,6 @@ int BoundComputator::MST(const bitset<BITSET_SIZE> &I) {
  }
 
 int BoundComputator::OneTreeLowerBound(Label *l) {
-
-    /* If root terminal in the terminal set of the label 
-     * return 0 and print a warning. */
-    if (l->GetBitset().test(0)) {
-        cout << "WARNING: OneTreeLowerBound called for root in I!\n";
-        return 0;
-    }
 
     Vertex* v = l->GetVertex();
 
@@ -275,12 +254,6 @@ Result BoundComputator::VertexComplementDistance(
         Vertex *v, 
         int &ret_dist, 
         int &ret_ind) {
-
-    /* The root should never be in I. */
-    if (I.test(0)) {
-        cout << "ERROR: computing d(v, I-R) for root in I. \n";
-        exit(1); 
-    }
 
     int min = INT_MAX;
     int min_ind;
