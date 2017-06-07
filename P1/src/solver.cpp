@@ -114,17 +114,16 @@ Result Solver::Merge(Label *I_label) {
      * over all valid (v, J) instead (regardless of whether 
      * they are associated with v yet) if this allows us to 
      * consider fewer options. We choose not to implement
-     * this as it is very rare for this to happen with 
-     * <=20 terminals. */
+     * this as it is very rare. */
     for (unsigned int i = 0; i < labels.size(); i++) {
         Label *J_label = labels[i];
         bitset<BITSET_SIZE> J = J_label->GetBitset();
         
         /* (v,J) should be in P, J should be non-empty, not 
-         * contain root and have no terminals in common with I. */
+         * contain root and have no terminals in common with I.
+         * Since J should not contain root anyways, we do not check this. */
         if (J_label->IsInP() && J.count() > 0
-                             && !J.test(0) &&
-                                (I & J).none()) {
+                             && (I & J).none()) {
             bitset<BITSET_SIZE> IJ = I | J;
 
             /* If (v, I u J) not yet set, set it and add it to _N and 
