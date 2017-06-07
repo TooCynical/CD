@@ -85,7 +85,6 @@ class Solver {
          * dynamic nature of these values. */
         priority_queue<pair<int, Label*>, vector<pair<int, Label*> >,
                        LabelValuePairComp> _N;
-        
 
         /* Set a global upper bound for the current instance by
          * computing the value of an MST on R. */

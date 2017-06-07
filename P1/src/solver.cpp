@@ -118,7 +118,8 @@ Result Solver::Merge(Label *I_label) {
      * label (v, emptyset) is always at index 0 in the vector, 
      * so instead of explicetely testing if J is empty, we simply
      * start at index 1. */
-    for (unsigned int i = 1; i < labels.size(); i++) {
+    unsigned int labels_size = labels.size();
+    for (unsigned int i = 1; i < labels_size; i++) {
         Label *J_label = labels[i];
         bitset<BITSET_SIZE> J = J_label->GetBitset();
         
@@ -128,7 +129,7 @@ Result Solver::Merge(Label *I_label) {
         if (J_label->IsInP() && (I & J).none()) {
             bitset<BITSET_SIZE> IJ = I | J;
 
-            /* If (v, I u J) not yet set, set it and add it to _N and 
+            /* If (v, I u J) not yet set, set it and add it to N and 
              * the label array of v. In this case (v, I u J) is not in P */
             Label *IJ_label;
             if ((IJ_label = v->GetLabelByBitset(IJ)) == NULL) {    

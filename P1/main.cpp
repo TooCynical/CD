@@ -72,4 +72,5 @@ int main(int argc, char* argv[]) {
     delete inst;
     delete bound_comp;
     delete S;
+    exit(0);
 }
