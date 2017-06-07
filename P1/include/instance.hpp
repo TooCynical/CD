@@ -55,8 +55,8 @@ class Instance {
 
         vector<Vertex*> _V;     // References to all vertices in 
                                 // lexicographical order.
-        Vertex**** _hanan_grid; // References to all vertices, ordered according
-                                // to the Hanan grid.
+        Vertex**** _hanan_grid; // References to all vertices, ordered 
+                                // according to the Hanan grid.
         Vertex** _terminals;    // References to all terminals.
 
         set<int> _x_values;     // All occuring x-coordinates of terminals.
@@ -103,11 +103,11 @@ class Instance {
         const int &GetNTerminals() const;
         const int &GetNVertices() const;
         const vector<Vertex*> &GetVertices() const;
-        Vertex **GetTerminals();
+        Vertex **GetTerminals() const;
 
         /* IO-functions for testing. */
-        void PrintTerminals();
-        void PrintVertices();
+        void PrintTerminals() const;
+        void PrintVertices() const;
 };
 
 #endif

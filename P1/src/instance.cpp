@@ -174,14 +174,14 @@ const int &Instance::GetNVertices() const { return _n_vertices; }
 
 const vector<Vertex*> &Instance::GetVertices() const { return _V; }
 
-Vertex **Instance::GetTerminals() { return _terminals; }
+Vertex **Instance::GetTerminals() const { return _terminals; }
 
-void Instance::PrintTerminals() {
+void Instance::PrintTerminals() const {
     for (int i = 0; i < _n_terminals; i++)
         _terminals[i]->Print();
 }
 
-void Instance::PrintVertices() {
+void Instance::PrintVertices() const {
     for (int i = 0; i < _n_vertices; i++)
         _V[i]->Print();
 }
