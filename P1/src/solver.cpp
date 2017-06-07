@@ -26,7 +26,7 @@ Result Solver::AddLabelToN(Label* l) {
         l->SetLowerBound(_bound_comp->GetLowerBound(l)); 
 
     /* Don't add labels that certainly won't contribute to a solution:
-     * see Lemma 14 and 15. */
+     * see Lemma 14 and 15 in Hougardy et al. */
     if (l->GetL() > _global_upper_bound) {
         return FAIL;
     }
@@ -67,19 +67,19 @@ Result Solver::SetInitialLabels() {
         l->SetInP();
         v->AddLabel(l);
     }
-    return SUCCESS;   
+    return SUCCESS;
 }
 
 Result Solver::ConsiderNeighbours(Label *v_label) {
     Vertex *v = v_label->GetVertex();
     bitset<BITSET_SIZE> I = v_label->GetBitset();
 
-    /* Loop over neighbours of v */
+    /* Loop over neighbours of v. */
     for (int i = 0; i < v->GetNNeighbours(); i++) {
         Vertex *w = v->GetNeighbours()[i];
         
-        /* (w, I) not yet set so set it and add it to _N 
-         * and the label array of w */
+        /* (w, I) not yet set so set it and add it to N 
+         * and the labels of w. */
         Label *w_label;
         if ((w_label = w->GetLabelByBitset(I)) == NULL) {
             w_label = new Label(w, I);
@@ -92,7 +92,7 @@ Result Solver::ConsiderNeighbours(Label *v_label) {
                 delete w_label;
         }
         /* (w, I) already set, check if l(v, I) + d(v, w) < l(w, I) and 
-         * if so replace l(w, I) by this value and add (w, I) to _N */
+         * if so replace l(w, I) by this value and add (w, I) to N. */
         else {
             if (!w_label->IsInP() && 
                 v_label->GetL() + RectDistance(v,w) < w_label->GetL()) {
@@ -111,8 +111,8 @@ Result Solver::Merge(Label *I_label) {
 
     /* Loop over all labels associated with v. In the
      * implementation by Hougardy et al. the loop runs
-     * over all valid (v, J) instead (regardless if they 
-     * are associated with v yet) if this allows us to 
+     * over all valid (v, J) instead (regardless of whether 
+     * they are associated with v yet) if this allows us to 
      * consider fewer options. We choose not to implement
      * this as it is very rare for this to happen with 
      * <=20 terminals. */

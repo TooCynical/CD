@@ -1,19 +1,19 @@
+# Test whether the two given binaries produce the same output
+# when pointed to a series of randomly generated instances of
+# the 3D rectilinear steiner tree problem.
+
 import random
 import sys
 import commands
 
-# prog1 = raw_input("Enter 1st binary path: ")
-# prog2 = raw_input("Enter 2nd binary path: ")
-
-prog1 = "./../bin/fastandmaybesafe"
-prog2 = "./../bin/main"
-
+prog1 = raw_input("Enter 1st binary path: ")
+prog2 = raw_input("Enter 2nd binary path: ")
 
 n = input("Enter number of test cases: ")
 m = input("Enter max terminals: ")
 l = input("Enter min terminals: ")
 
-testfile = "random_testfile"
+testfile = "testfile" + str(random.randint(0,100000))
 ret = sys.stdout
 
 for i in range(n):
@@ -29,7 +29,7 @@ for i in range(n):
         result2 = commands.getstatusoutput(prog2 + " " + testfile)[1]
 
         if result1 == result2:
-            print "Test succeeded.", result1, result2, "(", j, "terminals )"
+            print str(testfile) + ": Test succeeded.", result1, result2, "(", j, "terminals )"
         else:
-            print "Test failed.", result1, result2, "(", j, "terminals )"
+            print str(testfile) + ": Test failed.", result1, result2, "(", j, "terminals )"
             exit(0)
