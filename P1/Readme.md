@@ -51,3 +51,9 @@ Results:
     testfile only (with 40 terminals) so it should be taken as an indication only.
     Instances with 20 terminals are solved in about 1-30 seconds. Instances with 
     40 terminals take between 3-60 minutes.
+
+Testing:
+    The folder /testing/ contains several python / bash scripts which can be 
+    used to test the program. This is probably not very interesting but we 
+    included them anyways. Additionally, the folder contains a set of generated
+    instances files which can also be used for testing.
