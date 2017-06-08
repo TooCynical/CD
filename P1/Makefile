@@ -12,6 +12,9 @@ run: all
 test: all
 	python ./testing/assert_testcases.py
 
+zip: all
+	zip -r DijkstraSteiner include/* src/* main.cpp testing/* Readme.md Makefile 
+
 dirs: 
 	mkdir -p bin
 
