@@ -24,4 +24,7 @@ typedef enum Result { FAIL, SUCCESS } Result;
 /* Free a 2D int array of given width. */
 Result Free2DArray(unsigned int** array, size_t n);
 
+size_t Fact(size_t n);
+
+
 #endif

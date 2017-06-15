@@ -10,10 +10,9 @@
 #ifndef INSTANCE_H
 #define INSTANCE_H
 
- #include <vector>
+#include <vector>
 
- #include "rectangle.hpp"
-
+#include "rectangle.hpp"
 
 class IdHelper {
 private:
