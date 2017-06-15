@@ -18,3 +18,9 @@ Result Free2DArray(unsigned int** array, size_t n) {
     return SUCCESS;
 }
 
+size_t Fact(size_t n) {
+    size_t ret = 1;
+    for(size_t i = 1; i <= n; i++)
+        ret *= i;
+    return ret;
+}

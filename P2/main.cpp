@@ -2,6 +2,7 @@
 #include "instance.hpp"
 #include "util.hpp"
 #include "parser.hpp"
+#include "sequence_pair.hpp"
 
 #include <iostream>
 
@@ -25,6 +26,16 @@ int main(int argc, const char **argv) {
         exit(1);
     }
 
-    inst.print_rectangles();
-    return 0;
+    // inst.print_rectangles();
+
+    // Sequence S(4);
+    // S.print_sequence();
+    // while(S.increment() != FAIL)
+    //     S.print_sequence();
+
+    // SequencePair SP(3);
+    // SP.print_sequence_pair();
+    // while(SP.increment() != FAIL)
+    //     SP.print_sequence_pair();
+    // return 0;
 }
