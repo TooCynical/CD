@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS= -Wall -Wpedantic -Werror -g -I'include' -std=c++11
+CFLAGS= -Wall -Wpedantic -Wextra -g -I'include' -std=c++11
 SRC_DIR=src
 SRCS := $(shell find $(SRC_DIR)/* -maxdepth 0 -name '*.cpp')
 
