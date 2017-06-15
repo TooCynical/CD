@@ -3,6 +3,7 @@
 #include "util.hpp"
 #include "parser.hpp"
 #include "sequence_pair.hpp"
+#include "solver.hpp"
 
 #include <iostream>
 
@@ -30,12 +31,26 @@ int main(int argc, const char **argv) {
 
     // Sequence S(4);
     // S.print_sequence();
-    // while(S.increment() != FAIL)
-    //     S.print_sequence();
 
-    // SequencePair SP(3);
-    // SP.print_sequence_pair();
-    // while(SP.increment() != FAIL)
-    //     SP.print_sequence_pair();
-    // return 0;
+    // while(S.increment() != FAIL) {
+    //     S.print_sequence();
+    // }
+
+    SequencePair SP(3);
+    SP.print_sequence_pair();
+    cout << SP.below(1, 2);
+    cout << SP.leftof(1, 2);
+    cout << SP.rightof(1, 2);
+    cout << SP.above(1, 2);
+    cout << endl;
+
+    while(SP.increment() != FAIL) {
+        SP.print_sequence_pair();
+        cout << SP.below(1, 2);
+        cout << SP.leftof(1, 2);
+        cout << SP.rightof(1, 2);
+        cout << SP.above(1, 2);
+        cout << endl;
+    }
+    return 0;
 }
