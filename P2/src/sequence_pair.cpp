@@ -128,8 +128,6 @@ SequencePair::SequencePair(size_t n) : _n(n),
                                        _neg_seq(Sequence(n))
 {}
 
-SequencePair::~SequencePair() {}
-
 Result SequencePair::increment() {
     if (_neg_seq.increment() == FAIL) {
         if(_pos_seq.increment() == FAIL) {

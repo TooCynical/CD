@@ -51,7 +51,7 @@ public:
      * the order_number accordingly. */ 
     Result increment();
 
-    /* Return whether x comes before y in the sequence. */
+    /* Return whether x comes before y in the sequence using the order table. */
     bool comes_before(const size_t &x, const size_t &y);
     
     /* Accessors. */
@@ -72,7 +72,6 @@ private:
     Sequence _neg_seq;      // Negative sequence.
 public:
     SequencePair(size_t n);
-    ~SequencePair();
 
     /* Increment the negative sequence. If this causes the negative sequence
      * to be reset, increment the positive sequence as well. If this causes

@@ -28,6 +28,10 @@ private:
     std::vector<size_t> _rectangle_widths;
     std::vector<size_t> _rectangle_heights;
 
+    SequencePair *_seq_pair;
+    SequencePairDAG *_seq_pair_dag_hori;
+    SequencePairDAG *_seq_pair_dag_vert;
+
     size_t chip_height();
     size_t chip_width();
 
@@ -36,6 +40,7 @@ private:
 
 public:
     Solver(const Instance &inst);
+    ~Solver();
 
     Result solve_instance();   // TODO: make return floorplan.
 };
