@@ -1,3 +1,4 @@
 -parser: 
     -Sanitize negative values from input (currently cast to unsigned ints).
 -SequencePair: make sequences template classes.
+-SequencePairDAG: make orientation a template thing.
