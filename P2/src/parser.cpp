@@ -64,7 +64,6 @@ Result ParseFile(const char *file_name, Instance &inst) {
         return FAIL;
     }
 
-    cout << n << endl;
     inst.set_rectangles(n, rectangle_dims);
 
     Free2DArray(rectangle_dims, n);

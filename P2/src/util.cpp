@@ -32,3 +32,9 @@ void print_vector(vector<size_t> v) {
         cout << c << ' ';
     cout << endl;
 }
+
+size_t subtract(size_t a, size_t b) {
+    if (a < b)
+        cout << "Util: Warning subtract lead to underflow" << endl;
+    return a - b;
+}

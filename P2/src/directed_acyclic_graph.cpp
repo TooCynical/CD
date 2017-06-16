@@ -53,14 +53,17 @@ Result SequencePairDAG::update_topo_order_and_weights() {
     for (size_t i = 0; i < _n; i++)
         _total_weights[i] = _vertex_weights[_topo_order[i]];
 
-    /* Apply the longest path algorithm for DAGs. */
-    for (size_t i = 1; i <= _n; i++){
-        for (size_t j = i+1; j <= _n; j++) {
-            size_t index1 = _topo_order[_n-i];
-            size_t index2 = _topo_order[_n-j];
-
-            if (is_edge(index2, index1))
-                _total_weights[index2] += _total_weights[index1];
+    /* Apply the topological longest path algorithm for DAGs. */
+    for (size_t i = 0; i < _n; i++){
+        for (size_t j = i+1; j < _n; j++) {
+            if (is_edge(_topo_order[i], _topo_order[j])) {
+                if (_total_weights[j] < _total_weights[i] + 
+                                        _vertex_weights[_topo_order[j]])
+                {
+                _total_weights[j] = _total_weights[i] + 
+                                    _vertex_weights[_topo_order[j]];
+                }
+            }
         }
     }
     return SUCCESS;
