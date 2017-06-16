@@ -122,15 +122,13 @@ Result Sequence::print_order_table() {
 
 
 
-
-
-
-
 SequencePair::SequencePair(size_t n) : _n(n), 
                                        _fact_n(Fact(n)),
                                        _pos_seq(Sequence(n)),
                                        _neg_seq(Sequence(n))
 {}
+
+SequencePair::~SequencePair() {}
 
 Result SequencePair::increment() {
     if (_neg_seq.increment() == FAIL) {
@@ -142,7 +140,7 @@ Result SequencePair::increment() {
 }
 
 bool SequencePair::below(const size_t &x, const size_t &y) {
-    return (!_neg_seq.comes_before(x, y) && _pos_seq.comes_before(x, y));
+    return (_neg_seq.comes_before(x, y) && !_pos_seq.comes_before(x, y));
 }
 bool SequencePair::leftof(const size_t &x, const size_t &y) {
     return (_neg_seq.comes_before(x, y) && _pos_seq.comes_before(x, y));
@@ -153,7 +151,6 @@ bool SequencePair::rightof(const size_t &x, const size_t &y) {
 bool SequencePair::above(const size_t &x, const size_t &y) {
     return (_neg_seq.comes_before(x, y) && !_pos_seq.comes_before(x, y));
 }
-
 
 const Sequence &SequencePair::neg_seq() const { return _neg_seq; }
 const Sequence &SequencePair::pos_seq() const { return _pos_seq; }

@@ -72,6 +72,7 @@ private:
     Sequence _neg_seq;      // Negative sequence.
 public:
     SequencePair(size_t n);
+    ~SequencePair();
 
     /* Increment the negative sequence. If this causes the negative sequence
      * to be reset, increment the positive sequence as well. If this causes

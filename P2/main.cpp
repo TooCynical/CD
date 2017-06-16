@@ -4,6 +4,7 @@
 #include "parser.hpp"
 #include "sequence_pair.hpp"
 #include "solver.hpp"
+#include "directed_acyclic_graph.hpp"
 
 #include <iostream>
 
@@ -27,6 +28,8 @@ int main(int argc, const char **argv) {
         exit(1);
     }
 
+    Solver solver(inst);
+
     // inst.print_rectangles();
 
     // Sequence S(4);
@@ -36,21 +39,14 @@ int main(int argc, const char **argv) {
     //     S.print_sequence();
     // }
 
-    SequencePair SP(3);
-    SP.print_sequence_pair();
-    cout << SP.below(1, 2);
-    cout << SP.leftof(1, 2);
-    cout << SP.rightof(1, 2);
-    cout << SP.above(1, 2);
-    cout << endl;
+    // SequencePair SP(3);
+    // SP.print_sequence_pair();
 
-    while(SP.increment() != FAIL) {
-        SP.print_sequence_pair();
-        cout << SP.below(1, 2);
-        cout << SP.leftof(1, 2);
-        cout << SP.rightof(1, 2);
-        cout << SP.above(1, 2);
-        cout << endl;
-    }
+    // vector<size_t> weights = {10, 20, 30};
+    // SequencePairDAG SPDAG(3, VERTICAL, weights, SP);
+    // cout << SPDAG.longest_path_length() << endl;
+    
+    Solver S(inst);
+    S.solve_instance();
     return 0;
 }

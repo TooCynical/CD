@@ -48,6 +48,8 @@ const vector<Rectangle> &Instance::rectangles() const {
     return _rectangles;
 }
 
+size_t Instance::n_rectangles() const { return _n_rectangles; }
+
 Result Instance::print_rectangles() const {
     if (!_rectangles_set) {
         cout << "Instance: Attempting to print unset rectangles" << endl;
