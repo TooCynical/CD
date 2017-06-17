@@ -9,9 +9,11 @@ Result Instance::set_rectangles(size_t n_rectangles,
         return FAIL;
 
     _n_rectangles = n_rectangles;
-
+    Result res;
     for (size_t i = 0; i < n_rectangles; i++) {
-        add_rectangle(rectangle_dims[i][0], rectangle_dims[i][1]);
+        res = add_rectangle(rectangle_dims[i][0], rectangle_dims[i][1]);
+        if (res == FAIL)
+            return FAIL;
     }
 
     _rectangles_set = true;
@@ -19,7 +21,12 @@ Result Instance::set_rectangles(size_t n_rectangles,
 }
 
 Result Instance::add_rectangle(unsigned int width, unsigned int height) {
-    _rectangles.push_back(Rectangle(width, height, _id_gen.get_id()));
+    /* First get an id for the rectangle if possible. */
+    size_t id;
+    if (_id_gen.get_id(id) == FAIL)
+        return FAIL;
+
+    _rectangles.push_back(Rectangle(width, height, id));
     return SUCCESS;
 }
 
@@ -62,4 +69,11 @@ Result Instance::print_rectangles() const {
     return SUCCESS;
 }
 
-size_t IdHelper::get_id() { return _current_id++; }
+Result IdHelper::get_id(size_t &ret) { 
+    if (_current_id == SIZE_MAX)
+        return FAIL;
+
+    ret = _current_id;
+    _current_id++;
+    return SUCCESS;
+}

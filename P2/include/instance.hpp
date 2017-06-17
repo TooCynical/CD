@@ -5,8 +5,8 @@
  * University of Bonn 
  *
  * instance.hpp
- *
  */
+
 #ifndef INSTANCE_H
 #define INSTANCE_H
 
@@ -18,10 +18,15 @@ class IdHelper {
 private:
     size_t _current_id = 0;
 public:
-    size_t get_id();
+    Result get_id(size_t &ret);
 };
 
-
+/* Instance is a class that, given a nonnegative integer n, and a nx2 array 
+ * of positive integers, represents the set of Rectangles with widths and 
+ * heights given by this array. The Instane will create all Rectangles and 
+ * provide them with a unique ID, which corresponds to their position in the 
+ * array. The Instance will also verify that all rectangles were created 
+ * succesfully. */
 class Instance {
 private:
     std::vector<Rectangle> _rectangles;
