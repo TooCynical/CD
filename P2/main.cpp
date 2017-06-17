@@ -30,14 +30,14 @@ int main(int argc, const char **argv) {
 
     Solver solver(inst);
     Floorplan *floorplan;
-    
+
     if (solver.solve_instance(floorplan) == FAIL)
         cout << "Main: something went wrong solving the instance." << endl;
     else {
         if (floorplan->verify() == FAIL)
             cout << "Main: solution found but not legal." << endl;
         else 
-            floorplan->print_floorplan_with_dimensions();
+            floorplan->print_floorplan();
     }
     return 0;
 }

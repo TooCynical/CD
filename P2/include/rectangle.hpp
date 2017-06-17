@@ -5,7 +5,6 @@
  * University of Bonn 
  *
  * rectangle.hpp
- *
  */
 
 #ifndef RECTANGLE_HPP
@@ -14,6 +13,10 @@
 #include "util.hpp"
 #include <iostream>
 
+/* Rectangle is a class that, given three nonnegative integers represents
+ * the rectangle of width and height given by the first two integers.
+ * Furthermore, it keeps an ID, given by the third integer used for verification.
+ * Essentially this is a fancy wrapper for two unsigned ints. */
 class Rectangle {
 private:
     const unsigned int _width;

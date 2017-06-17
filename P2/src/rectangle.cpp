@@ -6,6 +6,7 @@
  *
  * rectangle.cpp
  *
+ * Implementation of functionality described in rectangle.hpp. 
  */
 
 #include "rectangle.hpp"
