@@ -29,6 +29,10 @@ def rectangles_from_file(fplan_fp):
             count += 1
     return width, height, rectangles
 
+def strip_end(text, suffix):
+    if not text.endswith(suffix):
+        return text
+    return text[:len(text)-len(suffix)]
 
 
 # Get width, height and rectangles from files.
@@ -59,6 +63,7 @@ for rect in rectangles:
     )
     count += 1
 
-# Save the figure.
+# Save the figure (removing extension is kind of hacky).
 save_fp = sys.argv[2]
+save_fp = strip_end(save_fp, ".floorplan")
 figure.savefig(save_fp, dpi=90, bbox_inches='tight')

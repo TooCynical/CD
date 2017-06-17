@@ -1,5 +1,3 @@
-# Run a set of edgecases.
-
 for filepath in ./testing/cases/*
 do
     filename=$(basename $filepath)
