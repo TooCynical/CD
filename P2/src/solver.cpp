@@ -6,6 +6,7 @@
  *
  * solver.cpp
  *
+ * Implementation of functionality described in solver.hpp.
  */
 
  #include "solver.hpp"
@@ -187,7 +188,7 @@ Result Solver::solve_instance(Floorplan *&ret) {
     size_t area_lower_bound = get_area_lower_bound();
     size_t height_lower_bound = get_height_lower_bound();
 
-    /* For each order of the sequence pair, get chip with and
+    /* For each order of the sequence pair, get chip width and
      * height, and compare area to previous best. If an improvement
      * is found, store the X and Y coords of the rectangles. */
     do {

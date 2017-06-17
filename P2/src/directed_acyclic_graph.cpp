@@ -113,7 +113,15 @@ Result SequencePairDAG::update() {
 }
 
 vector<size_t> SequencePairDAG::total_weights_in_order() {
-    update();
+    #ifndef OPTIMIZED_BUILD
+    /* In the main routine, it is not needed to do this update,
+     * but it is unsafe otherwise not to update here. */
+    if (update() == FAIL) {
+        cout << "SPDAG: Error: failed to update" << endl;
+        exit(1);
+    }
+    #endif
+    
     vector<size_t> ret(_n, 0);
     for (size_t i = 0; i < _n; i++) {
         ret[_topo_order[i]] = _total_weights[i];
@@ -122,11 +130,10 @@ vector<size_t> SequencePairDAG::total_weights_in_order() {
 }
 
 size_t SequencePairDAG::longest_path_length() {
-    #ifndef OPTIMIZED_BUILD
-    /* In the main routine, it is not needed to do this update,
-     * but it is unsafe otherwise not to update here. */
-    update();
-    #endif
+    if (update() == FAIL) {
+        cout << "SPDAG: Error: failed to update" << endl;
+        exit(1);
+    }
 
     return *max_element(_total_weights.begin(), _total_weights.end());
 }

@@ -19,10 +19,31 @@
 
 typedef enum {VERTICAL_DU, HORIZONTAL_LR, VERTICAL_UD, HORIZONTAL_RL} Orientation;
 
+/* SequencePairDAG is a class that, given a SequencePair of size n, an orientation,
+ * and a vector of n vertex weights represents the Directed Acyclic Graph generated
+ * by the sequence pair for the given orientation and vertex weights. The orientation
+ * here determines in what way the sequence pair determines which edges are in 
+ * the DAG:
+ *      - VERTICAL_DU:      (x, y) in E(DAG) iff x 'below' y in sequence pair.
+ *      - HORIZONTAL_LR:    (x, y) in E(DAG) iff x 'leftof' y in sequence pair.
+ *      - VERTICAL_UD:      (x, y) in E(DAG) iff x 'above' y in sequence pair.
+ *      - HORIZONTAL_RL:    (x, y) in E(DAG) iff x 'rightof' y in sequence pair.
+ *
+ * The SequencePairDAG is able to compute the length of a longest path starting
+ * in each of its vertices, using the topological order algorithm for longest paths
+ * in DAGs. The topological order here can be extracted from one of the sequences
+ * in the sequence pair (details are in the implementation of update_topo_order()).
+ *
+ * Of course, as the order on the sequence pair changes, the DAG will no longer be
+ * up to date, so whenever path lengths are requested the DAG will update all of 
+ * its data (which takes O(n^2) time).
+ *
+ * Detailed information on all members can be found below.
+ */
 class SequencePairDAG {
 private:
     size_t _n;                                  // Number of vertices
-    Orientation _orientation;                   // Orientation of graph.
+    const Orientation _orientation;             // Orientation of graph.
     const std::vector<size_t> &_vertex_weights; // Vertex weights in normal order.
     SequencePair *_seq_pair;                    // Underlying sequence pair of DAG.
 
@@ -59,8 +80,6 @@ public:
 
     /* Return the length of a longest path in the DAG. */
     size_t longest_path_length();
-
-
 };
 
 #endif
