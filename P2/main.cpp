@@ -28,10 +28,11 @@ int main(int argc, const char **argv) {
         exit(1);
     }
 
-    Solver S(inst);
+    Solver solver(inst);
 
     Floorplan *floorplan;
-    S.solve_instance(floorplan);
+    solver.solve_instance(floorplan);
     floorplan->print_floorplan();
+
     return 0;
 }

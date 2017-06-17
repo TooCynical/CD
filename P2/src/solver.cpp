@@ -127,12 +127,25 @@ Result Solver::set_rectangle_heights() {
     return SUCCESS;
 }
 
+
+size_t Solver::get_lower_bound() {
+    /* A trivial lower bound is given by the sums
+     * of the areas of the rectangles. */
+    size_t area_sum = 0;
+    for (size_t i = 0; i < _n; i++)
+        area_sum += _rectangle_widths[i] * _rectangle_heights[i];
+    return area_sum;
+}
+
 Result Solver::solve_instance(Floorplan *&ret) {
     vector<size_t> best_Y_coords;
     vector<size_t> best_X_coords;
     size_t best_area = 0;
     size_t best_width;
     size_t best_height;
+    size_t iteration_count = 0;
+
+    size_t lower_bound = get_lower_bound();
 
     /* For each order of the sequence pair, get chip with and
      * height, and compare area to previous best. If an improvement
@@ -147,7 +160,9 @@ Result Solver::solve_instance(Floorplan *&ret) {
             best_X_coords = _seq_pair_dag_hori->total_weights_in_order();
             best_Y_coords = _seq_pair_dag_vert->total_weights_in_order();
         }
-    } while (_seq_pair->increment() != FAIL);
+    } while (_seq_pair->increment() != FAIL && 
+             iteration_count++ < MAX_ITERATIONS &&
+             best_area > lower_bound);
 
     ret = new Floorplan(_inst,
                         best_width,

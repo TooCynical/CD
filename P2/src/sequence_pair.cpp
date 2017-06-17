@@ -6,15 +6,26 @@
  *
  * sequence_pair.cpp
  *
+ * Implementation of functionality described in sequence_pair.hpp 
  */
 
 #include "sequence_pair.hpp"
 
 using namespace std;
 
-Result Sequence::set_initial_sequence() {
+/* Return a vector (0, 1, ... , n - 1). */
+vector<size_t> OneToN(size_t n) {
+    vector<size_t> ret = vector<size_t>(n, 0);
+    for (size_t i = 0; i < n; i++)
+        ret[i] = i;
+
+    return ret;
+}
+
+Result Sequence::reset() {
     for (size_t i = 0; i < _n; i++)
-        _sequence.push_back(i);
+        _sequence[i] = i;
+    _order_number = 0;
     return SUCCESS;
 }
 
@@ -22,13 +33,10 @@ Result Sequence::set_initial_order_table() {
     if (_order_table_set)
         return FAIL;
 
+    /* Allocate memory. */
     _order_table = (bool**) calloc(_n, sizeof(bool*));
-    for (size_t i = 0; i < _n; i++) {
+    for (size_t i = 0; i < _n; i++)
         _order_table[i] = (bool*) calloc(_n, sizeof(bool));
-        for (size_t j = 0; j < _n; j++) {
-            _order_table[i][j] = (i < j);
-        }
-    }
 
     _order_table_set = true;
     return SUCCESS;
@@ -54,12 +62,14 @@ Result Sequence::update_order_table() {
     return SUCCESS;
 }
 
-Sequence::Sequence(size_t n) : _n(n), _fact_n(Fact(n)) {
-    set_initial_sequence();
-}
+Sequence::Sequence(size_t n) : _n(n), 
+                               _fact_n(Fact(n)),
+                               _sequence(OneToN(n)) 
+{}
 
 Sequence::~Sequence() {
     if (_order_table_set) {
+        /* Free order table. */
         for (size_t i = 0; i < _n; i++) {
             free(_order_table[i]);
         }
@@ -69,9 +79,10 @@ Sequence::~Sequence() {
 
 Result Sequence::increment() {
     next_permutation(_sequence.begin(), _sequence.end());
-
+    
     _order_table_updated = false;
     _order_number = (_order_number + 1) % _fact_n;
+
     if (_order_number == 0)
         return FAIL;
     else 
@@ -80,10 +91,14 @@ Result Sequence::increment() {
 
 bool Sequence::comes_before(const size_t &x, const size_t &y) {
     
+    #ifndef OPTIMIZED_BUILD
+    /* Check that x and y are valid inputs. This is called quite often 
+     * so we do not include it in optimized builds. */
     if (x >= _n || y >= _n) {
         cout << "Sequence: called comes_before for x, y > n" << endl;
         exit(1);
     }
+    #endif
 
     /* Update the order table if needed. */
     if (!_order_table_updated)
@@ -153,14 +168,9 @@ bool SequencePair::above(const size_t &x, const size_t &y) {
 const Sequence &SequencePair::neg_seq() const { return _neg_seq; }
 const Sequence &SequencePair::pos_seq() const { return _pos_seq; }
 
-
 Result SequencePair::print_sequence_pair() const {
     cout << "SP(" << _n << "):" << endl; 
     _pos_seq.print_sequence();
     _neg_seq.print_sequence();
     return SUCCESS;
 }
-
-
-
-    

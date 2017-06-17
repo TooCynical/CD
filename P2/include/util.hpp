@@ -14,6 +14,7 @@
 
 #define MAX_RECT_DIM    1000
 #define MAX_RECTANGLES  32
+#define MAX_ITERATIONS  100000000 
 
 #include <vector>
 #include <stdlib.h>

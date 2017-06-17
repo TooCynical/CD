@@ -66,6 +66,10 @@ private:
     size_t chip_height();
     size_t chip_width();
 
+    /* Compute a lower bound for the chip area required 
+     * in a floorplan for the instance. */
+    size_t get_lower_bound();
+
     Result set_rectangle_widths();
     Result set_rectangle_heights();
 
