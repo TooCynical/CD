@@ -6,6 +6,7 @@
  *
  * parser.hpp
  *
+ * Parsing of files to create instance objects.
  */
 
 #ifndef PARSER_H
@@ -20,6 +21,8 @@
 #include "util.hpp"
 #include "instance.hpp"
 
+/* Read a file and create an Instance object based on its content,
+ * or return FAIL if the file is not formatted correctly. */
 Result ParseFile(const char *filename, Instance &inst);
 
 #endif

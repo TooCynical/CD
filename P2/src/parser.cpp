@@ -6,6 +6,7 @@
  *
  * parser.cpp
  *
+ * Implementation of functionality described in parser.hpp.
  */
 
 #include "parser.hpp"
