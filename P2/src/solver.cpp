@@ -77,6 +77,8 @@ Result Floorplan::print_floorplan() {
     return SUCCESS;
 }
 
+
+
 Solver::Solver(const Instance &inst) : _inst(inst), 
                                        _n(inst.n_rectangles())
 {
@@ -88,14 +90,14 @@ Solver::Solver(const Instance &inst) : _inst(inst),
 
     _seq_pair = new SequencePair(_n);
     
-    /* Make a vertical and a horizontal graph based on the
+    /* Make a vertical and a horizontal constraint graph based on
      * the sequence pair. */
     _seq_pair_dag_vert = new SequencePairDAG(_n,
-                                             VERTICAL, 
+                                             VERTICAL_DU, 
                                             _rectangle_heights,
                                             _seq_pair);
     _seq_pair_dag_hori = new SequencePairDAG(_n,
-                                             HORIZONTAL, 
+                                             HORIZONTAL_LR, 
                                             _rectangle_widths,
                                             _seq_pair);
 }
@@ -120,15 +122,13 @@ Result Solver::set_rectangle_widths() {
     return SUCCESS;
 }
 
-
 Result Solver::set_rectangle_heights() {
     for (size_t i = 0; i < _n; i++)
         _rectangle_heights.push_back(_inst.rectangles()[i].height());
     return SUCCESS;
 }
 
-
-size_t Solver::get_lower_bound() {
+size_t Solver::get_area_lower_bound() {
     /* A trivial lower bound is given by the sums
      * of the areas of the rectangles. */
     size_t area_sum = 0;
@@ -137,21 +137,41 @@ size_t Solver::get_lower_bound() {
     return area_sum;
 }
 
+size_t Solver::get_width_lower_bound() {
+    /* A trivial lower bound is given by the min
+     * of the widths of the rectangles. */
+    return *max_element(_rectangle_widths.begin(), 
+                        _rectangle_widths.end());
+}
+
+size_t Solver::get_height_lower_bound() {
+    /* A trivial lower bound is given by the max
+     * of the heights of the rectangles. */
+    return *max_element(_rectangle_heights.begin(),
+                        _rectangle_heights.end());
+}
+
 Result Solver::solve_instance(Floorplan *&ret) {
     vector<size_t> best_Y_coords;
     vector<size_t> best_X_coords;
     size_t best_area = 0;
-    size_t best_width;
-    size_t best_height;
+    size_t best_width, best_height;
     size_t iteration_count = 0;
 
-    size_t lower_bound = get_lower_bound();
+    size_t area_lower_bound = get_area_lower_bound();
+    size_t height_lower_bound = get_height_lower_bound();
 
     /* For each order of the sequence pair, get chip with and
      * height, and compare area to previous best. If an improvement
      * is found, store the X and Y coords of the rectangles. */
     do {
         size_t W = chip_width();
+
+        /* If width * minimum height > best_area found, 
+         * we need not evaluate the height. */
+        if (W * height_lower_bound > best_area && best_area != 0)
+            continue;
+
         size_t H = chip_height();
         if (W * H < best_area || best_area == 0) {
             best_width = W;
@@ -162,7 +182,7 @@ Result Solver::solve_instance(Floorplan *&ret) {
         }
     } while (_seq_pair->increment() != FAIL && 
              iteration_count++ < MAX_ITERATIONS &&
-             best_area > lower_bound);
+             best_area > area_lower_bound);
 
     ret = new Floorplan(_inst,
                         best_width,

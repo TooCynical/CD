@@ -31,8 +31,9 @@ int main(int argc, const char **argv) {
     Solver solver(inst);
 
     Floorplan *floorplan;
-    solver.solve_instance(floorplan);
-    floorplan->print_floorplan();
-
+    if (solver.solve_instance(floorplan) == FAIL)
+        cout << "Main: something went wrong solving the instance." << endl;
+    else
+        floorplan->print_floorplan();
     return 0;
 }

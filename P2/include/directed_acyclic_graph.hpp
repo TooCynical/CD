@@ -17,7 +17,7 @@
 #include "util.hpp"
 #include "sequence_pair.hpp"
 
-typedef enum {VERTICAL, HORIZONTAL} Orientation;
+typedef enum {VERTICAL_DU, HORIZONTAL_LR, VERTICAL_UD, HORIZONTAL_RL} Orientation;
 
 class SequencePairDAG {
 private:

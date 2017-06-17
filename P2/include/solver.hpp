@@ -14,6 +14,7 @@
 #include <vector>
 #include <stdlib.h>
 #include <iostream>
+#include <algorithm> 
 
 #include "util.hpp"
 #include "instance.hpp"
@@ -51,25 +52,42 @@ public:
 };
 
 
+/* Solver is a class that, given a valid instance of the floorplanning problem,
+ * manages functionality to compute on optimum placement for this instance,
+ * represented by a Floorplan object.
+ * Solver basically acts as a driver for the sequence-pair algorithm. Actual 
+ * computation is performed within the SequencePair and SequencePairDAG classes.
+ *
+ * Solver assumes but does not check that the provided instance object passes
+ * its own verification function. */
 class Solver {
 private:
     const Instance &_inst;          // Underlying instance.
     size_t _n;                      // Number of rectangles in underlying instance.
 
-    std::vector<size_t> _rectangle_widths;
-    std::vector<size_t> _rectangle_heights;
+    std::vector<size_t> _rectangle_widths;  // Widths of rectangles in instance.
+    std::vector<size_t> _rectangle_heights; // Heights of rectangles in instance.
 
-    SequencePair *_seq_pair;
-    SequencePairDAG *_seq_pair_dag_hori;
-    SequencePairDAG *_seq_pair_dag_vert;
+    SequencePair *_seq_pair;                // Sequence pair of size n
+    SequencePairDAG *_seq_pair_dag_hori;    // The horizontal contraint graph
+                                            // based on _seq_pair.
+    SequencePairDAG *_seq_pair_dag_vert;    // The vertical contraint graph
+                                            // based on _seq_pair.
 
+    /* Compute chip width/height resulting from current order of _seq_pair by
+     * computing the length of a longest path in the horizontal/vertical 
+     * constraint graph. */
     size_t chip_height();
     size_t chip_width();
 
-    /* Compute a lower bound for the chip area required 
+    /* Compute a lower bound for the chip area/width/height required 
      * in a floorplan for the instance. */
-    size_t get_lower_bound();
+    size_t get_area_lower_bound();
+    size_t get_width_lower_bound();
+    size_t get_height_lower_bound();
 
+    /* Fetch rectangle widths/heights from the instance and store them
+     * in vectors. */
     Result set_rectangle_widths();
     Result set_rectangle_heights();
 
@@ -77,6 +95,7 @@ public:
     Solver(const Instance &inst);
     ~Solver();
 
+    /* Solve the current instance using the sequence pair method. */
     Result solve_instance(Floorplan *&ret);
 };
 

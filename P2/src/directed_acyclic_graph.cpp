@@ -6,6 +6,7 @@
  *
  * directed_acyclic_graph.cpp
  *
+ * Implementation of functionality described in directed_acyclic_graph.hpp
  */
 
 #include "directed_acyclic_graph.hpp"
@@ -27,12 +28,16 @@ SequencePairDAG::SequencePairDAG(size_t n,
 
 bool SequencePairDAG::is_edge(size_t x, size_t y) {
     switch(_orientation) {
-        case HORIZONTAL:
+        case HORIZONTAL_LR:
             return _seq_pair->leftof(x, y);
-        case VERTICAL:
+        case VERTICAL_DU:
             return _seq_pair->below(x, y);
+        case HORIZONTAL_RL:
+            return _seq_pair->rightof(x, y);
+        case VERTICAL_UD:
+            return _seq_pair->above(x, y);
         default:
-            cout << "Error SequencePairDAG::is_edge defaulted." << endl;
+            cout << "Error: SequencePairDAG::is_edge defaulted." << endl;
             exit(1);
     }
     return 0;
@@ -42,15 +47,28 @@ Result SequencePairDAG::update_topo_order() {
     switch(_orientation) {
         /* As x 'leftof' y implies x < y in the negative sequence,
          * the negative sequene is a topological order for the 
-         * HORIZONTAL DAG. */
-        case HORIZONTAL: 
+         * HORIZONTAL_LR DAG. */
+        case HORIZONTAL_LR: 
             _topo_order = _seq_pair->neg_seq().sequence();
             break;
         /* As x 'below' y implies x < y in the negative sequence,
          * the negative sequene is a topological order for the 
-         * VERTICAL DAG. */    
-        case VERTICAL:
+         * VERTICAL_DU DAG. */    
+        case VERTICAL_DU:
             _topo_order = _seq_pair->neg_seq().sequence();
+            break;
+        /* As x 'rightof' y implies x > y in the negative sequence,
+         * the reverse of the negative sequence is a topological order 
+         * for the HORIZONTAL_RL DAG. */
+        case HORIZONTAL_RL: 
+            _topo_order = _seq_pair->neg_seq().sequence();
+            reverse(_topo_order.begin(), _topo_order.end());
+            break;
+        /* As x 'above' y implies x < y in the positive sequence,
+         * the positive sequence is a topological order for the 
+         * VERTICAL_UD DAG. */    
+        case VERTICAL_UD:
+            _topo_order = _seq_pair->pos_seq().sequence();
             break;
         /* We should never default on this switch. */
         default:
@@ -62,23 +80,23 @@ Result SequencePairDAG::update_topo_order() {
 }
 
 Result SequencePairDAG::update_total_weights() {
-    /* Reset total weights to (initial) vertex_weights 
-     * sorted according to topological order */
+    /* Reset total weights to (initial) vertex weights 
+     * sorted according to topological order. */
     for (size_t i = 0; i < _n; i++)
         _total_weights[i] = _vertex_weights[_topo_order[i]];
 
     /* Apply the topological longest path algorithm for DAGs: */
     /* Loop over vertices in topological order. */
     for (size_t i = 0; i < _n; i++){
-        /* For each (outgoing) neighhbour of current vertex,
+        /* For each (outgoing) neighbour of current vertex,
          * update longest path length if needed. */
         for (size_t j = i+1; j < _n; j++) {
             if (is_edge(_topo_order[i], _topo_order[j])) {
                 if (_total_weights[j] < _total_weights[i] + 
                                         _vertex_weights[_topo_order[j]])
                 {
-                _total_weights[j] = _total_weights[i] + 
-                                    _vertex_weights[_topo_order[j]];
+                    _total_weights[j] = _total_weights[i] + 
+                                        _vertex_weights[_topo_order[j]];
                 }
             }
         }
@@ -104,6 +122,11 @@ vector<size_t> SequencePairDAG::total_weights_in_order() {
 }
 
 size_t SequencePairDAG::longest_path_length() {
+    #ifndef OPTIMIZED_BUILD
+    /* In the main routine, it is not needed to do this update,
+     * but it is unsafe otherwise not to update here. */
     update();
+    #endif
+
     return *max_element(_total_weights.begin(), _total_weights.end());
 }
