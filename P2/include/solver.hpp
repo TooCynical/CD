@@ -24,6 +24,16 @@
 
 typedef enum {UPPER_RIGHT, UPPER_LEFT, LOWER_RIGHT, LOWER_LEFT} Origin; 
 
+/* Floorplan is a class that, given an instance of the floorplanning problem 
+ * and two vectors containing x_coordinates and y_coordinates for each of the 
+ * rectangles in this instance represents a placement for these rectangles.
+ * Floorplan is able to:
+ *      - Accept coordinates for each origin (upper/lower left/right) and
+ *        convert them to lower left coordinates.
+ *      - Output the floorplan in multiple formats, as described below.
+ *      - Verify that the given coordinates represent a valid floorplan.
+ *
+ * Detailed information on all members can be found below. */
 class Floorplan {
 private:
     const Instance &_inst;  // Underlying instance.
@@ -35,11 +45,11 @@ private:
     std::vector<size_t> _x_coords;  // X-coords of rectangles (origin lower-left).
     std::vector<size_t> _y_coords;  // Y-coords of rectangles (origin lower-left).
 
-    /* Convert coords given in constructor (with orientation) to
-     * lower-left orientation. */
+    /* Convert coords given in constructor (with origin) to
+     * lower-left origin. */
     Result set_coords(std::vector<size_t> x_coords,
-                        std::vector<size_t> y_coords,
-                        Origin ori);
+                      std::vector<size_t> y_coords,
+                      Origin ori);
 public:
     Floorplan(const Instance &inst,
               size_t width,
@@ -48,7 +58,15 @@ public:
               std::vector<size_t> y_coords,
               Origin ori);
 
+    /* Check that the given floorplan is valid (i.e. no overlap). */
+    Result verify();
+
+    /* Print the floorplan as per instructions in the exercise. */
     Result print_floorplan();
+
+    /* Print the floorplan, but also add dimensions of each rectangle for
+     * use in the drawer (testing/drawer.py). */
+    Result print_floorplan_with_dimensions();
 };
 
 
@@ -59,7 +77,9 @@ public:
  * computation is performed within the SequencePair and SequencePairDAG classes.
  *
  * Solver assumes but does not check that the provided instance object passes
- * its own verification function. */
+ * its own verification function. 
+ *
+ * Detailed information on all members can be found below. */
 class Solver {
 private:
     const Instance &_inst;          // Underlying instance.
