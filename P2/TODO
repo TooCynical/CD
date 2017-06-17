@@ -1,3 +1,9 @@
 -parser: 
     -Sanitize negative values from input (currently cast to unsigned ints).
 -Sequence: implement set_order(...)
+-Floorplan: 
+    -Implement verify 
+    -(done) Implement print_floorplan_with_dimensions.
+-Drawer: make it use .floorplan-files only
+-command line options:
+    - Floorplan with / without dimensions.

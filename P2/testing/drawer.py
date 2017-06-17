@@ -13,31 +13,30 @@ class Rectangle:
 # This function returns a triple (width, height, [rectangles])
 # given a file representing a floorplan, and a file containing
 # dimensions for rectangles.
-def rectangles_from_file(fplan_fp, dim_fp):
+def rectangles_from_file(fplan_fp):
     count = 0
     rectangles = []
     with open(fplan_fp) as fplan_file:
-        with open(dim_fp) as dim_file:
-            for fplan_line, dim_line in zip(fplan_file, dim_file):
-                if (count == 0):
-                    width = int(fplan_line.split()[0])
-                    height = int(fplan_line.split()[1])
-                else:
-                    rectangles.append(Rectangle(fplan_line.split()[0], \
-                                                fplan_line.split()[1], \
-                                                dim_line.split()[0], \
-                                                dim_line.split()[1]))
-                count += 1
+        for fplan_line in fplan_file:
+            if (count == 0):
+                width = int(fplan_line.split()[0])
+                height = int(fplan_line.split()[1])
+            else:
+                rectangles.append(Rectangle(fplan_line.split()[0], \
+                                            fplan_line.split()[1], \
+                                            fplan_line.split()[2], \
+                                            fplan_line.split()[3]))
+            count += 1
     return width, height, rectangles
 
 
+
 # Get width, height and rectangles from files.
-if (len(sys.argv) < 4):
-    print "Usage: python drawer <floorplan> <dimensions> <output>"
+if (len(sys.argv) < 3):
+    print "Usage: python drawer <floorplan> <output>"
     exit(1)
 fplan_fp = sys.argv[1]
-dim_fp = sys.argv[2]
-width, height, rectangles = rectangles_from_file(fplan_fp, dim_fp)
+width, height, rectangles = rectangles_from_file(fplan_fp)
 
 # Make a width x height figure and add an axis to draw the rectangles.
 figure = plt.figure()
@@ -61,5 +60,5 @@ for rect in rectangles:
     count += 1
 
 # Save the figure.
-save_fp = sys.argv[3]
+save_fp = sys.argv[2]
 figure.savefig(save_fp, dpi=90, bbox_inches='tight')

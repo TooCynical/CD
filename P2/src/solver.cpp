@@ -77,6 +77,15 @@ Result Floorplan::print_floorplan() {
     return SUCCESS;
 }
 
+Result Floorplan::print_floorplan_with_dimensions() {
+    cout << _width << " " << _height << endl;
+    for (size_t i = 0; i < _n; i++) {
+        cout << _x_coords[i] << " " << _y_coords[i] 
+             << " " << _inst.rectangles()[i].width() << " "
+             << _inst.rectangles()[i].height() << endl;
+    }
+    return SUCCESS;
+}
 
 
 Solver::Solver(const Instance &inst) : _inst(inst), 
