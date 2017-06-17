@@ -69,6 +69,23 @@ Result Floorplan::set_coords(vector<size_t> x_coords,
     return SUCCESS;
 }
 
+Result Floorplan::verify() {
+    for (size_t i = 0; i < _n; i++) {
+        for (size_t j = i+1; j < _n; j++) {
+            if (intersect(_inst.rectangles()[i],
+                          _x_coords[i],
+                          _y_coords[i],
+                          _inst.rectangles()[j],
+                          _x_coords[j],
+                          _y_coords[j]))
+            {
+                return FAIL;
+            }
+        }
+    }
+    return SUCCESS;
+}
+
 Result Floorplan::print_floorplan() {
     cout << _width << " " << _height << endl;
     for (size_t i = 0; i < _n; i++) {

@@ -35,4 +35,11 @@ void print_vector(std::vector<size_t> v);
 /* Subtract two unsgined ints and print a warning if underflow occurs. */
 size_t subtract(size_t a, size_t b);
 
+/* Return whether a < b <= c. */
+bool between_left(size_t a, size_t b, size_t c);
+/* Return whether a <= b < c. */
+bool between_right(size_t a, size_t b, size_t c);
+
+
+
 #endif

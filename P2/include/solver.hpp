@@ -37,7 +37,7 @@ typedef enum {UPPER_RIGHT, UPPER_LEFT, LOWER_RIGHT, LOWER_LEFT} Origin;
 class Floorplan {
 private:
     const Instance &_inst;  // Underlying instance.
-    size_t _n;              // Number of rectangles in underlying instance.
+    const size_t _n;        // Number of rectangles in underlying instance.
     
     size_t _width;                  // Width taken by the floorplan.
     size_t _height;                 // Height taken by the floorplan.

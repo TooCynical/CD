@@ -38,3 +38,11 @@ size_t subtract(size_t a, size_t b) {
         cout << "Util: Warning subtract lead to underflow" << endl;
     return a - b;
 }
+
+bool between_right(size_t a, size_t b, size_t c) {
+    return ((a <= b) && (b < c));
+}
+
+bool between_left(size_t a, size_t b, size_t c) {
+    return ((a < b) && (b <= c));
+}

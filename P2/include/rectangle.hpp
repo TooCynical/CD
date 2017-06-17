@@ -30,4 +30,9 @@ public:
     Result print_rectangle() const;
 };
 
+/* Return whether the given rectangles intersect when placed at
+ * the given coordinates. */
+bool intersect(const Rectangle &a, size_t x_a, size_t y_a,
+               const Rectangle &b, size_t x_b, size_t y_b);
+
 #endif
