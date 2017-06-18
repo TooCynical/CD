@@ -62,6 +62,32 @@ Result Sequence::update_order_table() {
     return SUCCESS;
 }
 
+Result Sequence::set_order(size_t order_number) {
+
+    if (order_number >= _fact_n)
+        return FAIL;
+
+    size_t m = _n;
+    size_t k = _fact_n;
+    size_t index;
+    
+    vector<size_t> numbers = OneToN(_n);
+    _order_number = order_number;
+
+    for (size_t i = 0; i < _n; i++) {
+        k /= m;
+        index = order_number / k;
+        
+        _sequence[i] = numbers[index];
+        numbers.erase(numbers.begin() + index);
+        
+        order_number -= index * k;
+        m--;
+    }
+
+    return SUCCESS;
+}
+
 Sequence::Sequence(size_t n) : _n(n), 
                                _fact_n(Fact(n)),
                                _sequence(OneToN(n)) 

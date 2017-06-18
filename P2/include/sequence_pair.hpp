@@ -68,7 +68,7 @@ public:
     /* Set sequence to (0, 1, ... , n-1) */
     Result reset();
 
-    /* Set the order to match the given order number in O(n). */
+    /* Set the order to match the given order number in O(n^2). */
     Result set_order(size_t order_number);
 
     /* Return whether x comes before y in the sequence using the order table. */
