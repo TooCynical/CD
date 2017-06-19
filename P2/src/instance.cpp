@@ -13,15 +13,15 @@
 
 using namespace std;
 
-Result Instance::set_rectangles(size_t n_rectangles, 
-                                unsigned int **rectangle_dims)
+Result Instance::set_rectangles(unsigned n_rectangles, 
+                                unsigned **rectangle_dims)
 {
     if (_rectangles_set)
         return FAIL;
 
     _n_rectangles = n_rectangles;
     Result res;
-    for (size_t i = 0; i < n_rectangles; i++) {
+    for (unsigned i = 0; i < n_rectangles; i++) {
         res = add_rectangle(rectangle_dims[i][0], rectangle_dims[i][1]);
         if (res == FAIL)
             return FAIL;
@@ -31,9 +31,9 @@ Result Instance::set_rectangles(size_t n_rectangles,
     return SUCCESS;
 }
 
-Result Instance::add_rectangle(unsigned int width, unsigned int height) {
+Result Instance::add_rectangle(unsigned width, unsigned height) {
     /* First get an id for the rectangle if possible. */
-    size_t id;
+    unsigned id;
     if (_id_gen.get_id(id) == FAIL)
         return FAIL;
 
@@ -51,7 +51,7 @@ Result Instance::verify() const {
     /* Check that the dimensions of each rectangle are in bounds,
      * and that the id of each rectangle corresponds to their location
      * in the array, thus automatically checking that ids are unique. */
-    for (size_t i = 0; i < _n_rectangles; i++) {
+    for (unsigned i = 0; i < _n_rectangles; i++) {
         if (_rectangles[i].height() > MAX_RECT_DIM ||
             _rectangles[i].width() > MAX_RECT_DIM  ||
             _rectangles[i].id() != i)
@@ -66,7 +66,7 @@ const vector<Rectangle> &Instance::rectangles() const {
     return _rectangles;
 }
 
-size_t Instance::n_rectangles() const { return _n_rectangles; }
+unsigned Instance::n_rectangles() const { return _n_rectangles; }
 
 Result Instance::print_rectangles() const {
     if (!_rectangles_set) {
@@ -74,13 +74,13 @@ Result Instance::print_rectangles() const {
         exit(1);
     }
 
-    for (size_t i = 0; i < _n_rectangles; i++) {
+    for (unsigned i = 0; i < _n_rectangles; i++) {
         _rectangles[i].print_rectangle();
     }
     return SUCCESS;
 }
 
-Result IdHelper::get_id(size_t &ret) { 
+Result IdHelper::get_id(unsigned &ret) { 
     if (_current_id == SIZE_MAX)
         return FAIL;
 

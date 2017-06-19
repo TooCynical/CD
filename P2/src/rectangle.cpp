@@ -13,7 +13,7 @@
 
 using namespace std;
 
-Rectangle::Rectangle(unsigned int width, unsigned int height, size_t id) : 
+Rectangle::Rectangle(unsigned width, unsigned height, unsigned id) : 
                     _width(width), _height(height), _id(id)
 {}
 
@@ -23,22 +23,22 @@ Result Rectangle::print_rectangle() const {
     return SUCCESS;
 }
 
-const unsigned int &Rectangle::width() const { return _width; }
-const unsigned int &Rectangle::height() const { return _height; }
-const size_t &Rectangle::id() const { return _id; }
+const unsigned &Rectangle::width() const { return _width; }
+const unsigned &Rectangle::height() const { return _height; }
+const unsigned &Rectangle::id() const { return _id; }
 
-bool intersect(const Rectangle &a, size_t x_a, size_t y_a,
-               const Rectangle &b, size_t x_b, size_t y_b)
+bool intersect(const Rectangle &a, unsigned x_a, unsigned y_a,
+               const Rectangle &b, unsigned x_b, unsigned y_b)
 {
-    size_t x_max_a = x_a + a.width();
-    size_t x_min_a = x_a;
-    size_t y_max_a = y_a + a.height();
-    size_t y_min_a = y_a;
+    unsigned x_max_a = x_a + a.width();
+    unsigned x_min_a = x_a;
+    unsigned y_max_a = y_a + a.height();
+    unsigned y_min_a = y_a;
 
-    size_t x_max_b = x_b + b.width();
-    size_t x_min_b = x_b;
-    size_t y_max_b = y_b + b.height();
-    size_t y_min_b = y_b;
+    unsigned x_max_b = x_b + b.width();
+    unsigned x_min_b = x_b;
+    unsigned y_max_b = y_b + b.height();
+    unsigned y_min_b = y_b;
 
     /* Horrible logic... */
     return ((between_right(x_min_b, x_min_a, x_max_b) || 

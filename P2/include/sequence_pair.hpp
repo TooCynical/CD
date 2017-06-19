@@ -35,15 +35,15 @@
  * Detailed information on all members can be found below. */
 class Sequence {
 private:
-    const size_t _n;            // Number of elements in sequence.
-    const size_t _fact_n;       // Factorial(n).
-    size_t _order_number = 0;   // The index of the current order of the sequence,
+    const unsigned _n;            // Number of elements in sequence.
+    const unsigned _fact_n;       // Factorial(n).
+    unsigned _order_number = 0;   // The index of the current order of the sequence,
                                 // according to lexicographical ordering on the 
                                 // sequence (1, 2, ... , n). Member functions
                                 // changing the order are responsible for keeping
                                 // this accurate.
 
-    std::vector<size_t> _sequence;      // The current (ordered) sequence.
+    std::vector<unsigned> _sequence;      // The current (ordered) sequence.
 
     bool **_order_table;                // nxn table where entry at (i, j) is true
                                         // if i comes before j in the sequence.
@@ -57,7 +57,7 @@ private:
     Result set_initial_order_table();
 
 public:
-    Sequence(size_t n);
+    Sequence(unsigned n);
     ~Sequence();
 
     /* Change the ordering of the sequence to the lexicographically smallest
@@ -69,14 +69,14 @@ public:
     Result reset();
 
     /* Set the order to match the given order number in O(n^2). */
-    Result set_order(size_t order_number);
+    Result set_order(unsigned order_number);
 
     /* Return whether x comes before y in the sequence using the order table. */
-    bool comes_before(const size_t &x, const size_t &y);
+    bool comes_before(const unsigned &x, const unsigned &y);
     
     /* Accessors. */
-    const size_t &order_number() const;
-    const std::vector<size_t> &sequence() const;
+    const unsigned &order_number() const;
+    const std::vector<unsigned> &sequence() const;
 
     /* IO-functions for testing. */
     Result print_sequence() const;
@@ -96,13 +96,13 @@ public:
  * Detailed information on all members can be found below. */
 class SequencePair {
 private:
-    const size_t _n;        // Number of elements in each of the sequences.
-    const size_t _fact_n;   // Fact(n).
+    const unsigned _n;        // Number of elements in each of the sequences.
+    const unsigned _fact_n;   // Fact(n).
     
     Sequence _pos_seq;      // Positive sequence.
     Sequence _neg_seq;      // Negative sequence.
 public:
-    SequencePair(size_t n);
+    SequencePair(unsigned n);
 
     /* Increment the negative sequence. If this causes the negative sequence
      * to be reset, increment the positive sequence as well. If this causes
@@ -110,14 +110,21 @@ public:
      * incrementing a 2-digit number in n!-ary counting. */
     Result increment();
 
+    /* Reset both the negative and positive sequence. */
+    Result reset();
+
+    /* Set order number for positive and negative sequence. */
+    Result set_orders(unsigned pos_order_number, unsigned neg_order_number);
+
+
     /* Return whether x is 'below' y in the sequence pair. */
-    bool below(const size_t &x, const size_t &y);
+    bool below(const unsigned &x, const unsigned &y);
     /* Return whether x is 'left of' y in the sequence pair. */
-    bool leftof(const size_t &x, const size_t &y);
+    bool leftof(const unsigned &x, const unsigned &y);
     /* Return whether x is 'right of' y in the sequence pair. */
-    bool rightof(const size_t &x, const size_t &y);
+    bool rightof(const unsigned &x, const unsigned &y);
     /* Return whether x is 'above' y in the sequence pair. */
-    bool above(const size_t &x, const size_t &y);
+    bool above(const unsigned &x, const unsigned &y);
 
     /* Accessors */
     const Sequence &neg_seq() const;

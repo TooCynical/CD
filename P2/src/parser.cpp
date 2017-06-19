@@ -14,8 +14,8 @@
 using namespace std;
 
 Result ReadRectangleDimensions(fstream &input_file, 
-                               unsigned int **rectangle_dims,
-                               size_t n)
+                               unsigned **rectangle_dims,
+                               unsigned n)
 {
     string line;
     unsigned int width, height;
@@ -23,7 +23,7 @@ Result ReadRectangleDimensions(fstream &input_file,
     getline(input_file, line);
 
     /* Read n lines and fetch two unsigned ints from each of them. */
-    for (size_t i = 0; i < n; i++) {
+    for (unsigned i = 0; i < n; i++) {
         getline(input_file, line);
         istringstream line_stream(line);
         if (line_stream >> width >> height) {
@@ -37,7 +37,7 @@ Result ReadRectangleDimensions(fstream &input_file,
 }
 
 Result ParseFile(const char *file_name, Instance &inst) {
-    size_t n;
+    unsigned n;
 
     /* Try to open file. */
     fstream input_file(file_name);
@@ -56,9 +56,9 @@ Result ParseFile(const char *file_name, Instance &inst) {
 
     /* Try to read rectangles dims line by line. */
     unsigned int **rectangle_dims;
-    rectangle_dims = (unsigned int **) calloc(n, sizeof(unsigned int*));
-    for (size_t i = 0; i < n; i++)
-        rectangle_dims[i] = (unsigned int *) calloc(2, sizeof(unsigned int));
+    rectangle_dims = (unsigned**) calloc(n, sizeof(unsigned*));
+    for (unsigned i = 0; i < n; i++)
+        rectangle_dims[i] = (unsigned*) calloc(2, sizeof(unsigned));
 
     if (ReadRectangleDimensions(input_file, rectangle_dims, n) == FAIL) {
         cout << "ParseFile: Failed to read rectangle dimensions" << endl;

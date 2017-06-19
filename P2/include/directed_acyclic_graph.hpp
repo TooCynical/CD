@@ -42,13 +42,13 @@ typedef enum {VERTICAL_DU, HORIZONTAL_LR, VERTICAL_UD, HORIZONTAL_RL} Orientatio
  */
 class SequencePairDAG {
 private:
-    size_t _n;                                  // Number of vertices
+    unsigned _n;                                  // Number of vertices
     const Orientation _orientation;             // Orientation of graph.
-    const std::vector<size_t> &_vertex_weights; // Vertex weights in normal order.
+    const std::vector<unsigned> &_vertex_weights; // Vertex weights in normal order.
     SequencePair *_seq_pair;                    // Underlying sequence pair of DAG.
 
-    std::vector<size_t> _topo_order;    // Topological order of the DAG.
-    std::vector<size_t> _total_weights; // Longest path lengths in the DAG in 
+    std::vector<unsigned> _topo_order;    // Topological order of the DAG.
+    std::vector<unsigned> _total_weights; // Longest path lengths in the DAG in 
                                         // topological order.
 
     /* Update topological order to reflect the current situation in the 
@@ -66,20 +66,20 @@ private:
     /* Return whether there is an edge between vertex x and y in the DAG,
      * based on the 'below', 'leftof', 'rightof' or 'above' relation in the
      * underlying sequence pair, depending on the orientation of the DAG. */
-    bool is_edge(size_t x, size_t y);
+    bool is_edge(unsigned x, unsigned y);
 
 public:
-    SequencePairDAG(size_t n,
+    SequencePairDAG(unsigned n,
                     Orientation orientation,
-                    std::vector<size_t> &vertex_weights,
+                    std::vector<unsigned> &vertex_weights,
                     SequencePair *seq_pair);
     
     /* Return the total weights of the vertices of the DAG (as opposed to 
      * the ordering the DAG keeps, which is topological). */
-    std::vector<size_t> total_weights_in_order();
+    std::vector<unsigned> total_weights_in_order();
 
     /* Return the length of a longest path in the DAG. */
-    size_t longest_path_length();
+    unsigned longest_path_length();
 };
 
 #endif

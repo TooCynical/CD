@@ -37,25 +37,25 @@ typedef enum {UPPER_RIGHT, UPPER_LEFT, LOWER_RIGHT, LOWER_LEFT} Origin;
 class Floorplan {
 private:
     const Instance &_inst;  // Underlying instance.
-    const size_t _n;        // Number of rectangles in underlying instance.
+    const unsigned _n;        // Number of rectangles in underlying instance.
     
-    size_t _width;                  // Width taken by the floorplan.
-    size_t _height;                 // Height taken by the floorplan.
-    size_t _area;                   // Area taken by the floorplan.
-    std::vector<size_t> _x_coords;  // X-coords of rectangles (origin lower-left).
-    std::vector<size_t> _y_coords;  // Y-coords of rectangles (origin lower-left).
+    unsigned _width;                  // Width taken by the floorplan.
+    unsigned _height;                 // Height taken by the floorplan.
+    unsigned _area;                   // Area taken by the floorplan.
+    std::vector<unsigned> _x_coords;  // X-coords of rectangles (origin lower-left).
+    std::vector<unsigned> _y_coords;  // Y-coords of rectangles (origin lower-left).
 
     /* Convert coords given in constructor (with origin) to
      * lower-left origin. */
-    Result set_coords(std::vector<size_t> x_coords,
-                      std::vector<size_t> y_coords,
+    Result set_coords(std::vector<unsigned> x_coords,
+                      std::vector<unsigned> y_coords,
                       Origin ori);
 public:
     Floorplan(const Instance &inst,
-              size_t width,
-              size_t height,
-              std::vector<size_t> x_coords,
-              std::vector<size_t> y_coords,
+              unsigned width,
+              unsigned height,
+              std::vector<unsigned> x_coords,
+              std::vector<unsigned> y_coords,
               Origin ori);
 
     /* Check that the given floorplan is valid (i.e. no overlap). */
@@ -83,10 +83,11 @@ public:
 class Solver {
 private:
     const Instance &_inst;          // Underlying instance.
-    size_t _n;                      // Number of rectangles in underlying instance.
+    unsigned _n;                      // Number of rectangles in underlying instance.
+    unsigned _n_fact;                 // fact(n).
 
-    std::vector<size_t> _rectangle_widths;  // Widths of rectangles in instance.
-    std::vector<size_t> _rectangle_heights; // Heights of rectangles in instance.
+    std::vector<unsigned> _rectangle_widths;  // Widths of rectangles in instance.
+    std::vector<unsigned> _rectangle_heights; // Heights of rectangles in instance.
 
     SequencePair *_seq_pair;                // Sequence pair of size n
     SequencePairDAG *_seq_pair_dag_hori;    // The horizontal contraint graph
@@ -97,14 +98,14 @@ private:
     /* Compute chip width/height resulting from current order of _seq_pair by
      * computing the length of a longest path in the horizontal/vertical 
      * constraint graph. */
-    size_t chip_height();
-    size_t chip_width();
+    unsigned chip_height();
+    unsigned chip_width();
 
     /* Compute a lower bound for the chip area/width/height required 
      * in a floorplan for the instance. */
-    size_t get_area_lower_bound();
-    size_t get_width_lower_bound();
-    size_t get_height_lower_bound();
+    unsigned get_area_lower_bound();
+    unsigned get_width_lower_bound();
+    unsigned get_height_lower_bound();
 
     /* Fetch rectangle widths/heights from the instance and store them
      * in vectors. */
@@ -115,8 +116,13 @@ public:
     Solver(const Instance &inst);
     ~Solver();
 
-    /* Solve the current instance using the sequence pair method. */
-    Result solve_instance(Floorplan *&ret);
+    /* Solve the current instance using the sequence pair method. 
+     * The offset argument can be used to set the starting order
+     * number for the positive sequence, and the max_iter argument
+     * can be used to set a maximum amount of orders to be checked
+     * (use 0 for no bound). */
+    Result solve_instance(Floorplan *&ret, unsigned offset, unsigned max_iter);
+    Result solve_instance_parallel(Floorplan *&ret, unsigned n_threads);
 };
 
 #endif

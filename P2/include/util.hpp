@@ -12,33 +12,36 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-#define MAX_RECT_DIM    1000
+#define MAX_RECT_DIM    1000000000
 #define MAX_RECTANGLES  32
 #define MAX_ITERATIONS  100000000
 
 #include <vector>
 #include <stdlib.h>
 #include <iostream>
+#include <climits>
+ #include <stdint.h>
+
 
 /* The result type used instead of something unclear like return 0. */
 typedef enum Result { FAIL, SUCCESS } Result; 
 
 /* Free a 2D int array of given width. */
-Result Free2DArray(unsigned int** array, size_t n);
+Result Free2DArray(unsigned** array, unsigned n);
 
 /* Factorial function. */
-size_t Fact(size_t n);
+unsigned Fact(unsigned n);
 
 /* Print a vector. */
-void print_vector(std::vector<size_t> v);
+void print_vector(std::vector<unsigned> v);
 
-/* Subtract two unsgined ints and print a warning if underflow occurs. */
-size_t subtract(size_t a, size_t b);
+/* Subtract two unsgined ints throwing an exception upon underflow. */
+unsigned subtract(unsigned a, unsigned b);
 
 /* Return whether a < b <= c. */
-bool between_left(size_t a, size_t b, size_t c);
+bool between_left(unsigned a, unsigned b, unsigned c);
 /* Return whether a <= b < c. */
-bool between_right(size_t a, size_t b, size_t c);
+bool between_right(unsigned a, unsigned b, unsigned c);
 
 
 

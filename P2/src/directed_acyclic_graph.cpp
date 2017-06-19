@@ -13,20 +13,20 @@
 
 using namespace std;
 
-SequencePairDAG::SequencePairDAG(size_t n,
+SequencePairDAG::SequencePairDAG(unsigned n,
                                  Orientation orientation,
-                                 vector<size_t> &vertex_weights,
+                                 vector<unsigned> &vertex_weights,
                                  SequencePair *seq_pair) :
                                  _n(n),
                                  _orientation(orientation),
                                  _vertex_weights(vertex_weights),
                                  _seq_pair(seq_pair)
 {
-    _total_weights = vector<size_t >(_n, 0);
+    _total_weights = vector<unsigned >(_n, 0);
     update();
 }
 
-bool SequencePairDAG::is_edge(size_t x, size_t y) {
+bool SequencePairDAG::is_edge(unsigned x, unsigned y) {
     switch(_orientation) {
         case HORIZONTAL_LR:
             return _seq_pair->leftof(x, y);
@@ -82,15 +82,15 @@ Result SequencePairDAG::update_topo_order() {
 Result SequencePairDAG::update_total_weights() {
     /* Reset total weights to (initial) vertex weights 
      * sorted according to topological order. */
-    for (size_t i = 0; i < _n; i++)
+    for (unsigned i = 0; i < _n; i++)
         _total_weights[i] = _vertex_weights[_topo_order[i]];
 
     /* Apply the topological longest path algorithm for DAGs: */
     /* Loop over vertices in topological order. */
-    for (size_t i = 0; i < _n; i++){
+    for (unsigned i = 0; i < _n; i++){
         /* For each (outgoing) neighbour of current vertex,
          * update longest path length if needed. */
-        for (size_t j = i+1; j < _n; j++) {
+        for (unsigned j = i+1; j < _n; j++) {
             if (is_edge(_topo_order[i], _topo_order[j])) {
                 if (_total_weights[j] < _total_weights[i] + 
                                         _vertex_weights[_topo_order[j]])
@@ -112,7 +112,7 @@ Result SequencePairDAG::update() {
     return SUCCESS;
 }
 
-vector<size_t> SequencePairDAG::total_weights_in_order() {
+vector<unsigned> SequencePairDAG::total_weights_in_order() {
     #ifndef OPTIMIZED_BUILD
     /* In the main routine, it is not needed to do this update,
      * but it is unsafe otherwise not to update here. */
@@ -122,14 +122,14 @@ vector<size_t> SequencePairDAG::total_weights_in_order() {
     }
     #endif
     
-    vector<size_t> ret(_n, 0);
-    for (size_t i = 0; i < _n; i++) {
+    vector<unsigned> ret(_n, 0);
+    for (unsigned i = 0; i < _n; i++) {
         ret[_topo_order[i]] = _total_weights[i];
     }
     return ret;
 }
 
-size_t SequencePairDAG::longest_path_length() {
+unsigned SequencePairDAG::longest_path_length() {
     if (update() == FAIL) {
         cout << "SPDAG: Error: failed to update" << endl;
         exit(1);

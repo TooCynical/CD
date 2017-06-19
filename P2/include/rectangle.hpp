@@ -19,15 +19,15 @@
  * Essentially this is a fancy wrapper for two unsigned ints. */
 class Rectangle {
 private:
-    const unsigned int _width;
-    const unsigned int _height;
-    const size_t _id;
+    const unsigned _width;
+    const unsigned _height;
+    const unsigned _id;
 
 public:
-    Rectangle(unsigned int width, unsigned int height, size_t id); 
-    const unsigned int &width() const;
-    const unsigned int &height() const;
-    const size_t &id() const;
+    Rectangle(unsigned width, unsigned height, unsigned id); 
+    const unsigned &width() const;
+    const unsigned &height() const;
+    const unsigned &id() const;
 
     /* IO-functions for testing. */
     Result print_rectangle() const;
@@ -35,7 +35,7 @@ public:
 
 /* Return whether the given rectangles intersect when placed at
  * the given coordinates. */
-bool intersect(const Rectangle &a, size_t x_a, size_t y_a,
-               const Rectangle &b, size_t x_b, size_t y_b);
+bool intersect(const Rectangle &a, unsigned x_a, unsigned y_a,
+               const Rectangle &b, unsigned x_b, unsigned y_b);
 
 #endif

@@ -16,9 +16,9 @@
 
 class IdHelper {
 private:
-    size_t _current_id = 0;
+    unsigned _current_id = 0;
 public:
-    Result get_id(size_t &ret);
+    Result get_id(unsigned &ret);
 };
 
 /* Instance is a class that, given a nonnegative integer n, and a nx2 array 
@@ -30,7 +30,7 @@ public:
 class Instance {
 private:
     std::vector<Rectangle> _rectangles;     // Rectangles that make up the instance.
-    size_t _n_rectangles;                   // Number of rectangles in instance.
+    unsigned _n_rectangles;                   // Number of rectangles in instance.
     bool _rectangles_set = false;           // Have the rectangles been set yet?
 
     IdHelper _id_gen;                       // Object that generates IDs.
@@ -40,14 +40,14 @@ private:
 
 public:
     /* Set Rectangles for this instances given an nx2 array: nx(width height). */
-    Result set_rectangles(size_t n_rectangles, unsigned int **rectangle_dims);
+    Result set_rectangles(unsigned n_rectangles, unsigned int **rectangle_dims);
 
     /* Verify the instance. */
     Result verify() const;
 
     /* Accessors. */
     const std::vector<Rectangle> &rectangles() const;
-    size_t n_rectangles() const;
+    unsigned n_rectangles() const;
 
     /* IO-functions for testing. */
     Result print_rectangles() const;
