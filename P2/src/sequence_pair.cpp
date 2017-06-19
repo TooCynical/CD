@@ -14,16 +14,16 @@
 using namespace std;
 
 /* Return a vector (0, 1, ... , n - 1). */
-vector<unsigned> OneToN(unsigned n) {
-    vector<unsigned> ret = vector<unsigned>(n, 0);
-    for (unsigned i = 0; i < n; i++)
+vector<unsigned long long> OneToN(unsigned long long n) {
+    vector<unsigned long long> ret = vector<unsigned long long>(n, 0);
+    for (unsigned long long i = 0; i < n; i++)
         ret[i] = i;
 
     return ret;
 }
 
 Result Sequence::reset() {
-    for (unsigned i = 0; i < _n; i++)
+    for (unsigned long long i = 0; i < _n; i++)
         _sequence[i] = i;
     _order_number = 0;
     return SUCCESS;
@@ -35,7 +35,7 @@ Result Sequence::set_initial_order_table() {
 
     /* Allocate memory. */
     _order_table = (bool**) calloc(_n, sizeof(bool*));
-    for (unsigned i = 0; i < _n; i++)
+    for (unsigned long long i = 0; i < _n; i++)
         _order_table[i] = (bool*) calloc(_n, sizeof(bool));
 
     _order_table_set = true;
@@ -49,8 +49,8 @@ Result Sequence::update_order_table() {
     if (!_order_table_set)
         set_initial_order_table();
 
-    for (unsigned i = 0; i < _n; i++) {
-        for (unsigned j = 0; j < _n; j++) {
+    for (unsigned long long i = 0; i < _n; i++) {
+        for (unsigned long long j = 0; j < _n; j++) {
             if (i < j)
                 _order_table[_sequence[i]][_sequence[j]] = true;
             else
@@ -62,19 +62,19 @@ Result Sequence::update_order_table() {
     return SUCCESS;
 }
 
-Result Sequence::set_order(unsigned order_number) {
+Result Sequence::set_order(unsigned long long order_number) {
 
     if (order_number >= _fact_n)
         return FAIL;
 
-    unsigned m = _n;
-    unsigned k = _fact_n;
-    unsigned index;
+    unsigned long long m = _n;
+    unsigned long long k = _fact_n;
+    unsigned long long index;
     
-    vector<unsigned> numbers = OneToN(_n);
+    vector<unsigned long long> numbers = OneToN(_n);
     _order_number = order_number;
 
-    for (unsigned i = 0; i < _n; i++) {
+    for (unsigned long long i = 0; i < _n; i++) {
         k /= m;
         index = order_number / k;
         
@@ -88,7 +88,7 @@ Result Sequence::set_order(unsigned order_number) {
     return SUCCESS;
 }
 
-Sequence::Sequence(unsigned n) : _n(n), 
+Sequence::Sequence(unsigned long long n) : _n(n), 
                                _fact_n(Fact(n)),
                                _sequence(OneToN(n)) 
 {}
@@ -96,7 +96,7 @@ Sequence::Sequence(unsigned n) : _n(n),
 Sequence::~Sequence() {
     if (_order_table_set) {
         /* Free order table. */
-        for (unsigned i = 0; i < _n; i++) {
+        for (unsigned long long i = 0; i < _n; i++) {
             free(_order_table[i]);
         }
         free(_order_table);
@@ -115,7 +115,7 @@ Result Sequence::increment() {
         return SUCCESS;
 }
 
-bool Sequence::comes_before(const unsigned &x, const unsigned &y) {
+bool Sequence::comes_before(const unsigned long long &x, const unsigned long long &y) {
     
     #ifndef OPTIMIZED_BUILD
     /* Check that x and y are valid inputs. This is called quite often 
@@ -133,12 +133,12 @@ bool Sequence::comes_before(const unsigned &x, const unsigned &y) {
     return _order_table[x][y];
 }
 
-const unsigned &Sequence::order_number() const { return _order_number; }
-const vector<unsigned> &Sequence::sequence() const { return _sequence; }
+const unsigned long long &Sequence::order_number() const { return _order_number; }
+const vector<unsigned long long> &Sequence::sequence() const { return _sequence; }
 
 Result Sequence::print_sequence() const {
     cout << "S(" << _n << ")@" << _order_number << ": (";
-    for (unsigned i = 0; i < _n; i++) {
+    for (unsigned long long i = 0; i < _n; i++) {
         cout << _sequence[i];
         if (i < _n - 1)
             cout << ", ";
@@ -152,8 +152,8 @@ Result Sequence::print_order_table() {
     if (!_order_table_updated)
         update_order_table();
 
-    for (unsigned i = 0; i < _n; i++) {
-        for (unsigned j = 0; j < _n; j++) {
+    for (unsigned long long i = 0; i < _n; i++) {
+        for (unsigned long long j = 0; j < _n; j++) {
             cout << _order_table[i][j] << " ";
         }
         cout << endl;
@@ -163,7 +163,7 @@ Result Sequence::print_order_table() {
 
 
 
-SequencePair::SequencePair(unsigned n) : _n(n), 
+SequencePair::SequencePair(unsigned long long n) : _n(n), 
                                        _fact_n(Fact(n)),
                                        _pos_seq(Sequence(n)),
                                        _neg_seq(Sequence(n))
@@ -185,8 +185,8 @@ Result SequencePair::reset() {
         return FAIL;
 }
 
-Result SequencePair::set_orders(unsigned pos_order_number, 
-                                unsigned neg_order_number)
+Result SequencePair::set_orders(unsigned long long pos_order_number, 
+                                unsigned long long neg_order_number)
 {
     if (_neg_seq.set_order(neg_order_number) != FAIL && 
         _pos_seq.set_order(pos_order_number) != FAIL) 
@@ -197,16 +197,16 @@ Result SequencePair::set_orders(unsigned pos_order_number,
         return FAIL;    
 }
 
-bool SequencePair::below(const unsigned &x, const unsigned &y) {
+bool SequencePair::below(const unsigned long long &x, const unsigned long long &y) {
     return (_neg_seq.comes_before(x, y) && !_pos_seq.comes_before(x, y));
 }
-bool SequencePair::leftof(const unsigned &x, const unsigned &y) {
+bool SequencePair::leftof(const unsigned long long &x, const unsigned long long &y) {
     return (_neg_seq.comes_before(x, y) && _pos_seq.comes_before(x, y));
 }
-bool SequencePair::rightof(const unsigned &x, const unsigned &y) {
+bool SequencePair::rightof(const unsigned long long &x, const unsigned long long &y) {
     return (!_neg_seq.comes_before(x, y) && !_pos_seq.comes_before(x, y));
 }
-bool SequencePair::above(const unsigned &x, const unsigned &y) {
+bool SequencePair::above(const unsigned long long &x, const unsigned long long &y) {
     return (_neg_seq.comes_before(x, y) && !_pos_seq.comes_before(x, y));
 }
 

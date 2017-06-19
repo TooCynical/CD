@@ -28,16 +28,6 @@ int main(int argc, const char **argv) {
         exit(1);
     }
 
-    unsigned long i = 0;
-    cout << --i << endl;
-
-    unsigned j = 0;
-    cout << --j << endl;
-
-    int k = INT_MAX;
-    cout << k << endl;
-    cout << j / ((unsigned) k) << endl;
-
     Solver solver(inst);
     Floorplan *floorplan;
 
