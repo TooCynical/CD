@@ -13,15 +13,15 @@
 
 using namespace std;
 
-Result Instance::set_rectangles(unsigned long long n_rectangles, 
-                                unsigned long long **rectangle_dims)
+Result Instance::set_rectangles(uint64_t n_rectangles, 
+                                uint64_t **rectangle_dims)
 {
     if (_rectangles_set)
         return FAIL;
 
     _n_rectangles = n_rectangles;
     Result res;
-    for (unsigned long long i = 0; i < n_rectangles; i++) {
+    for (uint64_t i = 0; i < n_rectangles; i++) {
         res = add_rectangle(rectangle_dims[i][0], rectangle_dims[i][1]);
         if (res == FAIL)
             return FAIL;
@@ -31,9 +31,9 @@ Result Instance::set_rectangles(unsigned long long n_rectangles,
     return SUCCESS;
 }
 
-Result Instance::add_rectangle(unsigned long long width, unsigned long long height) {
+Result Instance::add_rectangle(uint64_t width, uint64_t height) {
     /* First get an id for the rectangle if possible. */
-    unsigned long long id;
+    uint64_t id;
     if (_id_gen.get_id(id) == FAIL)
         return FAIL;
 
@@ -51,7 +51,7 @@ Result Instance::verify() const {
     /* Check that the dimensions of each rectangle are in bounds,
      * and that the id of each rectangle corresponds to their location
      * in the array, thus automatically checking that ids are unique. */
-    for (unsigned long long i = 0; i < _n_rectangles; i++) {
+    for (uint64_t i = 0; i < _n_rectangles; i++) {
         if (_rectangles[i].height() > MAX_RECT_DIM ||
             _rectangles[i].width() > MAX_RECT_DIM  ||
             _rectangles[i].id() != i)
@@ -66,7 +66,7 @@ const vector<Rectangle> &Instance::rectangles() const {
     return _rectangles;
 }
 
-unsigned long long Instance::n_rectangles() const { return _n_rectangles; }
+uint64_t Instance::n_rectangles() const { return _n_rectangles; }
 
 Result Instance::print_rectangles() const {
     if (!_rectangles_set) {
@@ -74,13 +74,13 @@ Result Instance::print_rectangles() const {
         exit(1);
     }
 
-    for (unsigned long long i = 0; i < _n_rectangles; i++) {
+    for (uint64_t i = 0; i < _n_rectangles; i++) {
         _rectangles[i].print_rectangle();
     }
     return SUCCESS;
 }
 
-Result IdHelper::get_id(unsigned long long &ret) { 
+Result IdHelper::get_id(uint64_t &ret) { 
     if (_current_id == SIZE_MAX)
         return FAIL;
 

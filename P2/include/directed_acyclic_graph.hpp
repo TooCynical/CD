@@ -42,13 +42,13 @@ typedef enum {VERTICAL_DU, HORIZONTAL_LR, VERTICAL_UD, HORIZONTAL_RL} Orientatio
  */
 class SequencePairDAG {
 private:
-    unsigned long long _n;                                  // Number of vertices
+    uint64_t _n;                                  // Number of vertices
     const Orientation _orientation;             // Orientation of graph.
-    const std::vector<unsigned long long> &_vertex_weights; // Vertex weights in normal order.
+    const std::vector<uint64_t> &_vertex_weights; // Vertex weights in normal order.
     SequencePair *_seq_pair;                    // Underlying sequence pair of DAG.
 
-    std::vector<unsigned long long> _topo_order;    // Topological order of the DAG.
-    std::vector<unsigned long long> _total_weights; // Longest path lengths in the DAG in 
+    std::vector<uint64_t> _topo_order;    // Topological order of the DAG.
+    std::vector<uint64_t> _total_weights; // Longest path lengths in the DAG in 
                                         // topological order.
 
     /* Update topological order to reflect the current situation in the 
@@ -66,20 +66,20 @@ private:
     /* Return whether there is an edge between vertex x and y in the DAG,
      * based on the 'below', 'leftof', 'rightof' or 'above' relation in the
      * underlying sequence pair, depending on the orientation of the DAG. */
-    bool is_edge(unsigned long long x, unsigned long long y);
+    bool is_edge(uint64_t x, uint64_t y);
 
 public:
-    SequencePairDAG(unsigned long long n,
+    SequencePairDAG(uint64_t n,
                     Orientation orientation,
-                    std::vector<unsigned long long> &vertex_weights,
+                    std::vector<uint64_t> &vertex_weights,
                     SequencePair *seq_pair);
     
     /* Return the total weights of the vertices of the DAG (as opposed to 
      * the ordering the DAG keeps, which is topological). */
-    std::vector<unsigned long long> total_weights_in_order();
+    std::vector<uint64_t> total_weights_in_order();
 
     /* Return the length of a longest path in the DAG. */
-    unsigned long long longest_path_length();
+    uint64_t longest_path_length();
 };
 
 #endif

@@ -13,7 +13,7 @@
 
 using namespace std;
 
-Rectangle::Rectangle(unsigned long long width, unsigned long long height, unsigned long long id) : 
+Rectangle::Rectangle(uint64_t width, uint64_t height, uint64_t id) : 
                     _width(width), _height(height), _id(id)
 {}
 
@@ -23,22 +23,22 @@ Result Rectangle::print_rectangle() const {
     return SUCCESS;
 }
 
-const unsigned long long &Rectangle::width() const { return _width; }
-const unsigned long long &Rectangle::height() const { return _height; }
-const unsigned long long &Rectangle::id() const { return _id; }
+const uint64_t &Rectangle::width() const { return _width; }
+const uint64_t &Rectangle::height() const { return _height; }
+const uint64_t &Rectangle::id() const { return _id; }
 
-bool intersect(const Rectangle &a, unsigned long long x_a, unsigned long long y_a,
-               const Rectangle &b, unsigned long long x_b, unsigned long long y_b)
+bool intersect(const Rectangle &a, uint64_t x_a, uint64_t y_a,
+               const Rectangle &b, uint64_t x_b, uint64_t y_b)
 {
-    unsigned long long x_max_a = x_a + a.width();
-    unsigned long long x_min_a = x_a;
-    unsigned long long y_max_a = y_a + a.height();
-    unsigned long long y_min_a = y_a;
+    uint64_t x_max_a = x_a + a.width();
+    uint64_t x_min_a = x_a;
+    uint64_t y_max_a = y_a + a.height();
+    uint64_t y_min_a = y_a;
 
-    unsigned long long x_max_b = x_b + b.width();
-    unsigned long long x_min_b = x_b;
-    unsigned long long y_max_b = y_b + b.height();
-    unsigned long long y_min_b = y_b;
+    uint64_t x_max_b = x_b + b.width();
+    uint64_t x_min_b = x_b;
+    uint64_t y_max_b = y_b + b.height();
+    uint64_t y_min_b = y_b;
 
     /* Horrible logic... */
     return ((between_right(x_min_b, x_min_a, x_max_b) || 

@@ -12,36 +12,35 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-#define MAX_RECT_DIM    1000000000
-#define MAX_RECTANGLES  32
-#define MAX_ITERATIONS  100000000
+#define MAX_RECT_DIM    2147483649 // 2^32, maximum value of a unint32.
+#define MAX_RECTANGLES  100
 
 #include <vector>
 #include <stdlib.h>
 #include <iostream>
 #include <climits>
-#include <stdint.h>
 
+#include <stdint.h>
 
 /* The result type used instead of something unclear like return 0. */
 typedef enum Result { FAIL, SUCCESS } Result; 
 
 /* Free a 2D int array of given width. */
-Result Free2DArray(unsigned long long** array, unsigned long long n);
+Result Free2DArray(uint64_t** array, uint64_t n);
 
 /* Factorial function. */
-unsigned long long Fact(unsigned long long n);
+uint64_t Fact(uint64_t n);
 
 /* Print a vector. */
-void print_vector(std::vector<unsigned long long> v);
+void print_vector(std::vector<uint64_t> v);
 
 /* Subtract two unsgined ints throwing an exception upon underflow. */
-unsigned long long subtract(unsigned long long a, unsigned long long b);
+uint64_t subtract(uint64_t a, uint64_t b);
 
 /* Return whether a < b <= c. */
-bool between_left(unsigned long long a, unsigned long long b, unsigned long long c);
+bool between_left(uint64_t a, uint64_t b, uint64_t c);
 /* Return whether a <= b < c. */
-bool between_right(unsigned long long a, unsigned long long b, unsigned long long c);
+bool between_right(uint64_t a, uint64_t b, uint64_t c);
 
 
 

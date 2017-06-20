@@ -15,10 +15,10 @@
 using namespace std;
 
 Floorplan::Floorplan(const Instance &inst, 
-                     unsigned long long width,
-                     unsigned long long height,
-                     vector<unsigned long long> x_coords,
-                     vector<unsigned long long> y_coords,
+                     uint64_t width,
+                     uint64_t height,
+                     vector<uint64_t> x_coords,
+                     vector<uint64_t> y_coords,
                      Origin ori) : 
                     _inst(inst), 
                     _n(inst.n_rectangles()),
@@ -30,17 +30,17 @@ Floorplan::Floorplan(const Instance &inst,
         cout << "Floorplan: Warning failed to set coords" << endl;
 }
 
-Result Floorplan::set_coords(vector<unsigned long long> x_coords,
-                             vector<unsigned long long> y_coords, 
+Result Floorplan::set_coords(vector<uint64_t> x_coords,
+                             vector<uint64_t> y_coords, 
                              Origin ori) 
 {
     if (x_coords.size() != _n || y_coords.size() != _n)
         return FAIL;
 
-    _x_coords = vector<unsigned long long>(_n, 0);
-    _y_coords = vector<unsigned long long>(_n, 0);
+    _x_coords = vector<uint64_t>(_n, 0);
+    _y_coords = vector<uint64_t>(_n, 0);
 
-    for (unsigned long long i = 0; i < _n; i++) {
+    for (uint64_t i = 0; i < _n; i++) {
         switch(ori) {
             case UPPER_RIGHT:
                 _x_coords[i] = subtract(x_coords[i], 
@@ -71,8 +71,8 @@ Result Floorplan::set_coords(vector<unsigned long long> x_coords,
 }
 
 Result Floorplan::verify() {
-    for (unsigned long long i = 0; i < _n; i++) {
-        for (unsigned long long j = i+1; j < _n; j++) {
+    for (uint64_t i = 0; i < _n; i++) {
+        for (uint64_t j = i+1; j < _n; j++) {
             if (intersect(_inst.rectangles()[i],
                           _x_coords[i],
                           _y_coords[i],
@@ -89,7 +89,7 @@ Result Floorplan::verify() {
 
 Result Floorplan::print_floorplan() {
     cout << _width << " " << _height << endl;
-    for (unsigned long long i = 0; i < _n; i++) {
+    for (uint64_t i = 0; i < _n; i++) {
         cout << _x_coords[i] << " " << _y_coords[i] << endl;
     }
     return SUCCESS;
@@ -97,7 +97,7 @@ Result Floorplan::print_floorplan() {
 
 Result Floorplan::print_floorplan_with_dimensions() {
     cout << _width << " " << _height << endl;
-    for (unsigned long long i = 0; i < _n; i++) {
+    for (uint64_t i = 0; i < _n; i++) {
         cout << _x_coords[i] << " " << _y_coords[i] 
              << " " << _inst.rectangles()[i].width() << " "
              << _inst.rectangles()[i].height() << endl;
@@ -136,58 +136,58 @@ Solver::~Solver() {
     delete _seq_pair;
 }
 
-unsigned long long Solver::chip_height() {
+uint64_t Solver::chip_height() {
     return _seq_pair_dag_vert->longest_path_length();
 }
 
-unsigned long long Solver::chip_width() {
+uint64_t Solver::chip_width() {
     return _seq_pair_dag_hori->longest_path_length();
 }
 
 Result Solver::set_rectangle_widths() {
-    for (unsigned long long i = 0; i < _n; i++)
+    for (uint64_t i = 0; i < _n; i++)
         _rectangle_widths.push_back(_inst.rectangles()[i].width());
     return SUCCESS;
 }
 
 Result Solver::set_rectangle_heights() {
-    for (unsigned long long i = 0; i < _n; i++)
+    for (uint64_t i = 0; i < _n; i++)
         _rectangle_heights.push_back(_inst.rectangles()[i].height());
     return SUCCESS;
 }
 
-unsigned long long Solver::get_area_lower_bound() {
+uint64_t Solver::get_area_lower_bound() {
     /* A trivial lower bound is given by the sums
      * of the areas of the rectangles. */
-    unsigned long long area_sum = 0;
-    for (unsigned long long i = 0; i < _n; i++)
+    uint64_t area_sum = 0;
+    for (uint64_t i = 0; i < _n; i++)
         area_sum += _rectangle_widths[i] * _rectangle_heights[i];
     return area_sum;
 }
 
-unsigned long long Solver::get_width_lower_bound() {
+uint64_t Solver::get_width_lower_bound() {
     /* A trivial lower bound is given by the min
      * of the widths of the rectangles. */
     return *max_element(_rectangle_widths.begin(), 
                         _rectangle_widths.end());
 }
 
-unsigned long long Solver::get_height_lower_bound() {
+uint64_t Solver::get_height_lower_bound() {
     /* A trivial lower bound is given by the max
      * of the heights of the rectangles. */
     return *max_element(_rectangle_heights.begin(),
                         _rectangle_heights.end());
 }
 
-Result Solver::solve_instance(Floorplan *&ret, unsigned long long offset, unsigned long long max_iter) {
-    vector<unsigned long long> best_Y_coords;
-    vector<unsigned long long> best_X_coords;
-    unsigned long long best_area = 0;
-    unsigned long long best_width, best_height;
-    unsigned long long iteration_count = 0;
+Result Solver::solve_instance(Floorplan *&ret, uint64_t offset, uint64_t max_iter) {
+    vector<uint64_t> best_Y_coords;
+    vector<uint64_t> best_X_coords;
+    uint64_t best_area = 0;
+    uint64_t best_width, best_height;
+    uint64_t iteration_count = 0;
 
-    unsigned long long area_lower_bound = get_area_lower_bound();
-    unsigned long long height_lower_bound = get_height_lower_bound();
+    uint64_t area_lower_bound = get_area_lower_bound();
+    uint64_t height_lower_bound = get_height_lower_bound();
 
 
     Result order_res;
@@ -205,14 +205,14 @@ Result Solver::solve_instance(Floorplan *&ret, unsigned long long offset, unsign
      * height, and compare area to previous best. If an improvement
      * is found, store the X and Y coords of the rectangles. */
     do {
-        unsigned long long W = chip_width();
+        uint64_t W = chip_width();
 
         /* If width * minimum height > best_area found, 
          * we need not evaluate the height. */
         if (W * height_lower_bound > best_area && best_area != 0)
             continue;
 
-        unsigned long long H = chip_height();
+        uint64_t H = chip_height();
 
         if (W * H < best_area || best_area == 0) {
             best_width = W;

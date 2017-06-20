@@ -37,25 +37,25 @@ typedef enum {UPPER_RIGHT, UPPER_LEFT, LOWER_RIGHT, LOWER_LEFT} Origin;
 class Floorplan {
 private:
     const Instance &_inst;  // Underlying instance.
-    const unsigned long long _n;        // Number of rectangles in underlying instance.
+    const uint64_t _n;        // Number of rectangles in underlying instance.
     
-    unsigned long long _width;                  // Width taken by the floorplan.
-    unsigned long long _height;                 // Height taken by the floorplan.
-    unsigned long long _area;                   // Area taken by the floorplan.
-    std::vector<unsigned long long> _x_coords;  // X-coords of rectangles (origin lower-left).
-    std::vector<unsigned long long> _y_coords;  // Y-coords of rectangles (origin lower-left).
+    uint64_t _width;                  // Width taken by the floorplan.
+    uint64_t _height;                 // Height taken by the floorplan.
+    uint64_t _area;                   // Area taken by the floorplan.
+    std::vector<uint64_t> _x_coords;  // X-coords of rectangles (origin lower-left).
+    std::vector<uint64_t> _y_coords;  // Y-coords of rectangles (origin lower-left).
 
     /* Convert coords given in constructor (with origin) to
      * lower-left origin. */
-    Result set_coords(std::vector<unsigned long long> x_coords,
-                      std::vector<unsigned long long> y_coords,
+    Result set_coords(std::vector<uint64_t> x_coords,
+                      std::vector<uint64_t> y_coords,
                       Origin ori);
 public:
     Floorplan(const Instance &inst,
-              unsigned long long width,
-              unsigned long long height,
-              std::vector<unsigned long long> x_coords,
-              std::vector<unsigned long long> y_coords,
+              uint64_t width,
+              uint64_t height,
+              std::vector<uint64_t> x_coords,
+              std::vector<uint64_t> y_coords,
               Origin ori);
 
     /* Check that the given floorplan is valid (i.e. no overlap). */
@@ -83,11 +83,11 @@ public:
 class Solver {
 private:
     const Instance &_inst;          // Underlying instance.
-    unsigned long long _n;                      // Number of rectangles in underlying instance.
-    unsigned long long _n_fact;                 // fact(n).
+    uint64_t _n;                      // Number of rectangles in underlying instance.
+    uint64_t _n_fact;                 // fact(n).
 
-    std::vector<unsigned long long> _rectangle_widths;  // Widths of rectangles in instance.
-    std::vector<unsigned long long> _rectangle_heights; // Heights of rectangles in instance.
+    std::vector<uint64_t> _rectangle_widths;  // Widths of rectangles in instance.
+    std::vector<uint64_t> _rectangle_heights; // Heights of rectangles in instance.
 
     SequencePair *_seq_pair;                // Sequence pair of size n
     SequencePairDAG *_seq_pair_dag_hori;    // The horizontal contraint graph
@@ -98,14 +98,14 @@ private:
     /* Compute chip width/height resulting from current order of _seq_pair by
      * computing the length of a longest path in the horizontal/vertical 
      * constraint graph. */
-    unsigned long long chip_height();
-    unsigned long long chip_width();
+    uint64_t chip_height();
+    uint64_t chip_width();
 
     /* Compute a lower bound for the chip area/width/height required 
      * in a floorplan for the instance. */
-    unsigned long long get_area_lower_bound();
-    unsigned long long get_width_lower_bound();
-    unsigned long long get_height_lower_bound();
+    uint64_t get_area_lower_bound();
+    uint64_t get_width_lower_bound();
+    uint64_t get_height_lower_bound();
 
     /* Fetch rectangle widths/heights from the instance and store them
      * in vectors. */
@@ -121,8 +121,8 @@ public:
      * number for the positive sequence, and the max_iter argument
      * can be used to set a maximum amount of orders to be checked
      * (use 0 for no bound). */
-    Result solve_instance(Floorplan *&ret, unsigned long long offset, unsigned long long max_iter);
-    Result solve_instance_parallel(Floorplan *&ret, unsigned long long n_threads);
+    Result solve_instance(Floorplan *&ret, uint64_t offset, uint64_t max_iter);
+    Result solve_instance_parallel(Floorplan *&ret, uint64_t n_threads);
 };
 
 #endif

@@ -16,18 +16,18 @@
 /* Rectangle is a class that, given three nonnegative integers represents
  * the rectangle of width and height given by the first two integers.
  * Furthermore, it keeps an ID, given by the third integer used for verification.
- * Essentially this is a fancy wrapper for two unsigned long longs. */
+ * Essentially this is a fancy wrapper for two uint64_ts. */
 class Rectangle {
 private:
-    const unsigned long long _width;
-    const unsigned long long _height;
-    const unsigned long long _id;
+    const uint64_t _width;
+    const uint64_t _height;
+    const uint64_t _id;
 
 public:
-    Rectangle(unsigned long long width, unsigned long long height, unsigned long long id); 
-    const unsigned long long &width() const;
-    const unsigned long long &height() const;
-    const unsigned long long &id() const;
+    Rectangle(uint64_t width, uint64_t height, uint64_t id); 
+    const uint64_t &width() const;
+    const uint64_t &height() const;
+    const uint64_t &id() const;
 
     /* IO-functions for testing. */
     Result print_rectangle() const;
@@ -35,7 +35,7 @@ public:
 
 /* Return whether the given rectangles intersect when placed at
  * the given coordinates. */
-bool intersect(const Rectangle &a, unsigned long long x_a, unsigned long long y_a,
-               const Rectangle &b, unsigned long long x_b, unsigned long long y_b);
+bool intersect(const Rectangle &a, uint64_t x_a, uint64_t y_a,
+               const Rectangle &b, uint64_t x_b, uint64_t y_b);
 
 #endif

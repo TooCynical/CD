@@ -35,15 +35,15 @@
  * Detailed information on all members can be found below. */
 class Sequence {
 private:
-    const unsigned long long _n;            // Number of elements in sequence.
-    const unsigned long long _fact_n;       // Factorial(n).
-    unsigned long long _order_number = 0;   // The index of the current order of the sequence,
+    const uint64_t _n;            // Number of elements in sequence.
+    const uint64_t _fact_n;       // Factorial(n).
+    uint64_t _order_number = 0;   // The index of the current order of the sequence,
                                 // according to lexicographical ordering on the 
                                 // sequence (1, 2, ... , n). Member functions
                                 // changing the order are responsible for keeping
                                 // this accurate.
 
-    std::vector<unsigned long long> _sequence;      // The current (ordered) sequence.
+    std::vector<uint64_t> _sequence;      // The current (ordered) sequence.
 
     bool **_order_table;                // nxn table where entry at (i, j) is true
                                         // if i comes before j in the sequence.
@@ -57,7 +57,7 @@ private:
     Result set_initial_order_table();
 
 public:
-    Sequence(unsigned long long n);
+    Sequence(uint64_t n);
     ~Sequence();
 
     /* Change the ordering of the sequence to the lexicographically smallest
@@ -69,14 +69,14 @@ public:
     Result reset();
 
     /* Set the order to match the given order number in O(n^2). */
-    Result set_order(unsigned long long order_number);
+    Result set_order(uint64_t order_number);
 
     /* Return whether x comes before y in the sequence using the order table. */
-    bool comes_before(const unsigned long long &x, const unsigned long long &y);
+    bool comes_before(const uint64_t &x, const uint64_t &y);
     
     /* Accessors. */
-    const unsigned long long &order_number() const;
-    const std::vector<unsigned long long> &sequence() const;
+    const uint64_t &order_number() const;
+    const std::vector<uint64_t> &sequence() const;
 
     /* IO-functions for testing. */
     Result print_sequence() const;
@@ -96,13 +96,13 @@ public:
  * Detailed information on all members can be found below. */
 class SequencePair {
 private:
-    const unsigned long long _n;        // Number of elements in each of the sequences.
-    const unsigned long long _fact_n;   // Fact(n).
+    const uint64_t _n;        // Number of elements in each of the sequences.
+    const uint64_t _fact_n;   // Fact(n).
     
     Sequence _pos_seq;      // Positive sequence.
     Sequence _neg_seq;      // Negative sequence.
 public:
-    SequencePair(unsigned long long n);
+    SequencePair(uint64_t n);
 
     /* Increment the negative sequence. If this causes the negative sequence
      * to be reset, increment the positive sequence as well. If this causes
@@ -114,17 +114,17 @@ public:
     Result reset();
 
     /* Set order number for positive and negative sequence. */
-    Result set_orders(unsigned long long pos_order_number, unsigned long long neg_order_number);
+    Result set_orders(uint64_t pos_order_number, uint64_t neg_order_number);
 
 
     /* Return whether x is 'below' y in the sequence pair. */
-    bool below(const unsigned long long &x, const unsigned long long &y);
+    bool below(const uint64_t &x, const uint64_t &y);
     /* Return whether x is 'left of' y in the sequence pair. */
-    bool leftof(const unsigned long long &x, const unsigned long long &y);
+    bool leftof(const uint64_t &x, const uint64_t &y);
     /* Return whether x is 'right of' y in the sequence pair. */
-    bool rightof(const unsigned long long &x, const unsigned long long &y);
+    bool rightof(const uint64_t &x, const uint64_t &y);
     /* Return whether x is 'above' y in the sequence pair. */
-    bool above(const unsigned long long &x, const unsigned long long &y);
+    bool above(const uint64_t &x, const uint64_t &y);
 
     /* Accessors */
     const Sequence &neg_seq() const;

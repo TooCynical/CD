@@ -23,6 +23,7 @@ int main(int argc, const char **argv) {
         cout << "Main: Failed to parse file" << endl;
         exit(1);
     }
+
     if (inst.verify() == FAIL) {
         cout << "Main: Failed to verify instance" << endl;
         exit(1);
