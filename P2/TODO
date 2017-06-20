@@ -1,6 +1,6 @@
 -parser: 
     -Sanitize negative values from input (currently cast to unsigned ints).
--Sequence: (needed?) implement set_order(...)
+-Sequence: (done) implement set_order(...)
 -Floorplan: 
     -(done) Implement verify 
     -(done) Implement print_floorplan_with_dimensions.
@@ -8,3 +8,6 @@
     -(done)  make it use .floorplan-files only
 -command line options:
     - Floorplan with / without dimensions.
+-Solver:
+    - Make a parallel solver.
+- Testing!

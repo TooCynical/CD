@@ -6,17 +6,17 @@ SRCS := $(shell find $(SRC_DIR)/* -maxdepth 0 -name '*.cpp')
 all: dirs
 	$(CC) $(CFLAGS) $(SRCS) main.cpp -o bin/main -lm
 
-run: all
-	./bin/main
+opt: dirs
+	$(CC) $(CFLAGS) $(SRCS) main.cpp -o bin/main -lm -D OPT
+
+test: all
+	./bin/main testing/cases/small_test_1
 
 valgrind: all
 	valgrind ./bin/main
 
-test: all
-	python ./testing/assert_testcases.py
-
 zip: all
-	zip -r DijkstraSteiner include/* src/* main.cpp testing/* Readme.md Makefile 
+	zip -r SequencePairs include/* src/* main.cpp testing/* Readme.md Makefile 
 
 dirs: 
 	mkdir -p bin

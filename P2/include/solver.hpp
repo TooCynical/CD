@@ -41,7 +41,6 @@ private:
     
     uint64_t _width;                  // Width taken by the floorplan.
     uint64_t _height;                 // Height taken by the floorplan.
-    uint64_t _area;                   // Area taken by the floorplan.
     std::vector<uint64_t> _x_coords;  // X-coords of rectangles (origin lower-left).
     std::vector<uint64_t> _y_coords;  // Y-coords of rectangles (origin lower-left).
 
@@ -111,6 +110,12 @@ private:
      * in vectors. */
     Result set_rectangle_widths();
     Result set_rectangle_heights();
+
+    /* Check that the sum of all rectangle widths times the sum of all
+     * rectangle heights still fits in a uint64, as is needed to prevent
+     * overflow during the algorithm. */
+    Result verify_upper_bound();
+
 
 public:
     Solver(const Instance &inst);

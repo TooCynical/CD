@@ -23,8 +23,7 @@ Floorplan::Floorplan(const Instance &inst,
                     _inst(inst), 
                     _n(inst.n_rectangles()),
                     _width(width),
-                    _height(height),
-                    _area(width * height)
+                    _height(height)
 {
     if (set_coords(x_coords, y_coords, ori) == FAIL)
         cout << "Floorplan: Warning failed to set coords" << endl;
@@ -144,6 +143,20 @@ uint64_t Solver::chip_width() {
     return _seq_pair_dag_hori->longest_path_length();
 }
 
+Result Solver::verify_upper_bound() {
+    uint64_t width_sum = 0;
+    uint64_t height_sum = 0;
+    for (size_t i = 0; i < _n; i++) {
+        width_sum += _rectangle_widths[i];
+        height_sum += _rectangle_heights[i];
+    }
+    uint64_t max_unint64 = -1;
+    if (width_sum > max_unint64 / height_sum)
+        return FAIL;
+    else 
+        return SUCCESS;
+}
+
 Result Solver::set_rectangle_widths() {
     for (uint64_t i = 0; i < _n; i++)
         _rectangle_widths.push_back(_inst.rectangles()[i].width());
@@ -180,15 +193,21 @@ uint64_t Solver::get_height_lower_bound() {
 }
 
 Result Solver::solve_instance(Floorplan *&ret, uint64_t offset, uint64_t max_iter) {
+    if (verify_upper_bound() == FAIL) {
+        cout << "Solver: total rectangle dimensions too large." << endl;
+        return FAIL;
+    }
+
     vector<uint64_t> best_Y_coords;
     vector<uint64_t> best_X_coords;
     uint64_t best_area = 0;
     uint64_t best_width, best_height;
+    
     uint64_t iteration_count = 0;
+    uint64_t skipped = 0;
 
     uint64_t area_lower_bound = get_area_lower_bound();
     uint64_t height_lower_bound = get_height_lower_bound();
-
 
     Result order_res;
     if (offset == 0)
@@ -205,12 +224,15 @@ Result Solver::solve_instance(Floorplan *&ret, uint64_t offset, uint64_t max_ite
      * height, and compare area to previous best. If an improvement
      * is found, store the X and Y coords of the rectangles. */
     do {
-        uint64_t W = chip_width();
+        iteration_count ++;
 
         /* If width * minimum height > best_area found, 
          * we need not evaluate the height. */
-        if (W * height_lower_bound > best_area && best_area != 0)
+        uint64_t W = chip_width();
+        if (W * height_lower_bound > best_area && best_area != 0) {
+            skipped ++;
             continue;
+        }
 
         uint64_t H = chip_height();
 
@@ -222,8 +244,11 @@ Result Solver::solve_instance(Floorplan *&ret, uint64_t offset, uint64_t max_ite
             best_Y_coords = _seq_pair_dag_vert->total_weights_in_order();
         }
     } while (_seq_pair->increment() != FAIL && 
-             (max_iter == 0 || iteration_count++ < max_iter) &&
+             (max_iter == 0 || iteration_count < max_iter) &&
              best_area > area_lower_bound);
+    // cout << "iteration_count: " << iteration_count << endl;
+    // cout << "skipped: " << skipped << endl;
+    // cout << "area: " << best_area << endl;
 
     ret = new Floorplan(_inst,
                         best_width,

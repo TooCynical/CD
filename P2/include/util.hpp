@@ -9,10 +9,10 @@
  * Basic utility functions and constants.
  */
 
-#ifndef UTIL_H
-#define UTIL_H
+#ifndef UTIL_HPP
+#define UTIL_HPP
 
-#define MAX_RECT_DIM    2147483649 // 2^32, maximum value of a unint32.
+#define MAX_RECT_DIM    2147483649 // 2^31 + 1, maximum value of a signed int32.
 #define MAX_RECTANGLES  100
 
 #include <vector>
@@ -41,7 +41,5 @@ uint64_t subtract(uint64_t a, uint64_t b);
 bool between_left(uint64_t a, uint64_t b, uint64_t c);
 /* Return whether a <= b < c. */
 bool between_right(uint64_t a, uint64_t b, uint64_t c);
-
-
 
 #endif

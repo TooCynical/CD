@@ -15,8 +15,10 @@ int main(int argc, const char **argv) {
     const char *file_name;
     if (argc > 1)
         file_name = argv[1];
-    else
-        file_name = "testing/cases/small_test_1";
+    else {
+        cout << "Usage: " << argv[0] << "<filename>" << endl;
+        exit(0);
+    }
 
     Instance inst;
     if (ParseFile(file_name, inst) == FAIL) {
