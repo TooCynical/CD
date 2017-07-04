@@ -19,7 +19,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <climits>
-
+#include <stdexcept>
 #include <stdint.h>
 
 /* The result type used instead of something unclear like return 0. */

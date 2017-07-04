@@ -81,8 +81,8 @@ public:
  * Detailed information on all members can be found below. */
 class Solver {
 private:
-    const Instance &_inst;          // Underlying instance.
-    uint64_t _n;                      // Number of rectangles in underlying instance.
+    const Instance &_inst;            // Underlying instance.
+    size_t _n;                        // Number of rectangles in underlying instance.
     uint64_t _n_fact;                 // fact(n).
 
     std::vector<uint64_t> _rectangle_widths;  // Widths of rectangles in instance.
@@ -127,7 +127,6 @@ public:
      * can be used to set a maximum amount of orders to be checked
      * (use 0 for no bound). */
     Result solve_instance(Floorplan *&ret, uint64_t offset, uint64_t max_iter);
-    Result solve_instance_parallel(Floorplan *&ret, uint64_t n_threads);
 };
 
 #endif

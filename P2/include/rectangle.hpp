@@ -21,13 +21,13 @@ class Rectangle {
 private:
     const uint64_t _width;
     const uint64_t _height;
-    const uint64_t _id;
+    const size_t _id;
 
 public:
-    Rectangle(uint64_t width, uint64_t height, uint64_t id); 
+    Rectangle(uint64_t width, uint64_t height, size_t id); 
     const uint64_t &width() const;
     const uint64_t &height() const;
-    const uint64_t &id() const;
+    const size_t &id() const;
 
     /* IO-functions for testing. */
     Result print_rectangle() const;

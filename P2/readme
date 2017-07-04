@@ -1,0 +1,63 @@
+This folder contains an implementation of the Sequencepair algorithm for 
+the 3D rectilinear steiner tree problem. Our implementation is based on the
+algorithm description in the paper "VLSI Module Placement Based on Rectangle-Packing
+by the Sequence-Pair" by Murata et al. (1996) and we refer to this paper in the 
+documentation.
+
+Implemented functionality:
+    We have implemented:
+        - Parsing of instance files with somewhat extensive input sanitation.
+        - Sequence pairs which can be:
+            - Incremented (i.e. increase order number by one) in O(n^2).
+            - Determine whether x is 'above/below/leftof/rightof' y in constant
+              time for each x, y in [n].
+        - 'Sequence pair directed acyclic graphs', which can determine the length
+          of a longest path in the DAG based on a given sequence pair, given vertex
+          weights and an orientation in O(n^2).
+        - A basic driver for the algorithm which iterates over all orders of a sequence pair and keeps track of the best found solutions.
+    The total runtime of the algorithm as implemented is O((n!)^2 * n^2).
+
+    Drawer:
+        There is a basic python script which takes a .floorplan file and
+        produces a drawing of the represented placement using pyplot (see Testing).
+
+    Notes on input:
+        In order to avoid overflow issues, the following constraints on input 
+        are enforced:
+            - The factorial of the number of rectangles provided should not exceed
+              the maximum value of an unsigned int64.
+            - The sum of all rectangle widths times the sum of all rectangle heights
+              should not exceed the maximum value of an unsigned int64.
+            - Each rectangle width / height should not exceed the maximum value
+              of an unsigned int32.
+
+Documentation:
+    Comments describing functionality of classes / methods / functions can be found in the header (.hpp) files in the /include/ folder. 
+    The source (.cpp) files in the /src/ folder only contain comments refering to details of implementation of methods / functions.
+
+Compilation:
+    The code can be compiled using 'make'. Using 'make test' will run a 
+    test case as well. Running 'make opt' will exclude some assertions, which 
+    does not really help runtime in practice. The binary will be ./bin/main
+
+Usage:
+    ./bin/main <filename> [FULL]
+    
+    where <filename> is a required argument that should point to a well-formatted instance
+    file, and FULL is an optional argument indicating whether only the locations
+    of the rectangles in the floorplan should be printed (as per the assignment
+    specifications) or if additionally the dimensions of each rectangle should be
+    printed. This option is used to create .floorplan files which are accepted
+    by the drawer.
+
+Results:
+    The code runs and (hopefully) works correctly, as far as we know there are no
+    bugs, and there should be no memory leakages (except on termination with an 
+    error code).
+
+Testing:
+    The folder /testing/ contains several python / bash scripts which can be 
+    used to test the program. In particular, it includes a script which will 
+    create a .floorplan file for each case present in testing/cases, and a
+    script which will create a .png image for each .floorplan file in 
+    data/floorplans.

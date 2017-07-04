@@ -13,7 +13,7 @@
 
 using namespace std;
 
-Rectangle::Rectangle(uint64_t width, uint64_t height, uint64_t id) : 
+Rectangle::Rectangle(uint64_t width, uint64_t height, size_t id) : 
                     _width(width), _height(height), _id(id)
 {}
 
@@ -25,7 +25,7 @@ Result Rectangle::print_rectangle() const {
 
 const uint64_t &Rectangle::width() const { return _width; }
 const uint64_t &Rectangle::height() const { return _height; }
-const uint64_t &Rectangle::id() const { return _id; }
+const size_t &Rectangle::id() const { return _id; }
 
 bool intersect(const Rectangle &a, uint64_t x_a, uint64_t y_a,
                const Rectangle &b, uint64_t x_b, uint64_t y_b)

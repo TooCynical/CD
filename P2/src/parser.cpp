@@ -15,7 +15,7 @@ using namespace std;
 
 Result ReadRectangleDimensions(fstream &input_file, 
                                uint64_t **rectangle_dims,
-                               uint64_t n)
+                               size_t n)
 {
     string line;
     uint64_t width, height;
@@ -23,7 +23,7 @@ Result ReadRectangleDimensions(fstream &input_file,
     getline(input_file, line);
 
     /* Read n lines and fetch two uint64_ts from each of them. */
-    for (uint64_t i = 0; i < n; i++) {
+    for (size_t i = 0; i < n; i++) {
         getline(input_file, line);
         istringstream line_stream(line);
         if (line_stream >> width >> height) {
@@ -37,7 +37,7 @@ Result ReadRectangleDimensions(fstream &input_file,
 }
 
 Result ParseFile(const char *file_name, Instance &inst) {
-    uint64_t n;
+    size_t n;
 
     /* Try to open file. */
     fstream input_file(file_name);
@@ -57,7 +57,7 @@ Result ParseFile(const char *file_name, Instance &inst) {
     /* Try to read rectangles dims line by line. */
     uint64_t **rectangle_dims;
     rectangle_dims = (uint64_t**) calloc(n, sizeof(uint64_t*));
-    for (uint64_t i = 0; i < n; i++)
+    for (size_t i = 0; i < n; i++)
         rectangle_dims[i] = (uint64_t*) calloc(2, sizeof(uint64_t));
 
     if (ReadRectangleDimensions(input_file, rectangle_dims, n) == FAIL) {

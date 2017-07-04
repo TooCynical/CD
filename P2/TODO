@@ -7,7 +7,7 @@
 -Drawer:
     -(done)  make it use .floorplan-files only
 -command line options:
-    - Floorplan with / without dimensions.
+    - (done) Floorplan with / without dimensions.
 -Solver:
-    - Make a parallel solver.
+    - (scrapped) Make a parallel solver.
 - Testing!

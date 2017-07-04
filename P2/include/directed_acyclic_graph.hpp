@@ -42,14 +42,14 @@ typedef enum {VERTICAL_DU, HORIZONTAL_LR, VERTICAL_UD, HORIZONTAL_RL} Orientatio
  */
 class SequencePairDAG {
 private:
-    uint64_t _n;                                  // Number of vertices
-    const Orientation _orientation;             // Orientation of graph.
-    const std::vector<uint64_t> &_vertex_weights; // Vertex weights in normal order.
-    SequencePair *_seq_pair;                    // Underlying sequence pair of DAG.
+    size_t _n;                                      // Number of vertices
+    const Orientation _orientation;                 // Orientation of graph.
+    const std::vector<uint64_t> &_vertex_weights;   // Vertex weights in normal order.
+    SequencePair *_seq_pair;                        // Underlying sequence pair of DAG.
 
-    std::vector<uint64_t> _topo_order;    // Topological order of the DAG.
-    std::vector<uint64_t> _total_weights; // Longest path lengths in the DAG in 
-                                        // topological order.
+    std::vector<size_t> _topo_order;        // Topological order of the DAG.
+    std::vector<uint64_t> _total_weights;   // Longest path lengths in the DAG in 
+                                            // topological order.
 
     /* Update topological order to reflect the current situation in the 
      * underlying sequence pair. */
@@ -66,10 +66,10 @@ private:
     /* Return whether there is an edge between vertex x and y in the DAG,
      * based on the 'below', 'leftof', 'rightof' or 'above' relation in the
      * underlying sequence pair, depending on the orientation of the DAG. */
-    bool is_edge(uint64_t x, uint64_t y);
+    bool is_edge(size_t x, size_t y);
 
 public:
-    SequencePairDAG(uint64_t n,
+    SequencePairDAG(size_t n,
                     Orientation orientation,
                     std::vector<uint64_t> &vertex_weights,
                     SequencePair *seq_pair);

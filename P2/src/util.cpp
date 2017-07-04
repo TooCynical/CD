@@ -14,17 +14,22 @@
 using namespace std;
 
 Result Free2DArray(uint64_t** array, uint64_t n) {
-    for (uint64_t i = 0; i < n; i++)
+    for (size_t i = 0; i < n; i++)
             free(array[i]);
     free(array);
     return SUCCESS;
 }
 
-/* TODO: add exception. */
 uint64_t Fact(uint64_t n) {
+    uint64_t max_uint64 = -1;
     uint64_t ret = 1;
-    for(uint64_t i = 1; i <= n; i++)
+    for(uint64_t i = 1; i <= n; i++) {
+        if ((max_uint64 / i) <= ret) {
+            throw overflow_error("Factorial does not fit in uint64!");
+            return 0;
+        }
         ret *= i;
+    }
     return ret;
 }
 
@@ -37,7 +42,7 @@ void print_vector(vector<uint64_t> v) {
 /* TODO: add exception. */
 uint64_t subtract(uint64_t a, uint64_t b) {
     if (a < b)
-        cout << "Util: Warning subtract lead to underflow" << endl;
+        throw underflow_error("Subtraction lead to underflow!");
     return a - b;
 }
 

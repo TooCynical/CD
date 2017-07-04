@@ -13,7 +13,7 @@
 
 using namespace std;
 
-SequencePairDAG::SequencePairDAG(uint64_t n,
+SequencePairDAG::SequencePairDAG(size_t n,
                                  Orientation orientation,
                                  vector<uint64_t> &vertex_weights,
                                  SequencePair *seq_pair) :
@@ -82,15 +82,15 @@ Result SequencePairDAG::update_topo_order() {
 Result SequencePairDAG::update_total_weights() {
     /* Reset total weights to (initial) vertex weights 
      * sorted according to topological order. */
-    for (uint64_t i = 0; i < _n; i++)
+    for (size_t i = 0; i < _n; i++)
         _total_weights[i] = _vertex_weights[_topo_order[i]];
 
     /* Apply the topological longest path algorithm for DAGs: */
     /* Loop over vertices in topological order. */
-    for (uint64_t i = 0; i < _n; i++){
+    for (size_t i = 0; i < _n; i++){
         /* For each (outgoing) neighbour of current vertex,
          * update longest path length if needed. */
-        for (uint64_t j = i+1; j < _n; j++) {
+        for (size_t j = i+1; j < _n; j++) {
             if (is_edge(_topo_order[i], _topo_order[j])) {
                 if (_total_weights[j] < _total_weights[i] + 
                                         _vertex_weights[_topo_order[j]])
@@ -123,7 +123,7 @@ vector<uint64_t> SequencePairDAG::total_weights_in_order() {
     #endif
     
     vector<uint64_t> ret(_n, 0);
-    for (uint64_t i = 0; i < _n; i++) {
+    for (size_t i = 0; i < _n; i++) {
         ret[_topo_order[i]] = _total_weights[i];
     }
     return ret;

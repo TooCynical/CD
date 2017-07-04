@@ -16,8 +16,18 @@ int main(int argc, const char **argv) {
     if (argc > 1)
         file_name = argv[1];
     else {
-        cout << "Usage: " << argv[0] << "<filename>" << endl;
+        cout << "Usage: " << argv[0] << " <filename> [FULL]" << endl;
         exit(0);
+    }
+
+    /* Should we print simple output or full floorplan (i.e. 
+     * include rectangle dimensions)? */
+    bool full_floorplan = false;
+    if (argc > 2) {
+        string bound_arg(argv[2]);
+        if (bound_arg.compare("FULL") == 0) {
+            full_floorplan = true;
+        }
     }
 
     Instance inst;
@@ -34,13 +44,23 @@ int main(int argc, const char **argv) {
     Solver solver(inst);
     Floorplan *floorplan;
 
-    if (solver.solve_instance(floorplan, 0, 0) == FAIL)
+    if (solver.solve_instance(floorplan, 0, 0) == FAIL) {
         cout << "Main: something went wrong solving the instance." << endl;
+        exit(1);
+    }
     else {
-        if (floorplan->verify() == FAIL)
+        if (floorplan->verify() == FAIL) {
             cout << "Main: solution found but not legal." << endl;
-        else 
-            floorplan->print_floorplan_with_dimensions();
+            delete floorplan;
+            exit(1);
+        }
+        else {
+            if (full_floorplan)
+                floorplan->print_floorplan_with_dimensions();
+            else
+                floorplan->print_floorplan();
+        }
+        delete floorplan;
     }
     return 0;
 }

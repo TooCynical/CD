@@ -13,7 +13,7 @@
 
 using namespace std;
 
-Result Instance::set_rectangles(uint64_t n_rectangles, 
+Result Instance::set_rectangles(size_t n_rectangles, 
                                 uint64_t **rectangle_dims)
 {
     if (_rectangles_set)
@@ -21,7 +21,7 @@ Result Instance::set_rectangles(uint64_t n_rectangles,
 
     _n_rectangles = n_rectangles;
     Result res;
-    for (uint64_t i = 0; i < n_rectangles; i++) {
+    for (size_t i = 0; i < n_rectangles; i++) {
         res = add_rectangle(rectangle_dims[i][0], rectangle_dims[i][1]);
         if (res == FAIL)
             return FAIL;
@@ -51,7 +51,7 @@ Result Instance::verify() const {
     /* Check that the dimensions of each rectangle are in bounds,
      * and that the id of each rectangle corresponds to their location
      * in the array, thus automatically checking that ids are unique. */
-    for (uint64_t i = 0; i < _n_rectangles; i++) {
+    for (size_t i = 0; i < _n_rectangles; i++) {
         if (_rectangles[i].height() > MAX_RECT_DIM ||
             _rectangles[i].width() > MAX_RECT_DIM  ||
             _rectangles[i].id() != i)
@@ -66,7 +66,7 @@ const vector<Rectangle> &Instance::rectangles() const {
     return _rectangles;
 }
 
-uint64_t Instance::n_rectangles() const { return _n_rectangles; }
+size_t Instance::n_rectangles() const { return _n_rectangles; }
 
 Result Instance::print_rectangles() const {
     if (!_rectangles_set) {
@@ -74,13 +74,13 @@ Result Instance::print_rectangles() const {
         exit(1);
     }
 
-    for (uint64_t i = 0; i < _n_rectangles; i++) {
+    for (size_t i = 0; i < _n_rectangles; i++) {
         _rectangles[i].print_rectangle();
     }
     return SUCCESS;
 }
 
-Result IdHelper::get_id(uint64_t &ret) { 
+Result IdHelper::get_id(size_t &ret) { 
     if (_current_id == SIZE_MAX)
         return FAIL;
 
