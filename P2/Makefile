@@ -10,7 +10,7 @@ opt: dirs
 	$(CC) $(CFLAGS) $(SRCS) main.cpp -o bin/main -lm -D OPT
 
 test: all
-	./bin/main testing/cases/small_test_1
+	./bin/main testing/cases/random_test_1
 
 valgrind: all
 	valgrind ./bin/main

@@ -61,3 +61,9 @@ Testing:
     create a .floorplan file for each case present in testing/cases, and a
     script which will create a .png image for each .floorplan file in 
     data/floorplans.
+
+    So one can run: 
+        bash testing/make_floorplans.sh
+        bash testing/make_images.sh
+    to create a floorplan and an image representing the floorplan for each file
+    in testing/cases. These files can then be found in data/.
