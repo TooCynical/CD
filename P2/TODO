@@ -1,5 +1,5 @@
 -parser: 
-    -Sanitize negative values from input (currently cast to unsigned ints).
+    -(done) Sanitize negative values from input (currently cast to unsigned ints).
 -Sequence: (done) implement set_order(...)
 -Floorplan: 
     -(done) Implement verify 

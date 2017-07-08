@@ -13,6 +13,29 @@
 
 using namespace std;
 
+/* Attempt to read an integer, checking that it is not negative. */
+Result parse_n(fstream &input_file, uint64_t &ret) {
+    int64_t i;
+    input_file >> i;
+    ret = i;
+    if (i >= 0)
+        return SUCCESS;
+    else
+        return FAIL;
+}
+
+/* Attempt to read two integers, checking that they are not negative. */
+Result parse_w_h(istringstream &line_stream, uint64_t &ret1, uint64_t &ret2) {
+    int64_t i, j;
+    line_stream >> i >> j;
+    ret1 = i;
+    ret2 = j;
+    if (i >= 0 && j >= 0)
+        return SUCCESS;
+    else
+        return FAIL;
+}
+
 Result ReadRectangleDimensions(fstream &input_file, 
                                uint64_t **rectangle_dims,
                                size_t n)
@@ -26,7 +49,7 @@ Result ReadRectangleDimensions(fstream &input_file,
     for (size_t i = 0; i < n; i++) {
         getline(input_file, line);
         istringstream line_stream(line);
-        if (line_stream >> width >> height) {
+        if (parse_w_h(line_stream, width, height) == SUCCESS) {
             rectangle_dims[i][0] = width;
             rectangle_dims[i][1] = height;
         }
@@ -47,8 +70,9 @@ Result ParseFile(const char *file_name, Instance &inst) {
     }
 
     /* Try to read number of rectangles. */
-    input_file >> n;
-    if (input_file.fail() || n < 1 || n > MAX_RECTANGLES) {
+    if (parse_n(input_file, n) == FAIL || input_file.fail() || 
+        n > MAX_RECTANGLES) 
+    {
         cout << "ParseFile: File format incorrect (no valid n given): " <<
                 file_name << endl;
         return FAIL;

@@ -43,7 +43,7 @@ private:
                                   // changing the order are responsible for keeping
                                   // this accurate.
 
-    std::vector<size_t> _sequence;    // The current (ordered) sequence.
+    std::vector<size_t> _sequence;      // The current (ordered) sequence.
 
     bool **_order_table;                // nxn table where entry at (i, j) is true
                                         // if i comes before j in the sequence.
